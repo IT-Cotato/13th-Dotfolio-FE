@@ -1,3 +1,3 @@
 export default function Home() {
-  return <div>Home</div>
+  return <p>홈화면</p>
 }

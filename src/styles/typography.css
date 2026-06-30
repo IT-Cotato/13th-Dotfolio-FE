@@ -1,0 +1,159 @@
+@font-face {
+  font-family: 'Pretendard Variable';
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+  src: url('/fonts/PretendardVariable.woff2') format('woff2-variations');
+}
+
+@theme {
+  --font-pretendard: 'Pretendard Variable', sans-serif;
+
+  /* header */
+  --text-header: 2rem; /* 32px */
+  --text-header--font-weight: 700;
+  --text-header--line-height: 140%;
+  --text-header--letter-spacing: -0.02rem;
+
+  /* title */
+  --text-title1: 1.5rem; /* 24px */
+  --text-title1--font-weight: 700;
+  --text-title1--line-height: 140%;
+  --text-title1--letter-spacing: -0.015rem;
+
+  --text-title2: 1.125rem; /* 18px */
+  --text-title2--font-weight: 700;
+  --text-title2--line-height: 140%;
+  --text-title2--letter-spacing: -0.01125rem;
+
+  --text-title3: 1rem; /* 16px */
+  --text-title3--font-weight: 700;
+  --text-title3--line-height: 140%;
+  --text-title3--letter-spacing: -0.01rem;
+
+  /* subtitle */
+  --text-sub1-sb: 1.125rem; /* 18px */
+  --text-sub1-sb--font-weight: 600;
+  --text-sub1-sb--line-height: 140%;
+  --text-sub1-sb--letter-spacing: -0.01125rem;
+
+  --text-sub2-sb: 1rem; /* 16px */
+  --text-sub2-sb--font-weight: 600;
+  --text-sub2-sb--line-height: 140%;
+  --text-sub2-sb--letter-spacing: -0.01rem;
+
+  --text-sub3-sb: 0.875rem; /* 14px */
+  --text-sub3-sb--font-weight: 600;
+  --text-sub3-sb--line-height: 140%;
+  --text-sub3-sb--letter-spacing: -0.00875rem;
+
+  /* body */
+  --text-body1-md: 1.125rem; /* 18px */
+  --text-body1-md--font-weight: 500;
+  --text-body1-md--line-height: 140%;
+  --text-body1-md--letter-spacing: -0.01125rem;
+
+  --text-body1-r: 1.125rem; /* 18px */
+  --text-body1-r--font-weight: 400;
+  --text-body1-r--line-height: 140%;
+  --text-body1-r--letter-spacing: -0.01125rem;
+
+  --text-body2-md: 1rem; /* 16px */
+  --text-body2-md--font-weight: 500;
+  --text-body2-md--line-height: 140%;
+  --text-body2-md--letter-spacing: -0.01rem;
+
+  --text-body2-r: 1rem; /* 16px */
+  --text-body2-r--font-weight: 400;
+  --text-body2-r--line-height: 140%;
+  --text-body2-r--letter-spacing: -0.01rem;
+
+  --text-body3-md: 0.875rem; /* 14px */
+  --text-body3-md--font-weight: 500;
+  --text-body3-md--line-height: 140%;
+  --text-body3-md--letter-spacing: -0.00875rem;
+
+  --text-body3-r: 0.875rem; /* 14px */
+  --text-body3-r--font-weight: 400;
+  --text-body3-r--line-height: 140%;
+  --text-body3-r--letter-spacing: -0.00875rem;
+
+  /* body reading */
+  --text-body-reading1-md: 1.125rem; /* 18px */
+  --text-body-reading1-md--font-weight: 500;
+  --text-body-reading1-md--line-height: 160%;
+  --text-body-reading1-md--letter-spacing: -0.01125rem;
+
+  --text-body-reading1-r: 1.125rem; /* 18px */
+  --text-body-reading1-r--font-weight: 400;
+  --text-body-reading1-r--line-height: 160%;
+  --text-body-reading1-r--letter-spacing: -0.01125rem;
+
+  --text-body-reading2-md: 1rem; /* 16px */
+  --text-body-reading2-md--font-weight: 500;
+  --text-body-reading2-md--line-height: 160%;
+  --text-body-reading2-md--letter-spacing: -0.01rem;
+
+  --text-body-reading2-r: 1rem; /* 16px */
+  --text-body-reading2-r--font-weight: 400;
+  --text-body-reading2-r--line-height: 160%;
+  --text-body-reading2-r--letter-spacing: -0.01rem;
+
+  --text-body-reading3-md: 0.875rem; /* 14px */
+  --text-body-reading3-md--font-weight: 500;
+  --text-body-reading3-md--line-height: 160%;
+  --text-body-reading3-md--letter-spacing: -0.00875rem;
+
+  --text-body-reading3-r: 0.875rem; /* 14px */
+  --text-body-reading3-r--font-weight: 400;
+  --text-body-reading3-r--line-height: 160%;
+  --text-body-reading3-r--letter-spacing: -0.00875rem;
+
+  /* label */
+  --text-label1-sb: 1rem; /* 16px */
+  --text-label1-sb--font-weight: 600;
+  --text-label1-sb--line-height: 140%;
+  --text-label1-sb--letter-spacing: -0.01rem;
+
+  --text-label1-md: 1rem; /* 16px */
+  --text-label1-md--font-weight: 500;
+  --text-label1-md--line-height: 140%;
+  --text-label1-md--letter-spacing: -0.01rem;
+
+  --text-label2-sb: 0.875rem; /* 14px */
+  --text-label2-sb--font-weight: 600;
+  --text-label2-sb--line-height: 140%;
+  --text-label2-sb--letter-spacing: -0.00875rem;
+
+  --text-label2-md: 0.875rem; /* 14px */
+  --text-label2-md--font-weight: 500;
+  --text-label2-md--line-height: 140%;
+  --text-label2-md--letter-spacing: -0.00875rem;
+
+  --text-label3-sb: 0.75rem; /* 12px */
+  --text-label3-sb--font-weight: 600;
+  --text-label3-sb--line-height: 140%;
+  --text-label3-sb--letter-spacing: -0.0075rem;
+
+  --text-label3-md: 0.75rem; /* 12px */
+  --text-label3-md--font-weight: 500;
+  --text-label3-md--line-height: 140%;
+  --text-label3-md--letter-spacing: -0.0075rem;
+
+  /* caption */
+  --text-caption1: 0.75rem; /* 12px */
+  --text-caption1--font-weight: 400;
+  --text-caption1--line-height: 140%;
+  --text-caption1--letter-spacing: -0.0075rem;
+
+  --text-caption2: 0.625rem; /* 10px */
+  --text-caption2--font-weight: 400;
+  --text-caption2--line-height: 140%;
+  --text-caption2--letter-spacing: -0.00625rem;
+}
+
+@layer base {
+  * {
+    font-family: var(--font-pretendard);
+  }
+}

@@ -1,0 +1,48 @@
+@import "tailwindcss";
+@import "./typography.css";
+
+@theme {
+  /* grey scale */
+  --color-grey-0: #ffffff;
+  --color-grey-50: #f7faff;
+  --color-grey-100: #dee6ef;
+  --color-grey-200: #c8d1dc;
+  --color-grey-300: #b3bdc8;
+  --color-grey-400: #9fa9b5;
+  --color-grey-500: #8b95a1;
+  --color-grey-600: #6c7580;
+  --color-grey-700: #4e5761;
+  --color-grey-800: #333a42;
+  --color-grey-900: #1a1f26;
+  --color-grey-950: #05080c;
+
+  /* primary */
+  --color-primary-50: #e4ecff;
+  --color-primary-100: #c9daff;
+  --color-primary-200: #9bb9ff;
+  --color-primary-300: #6e96ff;
+  --color-primary-400: #426eff;
+  --color-primary-500: #2f52eb;
+  --color-primary-gradient: #2f52eb;
+
+  /* category */
+  --color-category-mint: #c7f1f6;
+  --color-category-purple: #d7d9ff;
+  --color-category-pink: #f6dcf9;
+  --color-category-coral: #fcdcd2;
+
+  /* error */
+  --color-error-bg: #fff3f4;
+  --color-error-border: #ffb7b4;
+  --color-error-text: #f25152;
+}
+
+@layer utilities {
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+}

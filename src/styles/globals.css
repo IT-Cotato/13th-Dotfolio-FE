@@ -45,4 +45,12 @@
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
   }
+
+  /* 홈 */
+  .bg-home {
+  background:
+    linear-gradient(0deg, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0.6) 100%),
+    url('/images/background.jpg') lightgray 0px -0.093px / 127.431% 100.018% no-repeat;
+}
+
 }

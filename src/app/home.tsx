@@ -1,6 +1,6 @@
 import { Card } from '@/components/common/card';
 import { HomeHeader } from '@/components/home/header';
-import { PrimaryButton } from '@/components/common/PrimaryButton';
+import { PrimaryButton } from '@/components/common/createButton';
 
 export default function Home() {
   const activityCount = 0;

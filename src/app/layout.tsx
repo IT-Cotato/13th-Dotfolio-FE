@@ -8,7 +8,7 @@ import ProfileIcon from '@/assets/profile.svg'
 export default function Layout() {
   return (
     <div className="w-full h-screen bg-home">
-      <header className="w-full h-20 flex items-center justify-end pr-6">
+      <header className="w-full h-20 relative flex items-center justify-end pr-6">
         <div className="flex items-center gap-5">
           <div className="relative p-0.75">
             <AlarmIcon className="w-6 h-6 text-grey-700" />

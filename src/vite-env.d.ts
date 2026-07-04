@@ -1,7 +1,7 @@
 /// <reference types="vite/client" />
 
 declare module '*.svg' {
-  import type { SVGProps, ReactElement } from 'react';
-  const ReactComponent: (props: SVGProps<SVGSVGElement>) => ReactElement | null;
+  import * as React from 'react';
+  const ReactComponent: React.FunctionComponent<React.SVGProps<SVGSVGElement>>;
   export default ReactComponent;
 }

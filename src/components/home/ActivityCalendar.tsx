@@ -1,19 +1,37 @@
-import activityData from '@/mock/activeday.json';
+import activityData from '@/mock/activeday';
+import type { ActivityType, DayType } from '@/types/activity';
 import { DAY_LABELS, DAY_LABEL_COLORS } from '@/constants/calendar';
 import { toDateStr, getCalendarWeeks } from '@/utils/date';
 
-type ActivityType = 'none' | 'memo' | 'both';
-type DayType = 'future' | 'today' | ActivityType;
-
-const getDotClass = (type: DayType): string => {
+const getPastDotClass = (type: ActivityType): string => {
   switch (type) {
-    case 'future': return 'border border-grey-100 bg-transparent';
-    case 'today':  return 'border-2 border-primary-400 bg-transparent';
-    case 'none':   return 'bg-grey-100';
-    case 'memo':   return 'bg-primary-100';
-    case 'both':   return 'bg-primary-gradient';
+    case 'none': return 'bg-grey-100';
+    case 'memo': return 'bg-primary-100';
+    case 'both': return 'bg-primary-gradient';
   }
 };
+
+const todayInnerClass: Record<'today-none' | 'today-memo' | 'today-both', string> = {
+  'today-none': 'bg-white',
+  'today-memo': 'bg-primary-100',
+  'today-both': 'bg-primary-gradient',
+};
+
+const todayTextColor: Record<'today-none' | 'today-memo' | 'today-both', string> = {
+  'today-none': 'text-primary-500',
+  'today-memo': 'text-primary-500',
+  'today-both': 'text-grey-0',
+};
+
+type TodayType = 'today-none' | 'today-memo' | 'today-both';
+
+const TodayDot = ({ type }: { type: TodayType }) => (
+  <div className="w-7 h-7 rounded-full bg-primary-gradient p-0.5">
+    <div className={`w-full h-full rounded-full flex items-center justify-center ${todayInnerClass[type]}`}>
+      <span className={`text-[8px] leading-none font-medium ${todayTextColor[type]}`}>Today</span>
+    </div>
+  </div>
+);
 
 export const ActivityCalendar = () => {
   const now = new Date();
@@ -24,9 +42,14 @@ export const ActivityCalendar = () => {
 
   const getCellType = (day: number): DayType => {
     const dateStr = toDateStr(year, month, day);
-    if (dateStr === todayStr) return 'today';
+    if (dateStr === todayStr) {
+      const activity = activityData[dateStr];
+      if (activity === 'both') return 'today-both';
+      if (activity === 'memo') return 'today-memo';
+      return 'today-none';
+    }
     if (dateStr > todayStr) return 'future';
-    return (activityData as Record<string, ActivityType>)[dateStr] ?? 'none';
+    return activityData[dateStr] ?? 'none';
   };
 
   return (
@@ -44,12 +67,20 @@ export const ActivityCalendar = () => {
             {week.map((day, di) => {
               if (!day) return <div key={di} />;
               const type = getCellType(day);
+
+              if (type === 'today-none' || type === 'today-memo' || type === 'today-both') {
+                return <TodayDot key={di} type={type} />;
+              }
+
               return (
-                <div key={di} className="flex flex-col items-center gap-0.5">
-                  <div className={`w-7 h-7 rounded-full ${getDotClass(type)}`} />
-                  {type === 'today' && (
-                    <span className="text-caption2 text-primary-400">Today</span>
-                  )}
+                <div key={di} className="flex justify-center">
+                  <div
+                    className={`w-7 h-7 rounded-full ${
+                      type === 'future'
+                        ? 'border border-grey-100 bg-transparent'
+                        : getPastDotClass(type)
+                    }`}
+                  />
                 </div>
               );
             })}

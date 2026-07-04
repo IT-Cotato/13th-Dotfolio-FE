@@ -1,3 +1,5 @@
+import { ActivityCalendar } from './ActivityCalendar';
+
 export const HomeHeader = () => {
   return (
     <div className="w-full flex justify-between items-start rounded-4xl bg-grey-50 p-14">
@@ -15,8 +17,7 @@ export const HomeHeader = () => {
           나만의 성장 스토리를 만들어보세요.
         </p>
       </div>
-      {/* TODO: 캘린더 컴포넌트 */}
-      <div />
+      <ActivityCalendar />
     </div>
   );
 };

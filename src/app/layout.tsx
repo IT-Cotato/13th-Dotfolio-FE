@@ -1,13 +1,28 @@
 import { Routes, Route } from 'react-router-dom'
 import Home from './home'
+import { ImmersionToggle } from '@/components/home/ImmersionToggle'
+import { Sidebar } from '@/components/common/sidebar'
+import AlarmIcon from '@/assets/alarm.svg'
+import ProfileIcon from '@/assets/profile.svg'
 
 export default function Layout() {
   return (
-    <div className="w-full h-screen">
-      <header className="w-full h-[80px] border-b border-[var(--color-grey-100)]" />
+    <div className="w-full h-screen bg-home">
+      <header className="w-full h-20 relative flex items-center justify-end pr-6">
+        <div className="flex items-center gap-5">
+          <div className="relative p-0.75">
+            <AlarmIcon className="w-6 h-6 text-grey-700" />
+            <span className="absolute top-0 right-0 w-1.5 h-1.5 rounded-full bg-error-text" />
+          </div>
+          <ProfileIcon className="w-6 h-6 text-grey-700" />
+        </div>
+      </header>
       <div className="flex h-[calc(100vh-80px)]">
-        <nav className="w-[240px] shrink-0 border-r border-[var(--color-grey-100)]" />
-        <main className="flex-1 px-6 py-6">
+        <nav className="w-60 shrink-0 flex flex-col items-start pt-6 px-6 gap-6">
+          <ImmersionToggle />
+          <Sidebar />
+        </nav>
+        <main className="flex-1 pb-8 pr-6 h-full overflow-y-auto">
           <Routes>
             <Route path="/" element={<Home />} />
           </Routes>

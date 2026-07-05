@@ -1,4 +1,7 @@
 import { useState } from 'react';
+import LottieLib from 'lottie-react';
+const Lottie = (LottieLib as unknown as { default: typeof LottieLib }).default ?? LottieLib;
+import readABook from '@/assets/read-a-book.json';
 import { Card } from '@/components/common/card';
 import { HomeHeader } from '@/components/home/header';
 import { PrimaryButton } from '@/components/common/createButton';
@@ -40,7 +43,7 @@ export default function Home() {
         {activities.length === 0 ? (
           <section className="w-full flex flex-col items-center text-center gap-8">
             <div className="flex flex-col items-center gap-2.5">
-              <img src="/book.gif" alt="book" />
+              <Lottie animationData={readABook} loop autoplay style={{ width: 160, height: 160 }} />
               <div className="flex flex-col gap-3">
                 <p className="text-sub1-sb text-grey-950">첫 기록을 남겨볼까요?</p>
                 <p className="text-body2-r text-grey-700">

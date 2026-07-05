@@ -29,7 +29,7 @@ export const ActivityCard = ({ activity }: ActivityCardProps) => {
         <p className="text-body2-r text-grey-500">{activity.startDate} ~ {endLabel}</p>
       </div>
       <div className="border-t border-grey-100 pt-2">
-        <p className="text-body3-r text-grey-500">기록 중 0 · 기여 참고 0</p>
+        <p className="text-body3-r text-grey-500">기록 중 0 · 기록 완료 0</p>
       </div>
     </div>
   );

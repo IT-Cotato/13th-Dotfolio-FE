@@ -3,22 +3,41 @@ import { Card } from '@/components/common/card';
 import { HomeHeader } from '@/components/home/header';
 import { PrimaryButton } from '@/components/common/createButton';
 import { ActivityModal } from '@/components/home/ActivityModal';
+import { ActivityCard } from '@/components/home/ActivityCard';
+import { Toast } from '@/components/common/Toast';
+import type { Activity } from '@/types/activity';
 
 export default function Home() {
-  const activityCount = 0;
+  const [activities, setActivities] = useState<Activity[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [showToast, setShowToast] = useState(false);
+
+  const handleSubmit = (data: Omit<Activity, 'id'>) => {
+    setActivities(prev => [...prev, { id: Date.now().toString(), ...data }]);
+    setIsModalOpen(false);
+    setShowToast(true);
+    setTimeout(() => setShowToast(false), 2000);
+  };
 
   return (
     <>
+      {showToast && (
+        <div className="fixed top-4 left-1/2 -translate-x-1/2 z-[100]">
+          <Toast message="활동이 성공적으로 생성되었습니다." />
+        </div>
+      )}
       <Card>
         <HomeHeader />
-        <section className="w-full">
+        <section className="w-full flex items-center justify-between">
           <div className="flex items-center gap-2">
             <span className="text-title1 text-grey-900">기록 중인 활동</span>
-            <span className="text-title1 text-grey-900">{activityCount}</span>
+            <span className="text-title1 text-grey-900">{activities.length}</span>
           </div>
+          {activities.length > 0 && (
+            <PrimaryButton label="활동 추가" onClick={() => setIsModalOpen(true)} />
+          )}
         </section>
-        {activityCount === 0 && (
+        {activities.length === 0 ? (
           <section className="w-full flex flex-col items-center text-center gap-8">
             <div className="flex flex-col items-center gap-2.5">
               <img src="/book.gif" alt="book" />
@@ -32,9 +51,19 @@ export default function Home() {
             </div>
             <PrimaryButton label="활동 기록하기" onClick={() => setIsModalOpen(true)} />
           </section>
+        ) : (
+          <section className="w-full grid grid-cols-4 gap-4">
+            {activities.map(activity => (
+              <ActivityCard key={activity.id} activity={activity} />
+            ))}
+          </section>
         )}
       </Card>
-      <ActivityModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+      <ActivityModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSubmit={handleSubmit}
+      />
     </>
   );
 }

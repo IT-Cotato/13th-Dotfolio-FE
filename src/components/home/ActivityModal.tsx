@@ -6,12 +6,21 @@ import CloseIcon from '@/assets/close.svg';
 import { formatDate } from '@/utils/date';
 import { ACTIVITY_TYPES } from '@/constants/activity';
 
+interface ActivityFormData {
+  title: string;
+  tags: string[];
+  startDate: string;
+  endDate: string;
+  endDateUnknown: boolean;
+}
+
 interface ActivityModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onSubmit: (data: ActivityFormData) => void;
 }
 
-export const ActivityModal = ({ isOpen, onClose }: ActivityModalProps) => {
+export const ActivityModal = ({ isOpen, onClose, onSubmit }: ActivityModalProps) => {
   const [title, setTitle] = useState('');
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [extraTags, setExtraTags] = useState<string[]>([]);
@@ -175,7 +184,11 @@ export const ActivityModal = ({ isOpen, onClose }: ActivityModalProps) => {
         </div>
 
         {/* 활동 생성 */}
-        <Button label="활동 생성" disabled={isDisabled} />
+        <Button
+          label="활동 생성"
+          disabled={isDisabled}
+          onClick={() => onSubmit({ title, tags: selectedTags, startDate, endDate, endDateUnknown })}
+        />
       </div>
     </div>
   );

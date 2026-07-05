@@ -3,11 +3,8 @@ import { ActivityTag } from '@/components/common/ActivityTag';
 import { Button } from '@/components/common/button';
 import CalendarIcon from '@/assets/calendar.svg';
 import CloseIcon from '@/assets/close.svg';
-
-const ACTIVITY_TYPES = ['동아리/학회', '프로젝트', '인턴', '공모전'];
-
-const formatDate = (d: Date) =>
-  `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, '0')}.${String(d.getDate()).padStart(2, '0')}`;
+import { formatDate } from '@/utils/date';
+import { ACTIVITY_TYPES } from '@/constants/activity';
 
 interface ActivityModalProps {
   isOpen: boolean;
@@ -58,7 +55,7 @@ export const ActivityModal = ({ isOpen, onClose }: ActivityModalProps) => {
         {/* 활동 종류 */}
         <div className="flex flex-col gap-2">
           <p className="text-sub2-sb text-grey-900">활동 종류</p>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-2 py-2">
             {ACTIVITY_TYPES.map(tag => (
               <ActivityTag
                 key={tag}
@@ -78,7 +75,7 @@ export const ActivityModal = ({ isOpen, onClose }: ActivityModalProps) => {
 
         {/* 날짜 */}
         <div className="flex flex-col gap-4">
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-2 gap-3">
             <div className="flex flex-col gap-2">
               <p className="text-sub2-sb text-grey-900">활동 시작일</p>
               <div className="flex items-center gap-2 py-3 border-b border-grey-100">

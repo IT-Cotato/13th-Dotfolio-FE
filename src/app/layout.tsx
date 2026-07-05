@@ -11,10 +11,10 @@ export default function Layout() {
       <header className="w-full h-20 relative flex items-center justify-end pr-6">
         <div className="flex items-center gap-5">
           <div className="relative p-0.75">
-            <AlarmIcon className="w-6 h-6 text-grey-700" />
+            <AlarmIcon className="w-6 h-6 text-grey-700 cursor-pointer"  />
             <span className="absolute top-0 right-0 w-1.5 h-1.5 rounded-full bg-error-text" />
           </div>
-          <ProfileIcon className="w-6 h-6 text-grey-700" />
+          <ProfileIcon className="w-6 h-6 text-grey-700 cursor-pointer" />
         </div>
       </header>
       <div className="flex h-[calc(100vh-80px)]">

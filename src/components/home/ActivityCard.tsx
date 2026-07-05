@@ -1,4 +1,5 @@
 import { Tag } from '@/components/home/folder/Tag';
+import { ProgressBar } from '@/components/home/ProgressBar';
 import type { Activity } from '@/types/activity';
 
 interface ActivityCardProps {
@@ -8,6 +9,7 @@ interface ActivityCardProps {
 export const ActivityCard = ({ activity }: ActivityCardProps) => {
   const firstTag = activity.tags[0] ?? '';
   const endLabel = activity.endDateUnknown ? '현재 진행 중' : activity.endDate;
+  const inProgress = activity.recordCount - activity.completedCount;
 
   return (
     <div className="flex flex-col gap-4 bg-white rounded-2xl px-3 py-4 border border-grey-100">
@@ -25,11 +27,9 @@ export const ActivityCard = ({ activity }: ActivityCardProps) => {
 
       <div className="flex flex-col gap-2 mt-auto">
         <p className="text-body3-md text-grey-700">
-          기록 중 <span className="text-sub3-sb">0</span> · 기록 완료 <span className="text-sub3-sb">0</span>
+          기록 중 <span className="text-sub3-sb">{inProgress}</span> · 기록 완료 <span className="text-sub3-sb">{activity.completedCount}</span>
         </p>
-        <div className="w-full h-1 bg-grey-100 rounded-full overflow-hidden">
-          <div className="h-full w-0 bg-primary-500 rounded-full" />
-        </div>
+        <ProgressBar value={activity.completedCount} max={activity.recordCount} />
       </div>
     </div>
   );

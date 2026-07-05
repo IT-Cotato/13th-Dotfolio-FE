@@ -7,6 +7,8 @@ export interface Activity {
   startDate: string;
   endDate: string;
   endDateUnknown: boolean;
+  recordCount: number;
+  completedCount: number;
 }
 
 export type DayType =

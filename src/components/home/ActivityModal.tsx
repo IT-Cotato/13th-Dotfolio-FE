@@ -203,7 +203,6 @@ export const ActivityModal = ({ isOpen, onClose, onSubmit }: ActivityModalProps)
           </div>
         </div>
 
-        {/* 활동 생성 */}
         <Button
           label="활동 생성"
           disabled={isDisabled}

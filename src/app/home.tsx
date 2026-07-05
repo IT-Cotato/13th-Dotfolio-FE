@@ -9,14 +9,15 @@ import { ActivityModal } from '@/components/home/ActivityModal';
 import { ActivityCard } from '@/components/home/ActivityCard';
 import { Toast } from '@/components/common/Toast';
 import type { Activity } from '@/types/activity';
+import MOCK_ACTIVITIES from '@/mock/activities.json';
 
 export default function Home() {
-  const [activities, setActivities] = useState<Activity[]>([]);
+  const [activities, setActivities] = useState<Activity[]>(MOCK_ACTIVITIES);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showToast, setShowToast] = useState(false);
 
-  const handleSubmit = (data: Omit<Activity, 'id'>) => {
-    setActivities(prev => [...prev, { id: Date.now().toString(), ...data }]);
+  const handleSubmit = (data: Omit<Activity, 'id' | 'recordCount' | 'completedCount'>) => {
+    setActivities(prev => [...prev, { id: Date.now().toString(), ...data, recordCount: 0, completedCount: 0 }]);
     setIsModalOpen(false);
     setShowToast(true);
     setTimeout(() => setShowToast(false), 2000);

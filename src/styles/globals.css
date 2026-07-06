@@ -2,6 +2,9 @@
 @import "./typography.css";
 
 @theme {
+  /* neutral grey (Figma Neutral-Grey scale) */
+  --color-neutral-grey-900: #1a1a1a;
+
   /* grey scale */
   --color-grey-0: #ffffff;
   --color-grey-50: #f7faff;

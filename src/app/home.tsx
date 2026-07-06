@@ -8,12 +8,14 @@ import { PrimaryButton } from '@/components/common/createButton';
 import { ActivityModal } from '@/components/home/ActivityModal';
 import { ActivityCard } from '@/components/home/ActivityCard';
 import { Toast } from '@/components/common/Toast';
+import { ConfirmModal } from '@/components/common/ConfirmModal';
 import type { Activity } from '@/types/activity';
 import MOCK_ACTIVITIES from '@/mock/activities.json';
 
 export default function Home() {
   const [activities, setActivities] = useState<Activity[]>(MOCK_ACTIVITIES);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [showToast, setShowToast] = useState(false);
 
   const handleSubmit = (data: Omit<Activity, 'id' | 'recordCount' | 'completedCount'>) => {

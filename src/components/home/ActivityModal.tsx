@@ -5,6 +5,7 @@ import { DatePicker } from '@/components/common/DatePicker';
 import CalendarIcon from '@/assets/calendar.svg';
 import CloseIcon from '@/assets/close.svg';
 import { ACTIVITY_TYPES } from '@/constants/activity';
+import type { Activity } from '@/types/activity';
 
 interface ActivityFormData {
   title: string;
@@ -18,17 +19,20 @@ interface ActivityModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (data: ActivityFormData) => void;
+  activity?: Activity;
 }
 
-export const ActivityModal = ({ isOpen, onClose, onSubmit }: ActivityModalProps) => {
-  const [title, setTitle] = useState('');
-  const [selectedTags, setSelectedTags] = useState<string[]>([]);
-  const [extraTags, setExtraTags] = useState<string[]>([]);
+export const ActivityModal = ({ isOpen, onClose, onSubmit, activity }: ActivityModalProps) => {
+  const [title, setTitle] = useState(activity?.title ?? '');
+  const [selectedTags, setSelectedTags] = useState<string[]>(activity?.tags ?? []);
+  const [extraTags, setExtraTags] = useState<string[]>(
+    activity?.tags.filter(t => !ACTIVITY_TYPES.includes(t as (typeof ACTIVITY_TYPES)[number])) ?? []
+  );
   const [isAddingTag, setIsAddingTag] = useState(false);
   const [newTagValue, setNewTagValue] = useState('');
-  const [startDate, setStartDate] = useState('');
-  const [endDate, setEndDate] = useState('');
-  const [endDateUnknown, setEndDateUnknown] = useState(false);
+  const [startDate, setStartDate] = useState(activity?.startDate ?? '');
+  const [endDate, setEndDate] = useState(activity?.endDate ?? '');
+  const [endDateUnknown, setEndDateUnknown] = useState(activity?.endDateUnknown ?? false);
   const [openPicker, setOpenPicker] = useState<'start' | 'end' | null>(null);
   const tagInputRef = useRef<HTMLInputElement>(null);
 
@@ -204,7 +208,7 @@ export const ActivityModal = ({ isOpen, onClose, onSubmit }: ActivityModalProps)
         </div>
 
         <Button
-          label="활동 생성"
+          label={activity ? '수정하기' : '활동 생성'}
           disabled={isDisabled}
           onClick={() => onSubmit({ title, tags: selectedTags, startDate, endDate, endDateUnknown })}
         />

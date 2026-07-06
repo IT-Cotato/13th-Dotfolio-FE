@@ -8,19 +8,35 @@ import { PrimaryButton } from '@/components/common/createButton';
 import { ActivityModal } from '@/components/home/ActivityModal';
 import { ActivityCard } from '@/components/home/ActivityCard';
 import { Toast } from '@/components/common/Toast';
-import { ConfirmModal } from '@/components/common/ConfirmModal';
 import type { Activity } from '@/types/activity';
 import MOCK_ACTIVITIES from '@/mock/activities.json';
 
 export default function Home() {
   const [activities, setActivities] = useState<Activity[]>(MOCK_ACTIVITIES);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const [selectedActivity, setSelectedActivity] = useState<Activity | null>(null);
   const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
+
+  const openEdit = (activity: Activity) => {
+    setSelectedActivity(activity);
+    setIsModalOpen(true);
+  };
+
+  const handleClose = () => {
+    setIsModalOpen(false);
+    setSelectedActivity(null);
+  };
 
   const handleSubmit = (data: Omit<Activity, 'id' | 'recordCount' | 'completedCount'>) => {
-    setActivities(prev => [...prev, { id: Date.now().toString(), ...data, recordCount: 0, completedCount: 0 }]);
-    setIsModalOpen(false);
+    if (selectedActivity) {
+      setActivities(prev => prev.map(a => a.id === selectedActivity.id ? { ...a, ...data } : a));
+      setToastMessage('변경사항이 저장되었습니다.');
+    } else {
+      setActivities(prev => [...prev, { id: Date.now().toString(), ...data, recordCount: 0, completedCount: 0 }]);
+      setToastMessage('활동이 성공적으로 생성되었습니다.');
+    }
+    handleClose();
     setShowToast(true);
     setTimeout(() => setShowToast(false), 2000);
   };
@@ -29,7 +45,7 @@ export default function Home() {
     <>
       {showToast && (
         <div className="fixed top-4 left-1/2 -translate-x-1/2 z-[100]">
-          <Toast message="활동이 성공적으로 생성되었습니다." />
+          <Toast message={toastMessage} />
         </div>
       )}
       <Card>
@@ -60,14 +76,16 @@ export default function Home() {
         ) : (
           <section className="w-full grid grid-cols-4 gap-4">
             {activities.map(activity => (
-              <ActivityCard key={activity.id} activity={activity} />
+              <ActivityCard key={activity.id} activity={activity} onClick={() => openEdit(activity)} />
             ))}
           </section>
         )}
       </Card>
       <ActivityModal
+        key={selectedActivity?.id ?? 'new'}
         isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
+        activity={selectedActivity ?? undefined}
+        onClose={handleClose}
         onSubmit={handleSubmit}
       />
     </>

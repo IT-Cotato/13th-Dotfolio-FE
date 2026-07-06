@@ -5,20 +5,22 @@ import type { Activity } from '@/types/activity';
 
 interface ActivityCardProps {
   activity: Activity;
+  onClick?: () => void;
 }
 
-export const ActivityCard = ({ activity }: ActivityCardProps) => {
+export const ActivityCard = ({ activity, onClick }: ActivityCardProps) => {
   const firstTag = activity.tags[0] ?? '';
   const endLabel = activity.endDateUnknown ? '현재 진행 중' : activity.endDate;
   const inProgress = activity.recordCount - activity.completedCount;
 
   return (
     <div
-      className="relative w-full rounded-[20px]"
+      className="relative w-full rounded-[20px] cursor-pointer"
       style={{
         aspectRatio: '266/186',
         background: 'linear-gradient(180deg, #DEE6EF 0%, rgba(222, 230, 239, 0.50) 26.32%)',
       }}
+      onClick={onClick}
     >
       <FolderCard className="absolute inset-0 w-full h-full" />
 

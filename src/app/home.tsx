@@ -8,6 +8,7 @@ import { PrimaryButton } from '@/components/common/createButton';
 import { ActivityModal } from '@/components/home/ActivityModal';
 import { ActivityCard } from '@/components/home/ActivityCard';
 import { Toast } from '@/components/common/Toast';
+import { ConfirmModal } from '@/components/common/ConfirmModal';
 import type { Activity } from '@/types/activity';
 import MOCK_ACTIVITIES from '@/mock/activities.json';
 
@@ -17,10 +18,33 @@ export default function Home() {
   const [selectedActivity, setSelectedActivity] = useState<Activity | null>(null);
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
+  const [confirmModal, setConfirmModal] = useState<'delete' | 'end' | null>(null);
+  const [targetActivity, setTargetActivity] = useState<Activity | null>(null);
 
   const openEdit = (activity: Activity) => {
     setSelectedActivity(activity);
     setIsModalOpen(true);
+  };
+
+  const openConfirm = (type: 'delete' | 'end', activity: Activity) => {
+    setTargetActivity(activity);
+    setConfirmModal(type);
+  };
+
+  const closeConfirm = () => {
+    setConfirmModal(null);
+    setTargetActivity(null);
+  };
+
+  const handleDelete = () => {
+    if (!targetActivity) return;
+    setActivities(prev => prev.filter(a => a.id !== targetActivity.id));
+    closeConfirm();
+  };
+
+  const handleEnd = () => {
+    // TODO: 보관 처리 로직
+    closeConfirm();
   };
 
   const handleClose = () => {
@@ -76,7 +100,13 @@ export default function Home() {
         ) : (
           <section className="w-full self-start grid grid-cols-4 gap-4 max-w-[1112px]">
             {activities.map(activity => (
-              <ActivityCard key={activity.id} activity={activity} onClick={() => openEdit(activity)} />
+              <ActivityCard
+                  key={activity.id}
+                  activity={activity}
+                  onEdit={() => openEdit(activity)}
+                  onEnd={() => openConfirm('end', activity)}
+                  onDelete={() => openConfirm('delete', activity)}
+                />
             ))}
           </section>
         )}
@@ -87,6 +117,23 @@ export default function Home() {
         activity={selectedActivity ?? undefined}
         onClose={handleClose}
         onSubmit={handleSubmit}
+      />
+      <ConfirmModal
+        isOpen={confirmModal === 'delete'}
+        title="활동을 삭제하시겠어요?"
+        description="활동을 삭제하면 작성한 모든 기록이 함께 삭제됩니다.
+기록을 보관하려면 기록 종료 및 보관을 이용해 주세요."
+        confirmLabel="활동 삭제"
+        onConfirm={handleDelete}
+        onCancel={closeConfirm}
+      />
+      <ConfirmModal
+        isOpen={confirmModal === 'end'}
+        title="기록을 종료하시겠어요?"
+        description="활동 기록을 종료하면 해당 기록은 나의 스토리 > 나의 연대기에 보관됩니다."
+        confirmLabel="기록 종료"
+        onConfirm={handleEnd}
+        onCancel={closeConfirm}
       />
     </>
   );

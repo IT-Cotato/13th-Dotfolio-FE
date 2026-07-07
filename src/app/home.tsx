@@ -74,7 +74,7 @@ export default function Home() {
             <PrimaryButton label="활동 기록하기" onClick={() => setIsModalOpen(true)} />
           </section>
         ) : (
-          <section className="w-full grid grid-cols-4 gap-4">
+          <section className="w-full self-start grid grid-cols-4 gap-4 max-w-[1112px]">
             {activities.map(activity => (
               <ActivityCard key={activity.id} activity={activity} onClick={() => openEdit(activity)} />
             ))}

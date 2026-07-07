@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const DotOneIcon = () => (
   <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
@@ -62,6 +63,7 @@ const NavItem = ({ icon, label, hasChevron = false, isActive = false, onClick }:
 );
 
 export const Sidebar = () => {
+  const navigate = useNavigate();
   const [active, setActive] = useState('홈');
 
   return (
@@ -70,13 +72,19 @@ export const Sidebar = () => {
         icon={<DotOneIcon />}
         label="홈"
         isActive={active === '홈'}
-        onClick={() => setActive('홈')}
+        onClick={() => {
+          setActive('홈');
+          navigate('/');
+        }}
       />
       <NavItem
         icon={<DotTwoIcon />}
         label="메모하기"
         isActive={active === '메모하기'}
-        onClick={() => setActive('메모하기')}
+        onClick={() => {
+          setActive('메모하기');
+          navigate('/memo');
+        }}
       />
       <NavItem
         icon={<DotThreeIcon />}

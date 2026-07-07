@@ -1,5 +1,6 @@
 import { Routes, Route } from 'react-router-dom'
 import Home from './home'
+import Memo from './memo'
 import { ImmersionToggle } from '@/components/home/ImmersionToggle'
 import { Sidebar } from '@/components/common/sidebar'
 import AlarmIcon from '@/assets/alarm.svg'
@@ -25,6 +26,7 @@ export default function Layout() {
         <main className="flex-1 pb-8 pr-6 h-full overflow-y-auto">
           <Routes>
             <Route path="/" element={<Home />} />
+            <Route path="/memo" element={<Memo />} />
           </Routes>
         </main>
       </div>

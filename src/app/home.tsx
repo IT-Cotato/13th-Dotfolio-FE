@@ -18,6 +18,8 @@ export default function Home() {
   const [selectedActivity, setSelectedActivity] = useState<Activity | null>(null);
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
+  const [deletedActivity, setDeletedActivity] = useState<Activity | null>(null);
+  const [undoTimer, setUndoTimer] = useState<ReturnType<typeof setTimeout> | null>(null);
   const [confirmModal, setConfirmModal] = useState<'delete' | 'end' | null>(null);
   const [targetActivity, setTargetActivity] = useState<Activity | null>(null);
 
@@ -38,13 +40,34 @@ export default function Home() {
 
   const handleDelete = () => {
     if (!targetActivity) return;
-    setActivities(prev => prev.filter(a => a.id !== targetActivity.id));
+    const removed = targetActivity;
+    setActivities(prev => prev.filter(a => a.id !== removed.id));
+    setDeletedActivity(removed);
+    setToastMessage('활동이 삭제되었습니다.');
+    setShowToast(true);
+    if (undoTimer) clearTimeout(undoTimer);
+    const timer = setTimeout(() => {
+      setShowToast(false);
+      setDeletedActivity(null);
+    }, 2000);
+    setUndoTimer(timer);
     closeConfirm();
+  };
+
+  const handleUndo = () => {
+    if (!deletedActivity) return;
+    if (undoTimer) clearTimeout(undoTimer);
+    setActivities(prev => [...prev, deletedActivity]);
+    setDeletedActivity(null);
+    setShowToast(false);
   };
 
   const handleEnd = () => {
     // TODO: 보관 처리 로직
     closeConfirm();
+    setToastMessage('활동 기록이 활동 보관함에 보관되었습니다.');
+    setShowToast(true);
+    setTimeout(() => setShowToast(false), 2000);
   };
 
   const handleClose = () => {
@@ -69,7 +92,7 @@ export default function Home() {
     <>
       {showToast && (
         <div className="fixed top-4 left-1/2 -translate-x-1/2 z-[100]">
-          <Toast message={toastMessage} />
+          <Toast message={toastMessage} onUndo={deletedActivity ? handleUndo : undefined} />
         </div>
       )}
       <Card>

@@ -6,5 +6,6 @@ export interface MemoData {
   title?: string;
   tag?: string;
   attachmentCount?: number;
+  attachmentUrl?: string;
   isImportant?: boolean;
 }

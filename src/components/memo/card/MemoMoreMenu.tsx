@@ -8,9 +8,10 @@ interface MemoMoreMenuProps {
   isImportant: boolean;
   onToggleImportant: () => void;
   onDelete: () => void;
+  align?: 'left' | 'right';
 }
 
-export const MemoMoreMenu = ({ isImportant, onToggleImportant, onDelete }: MemoMoreMenuProps) => {
+export const MemoMoreMenu = ({ isImportant, onToggleImportant, onDelete, align = 'left' }: MemoMoreMenuProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -28,7 +29,7 @@ export const MemoMoreMenu = ({ isImportant, onToggleImportant, onDelete }: MemoM
   };
 
   return (
-    <div ref={menuRef} className="relative ml-auto">
+    <div ref={menuRef} className="relative ml-auto" onClick={(event) => event.stopPropagation()}>
       <button
         type="button"
         aria-label="메모 더보기"
@@ -40,7 +41,7 @@ export const MemoMoreMenu = ({ isImportant, onToggleImportant, onDelete }: MemoM
       </button>
 
       {isOpen && (
-        <div className="absolute left-0 top-10 z-30 w-[184px] rounded-2xl border border-grey-100 bg-white p-4 shadow-[0_0_30px_rgba(22,53,164,0.08)]">
+        <div className={`absolute top-10 z-30 w-[184px] rounded-2xl border border-grey-100 bg-white p-4 shadow-[0_0_30px_rgba(22,53,164,0.08)] ${align === 'right' ? 'right-0' : 'left-0'}`}>
           <p className="mb-3 text-sub2-sb text-grey-400">메모 관리</p>
           <button type="button" onClick={() => run(onToggleImportant)} className="flex h-11 w-full items-center gap-4 text-body2-md text-grey-900">
             <StarIcon className="h-5 w-5" />

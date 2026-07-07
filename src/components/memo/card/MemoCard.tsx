@@ -11,14 +11,16 @@ interface MemoCardProps {
   selected: boolean;
   selectionMode: boolean;
   onSelect: (selected: boolean) => void;
+  onOpen: () => void;
 }
 
-export const MemoCard = ({ memo, onDelete, onToggleImportant, selected, selectionMode, onSelect }: MemoCardProps) => (
+export const MemoCard = ({ memo, onDelete, onToggleImportant, selected, selectionMode, onSelect, onOpen }: MemoCardProps) => (
   <article
-    className={`group relative flex min-h-[266px] w-[266px] max-h-[454px] shrink-0 overflow-visible rounded-[20px] ${selected ? 'bg-primary-gradient p-0.5 shadow-[0_0_30px_rgba(22,53,164,0.08)]' : `border ${memo.isImportant ? 'border-primary-100' : 'border-grey-100'}`}`}
+    onClick={onOpen}
+    className={`group relative flex min-h-[266px] w-[266px] max-h-[454px] shrink-0 cursor-pointer overflow-visible rounded-[20px] ${selected ? 'bg-primary-gradient p-0.5 shadow-[0_0_30px_rgba(22,53,164,0.08)]' : `border ${memo.isImportant ? 'border-primary-100' : 'border-grey-100'}`}`}
   >
     <div className={`flex min-h-0 flex-1 flex-col overflow-visible ${selected ? 'rounded-[18px]' : 'rounded-[19px]'} ${memo.isImportant ? 'bg-primary-50' : 'bg-white'}`}>
-    <label className="peer group/check absolute left-0 top-0 z-20 h-[54px] w-11 cursor-pointer">
+    <label onClick={(event) => event.stopPropagation()} className="peer group/check absolute left-0 top-0 z-20 h-[54px] w-11 cursor-pointer">
       <span className="sr-only">메모 선택</span>
       <input
         type="checkbox"

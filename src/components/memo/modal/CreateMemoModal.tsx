@@ -45,6 +45,7 @@ export const CreateMemoModal = ({ onClose, onCreate }: CreateMemoModalProps) => 
       title: title.trim() || undefined,
       tag: selectedTag,
       attachmentCount: file ? 1 : undefined,
+      attachmentUrl: file ? URL.createObjectURL(file) : undefined,
     });
   };
 

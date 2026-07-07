@@ -34,10 +34,15 @@ export const MemoCard = ({ memo, onDelete, onToggleImportant, selected, selectio
     </label>
     <header className={`flex h-[52px] shrink-0 items-center rounded-t-[18px] border-b px-4 text-body3-md transition-[padding] peer-hover:pl-11 ${selected || selectionMode ? 'pl-11' : ''} ${memo.isImportant ? 'border-primary-100 text-primary-500' : 'border-grey-100 text-grey-600'}`}>
       <time>{memo.createdAt}</time>
-      <span className={`ml-2 flex h-[22px] items-center gap-2 rounded-full border border-grey-100 bg-white py-px pl-1 pr-2 text-label3-md ${memo.isImportant ? 'text-primary-500' : 'text-grey-600'}`}>
-        <DdayIcon /> {memo.dDay}
+      <span className={`ml-2 flex h-[22px] w-[62px] shrink-0 items-center rounded-[100px] border border-grey-100 bg-white py-px pl-1 pr-2 text-label3-md ${memo.isImportant ? 'text-primary-500' : 'text-grey-600'}`}>
+        <span className="flex h-5 w-5 shrink-0 items-center justify-center">
+          <DdayIcon className="h-2.5 w-[7px]" />
+        </span>
+        <span className="whitespace-nowrap">{memo.dDay}</span>
       </span>
-      <MemoMoreMenu isImportant={!!memo.isImportant} onToggleImportant={onToggleImportant} onDelete={onDelete} />
+      <div className="ml-auto -translate-y-2">
+        <MemoMoreMenu isImportant={!!memo.isImportant} onToggleImportant={onToggleImportant} onDelete={onDelete} />
+      </div>
     </header>
 
     <div className="flex min-h-0 flex-1 flex-col gap-3 p-4">

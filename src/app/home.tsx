@@ -65,6 +65,8 @@ export default function Home() {
   const handleEnd = () => {
     // TODO: 보관 처리 로직
     closeConfirm();
+    if (undoTimer) clearTimeout(undoTimer);
+    setDeletedActivity(null);
     setToastMessage('활동 기록이 활동 보관함에 보관되었습니다.');
     setShowToast(true);
     setTimeout(() => setShowToast(false), 2000);
@@ -76,6 +78,8 @@ export default function Home() {
   };
 
   const handleSubmit = (data: Omit<Activity, 'id' | 'recordCount' | 'completedCount'>) => {
+    if (undoTimer) clearTimeout(undoTimer);
+    setDeletedActivity(null);
     if (selectedActivity) {
       setActivities(prev => prev.map(a => a.id === selectedActivity.id ? { ...a, ...data } : a));
       setToastMessage('변경사항이 저장되었습니다.');

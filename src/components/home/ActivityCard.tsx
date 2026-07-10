@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import FolderCard from '@/assets/folder-card.svg';
 import { Tag } from '@/components/home/folder/Tag';
 import { ActivityMenu } from '@/components/home/folder/ActivityMenu';
@@ -15,9 +15,21 @@ interface ActivityCardProps {
 
 export const ActivityCard = ({ activity, onClick, onEdit, onEnd, onDelete }: ActivityCardProps) => {
   const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
   const firstTag = activity.tags[0] ?? '';
   const endLabel = activity.endDateUnknown ? '현재 진행 중' : activity.endDate;
   const inProgress = activity.recordCount - activity.completedCount;
+
+  useEffect(() => {
+    if (!menuOpen) return;
+    const handleOutsideClick = (e: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setMenuOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleOutsideClick);
+    return () => document.removeEventListener('mousedown', handleOutsideClick);
+  }, [menuOpen]);
 
   return (
     <div
@@ -45,11 +57,15 @@ export const ActivityCard = ({ activity, onClick, onEdit, onEnd, onDelete }: Act
           <div className="flex flex-col gap-1">
             <div className="flex items-start justify-between gap-2">
               <p className="text-sub1-sb text-grey-950 truncate">{activity.title}</p>
-              <div className="relative shrink-0">
+              <div
+                ref={menuRef}
+                className="relative shrink-0"
+                onClick={e => e.stopPropagation()}
+              >
                 <button
                   type="button"
                   className="w-6 h-6 flex items-center justify-center text-grey-500 text-body2-md cursor-pointer leading-none rounded-[5px] hover:bg-[#EAEEF4] transition-colors"
-                  onClick={e => { e.stopPropagation(); setMenuOpen(prev => !prev); }}
+                  onClick={() => setMenuOpen(prev => !prev)}
                 >
                   ···
                 </button>

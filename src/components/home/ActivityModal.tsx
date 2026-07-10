@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { ActivityTag } from '@/components/common/ActivityTag';
 import { Button } from '@/components/common/button';
 import { DatePicker } from '@/components/common/DatePicker';
@@ -35,6 +35,20 @@ export const ActivityModal = ({ isOpen, onClose, onSubmit, activity }: ActivityM
   const [endDateUnknown, setEndDateUnknown] = useState(activity?.endDateUnknown ?? false);
   const [openPicker, setOpenPicker] = useState<'start' | 'end' | null>(null);
   const tagInputRef = useRef<HTMLInputElement>(null);
+  const startPickerRef = useRef<HTMLDivElement>(null);
+  const endPickerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!openPicker) return;
+    const handleOutsideClick = (e: MouseEvent) => {
+      const ref = openPicker === 'start' ? startPickerRef : endPickerRef;
+      if (ref.current && !ref.current.contains(e.target as Node)) {
+        setOpenPicker(null);
+      }
+    };
+    document.addEventListener('mousedown', handleOutsideClick);
+    return () => document.removeEventListener('mousedown', handleOutsideClick);
+  }, [openPicker]);
 
   if (!isOpen) return null;
 
@@ -139,7 +153,7 @@ export const ActivityModal = ({ isOpen, onClose, onSubmit, activity }: ActivityM
             {/* 시작일 */}
             <div className="flex flex-col gap-2">
               <p className="text-sub2-sb text-grey-900">활동 시작일</p>
-              <div className="relative">
+              <div className="relative" ref={startPickerRef}>
                 <button
                   type="button"
                   onClick={() => setOpenPicker(prev => prev === 'start' ? null : 'start')}
@@ -165,7 +179,7 @@ export const ActivityModal = ({ isOpen, onClose, onSubmit, activity }: ActivityM
             {/* 종료일 */}
             <div className="flex flex-col gap-2">
               <p className="text-sub2-sb text-grey-900">활동 종료일</p>
-              <div className="relative">
+              <div className="relative" ref={endPickerRef}>
                 <button
                   type="button"
                   onClick={() => !endDateUnknown && setOpenPicker(prev => prev === 'end' ? null : 'end')}

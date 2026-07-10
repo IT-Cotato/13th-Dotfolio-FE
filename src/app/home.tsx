@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import LottieLib from 'lottie-react';
 const Lottie = (LottieLib as unknown as { default: typeof LottieLib }).default ?? LottieLib;
 import readABook from '@/assets/read-a-book.json';
@@ -16,10 +16,8 @@ export default function Home() {
   const [activities, setActivities] = useState<Activity[]>(MOCK_ACTIVITIES);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedActivity, setSelectedActivity] = useState<Activity | null>(null);
-  const [showToast, setShowToast] = useState(false);
-  const [toastMessage, setToastMessage] = useState('');
-  const [deletedActivity, setDeletedActivity] = useState<Activity | null>(null);
-  const [undoTimer, setUndoTimer] = useState<ReturnType<typeof setTimeout> | null>(null);
+  const [toast, setToast] = useState<{ message: string; onUndo?: () => void } | null>(null);
+  const toastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [confirmModal, setConfirmModal] = useState<'delete' | 'end' | null>(null);
   const [targetActivity, setTargetActivity] = useState<Activity | null>(null);
 
@@ -38,38 +36,28 @@ export default function Home() {
     setTargetActivity(null);
   };
 
+  const fireToast = (message: string, onUndo?: () => void) => {
+    if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
+    setToast({ message, onUndo });
+    toastTimerRef.current = setTimeout(() => setToast(null), 2000);
+  };
+
   const handleDelete = () => {
     if (!targetActivity) return;
     const removed = targetActivity;
     setActivities(prev => prev.filter(a => a.id !== removed.id));
-    setDeletedActivity(removed);
-    setToastMessage('활동이 삭제되었습니다.');
-    setShowToast(true);
-    if (undoTimer) clearTimeout(undoTimer);
-    const timer = setTimeout(() => {
-      setShowToast(false);
-      setDeletedActivity(null);
-    }, 2000);
-    setUndoTimer(timer);
     closeConfirm();
-  };
-
-  const handleUndo = () => {
-    if (!deletedActivity) return;
-    if (undoTimer) clearTimeout(undoTimer);
-    setActivities(prev => [...prev, deletedActivity]);
-    setDeletedActivity(null);
-    setShowToast(false);
+    fireToast('활동이 삭제되었습니다.', () => {
+      setActivities(prev => [...prev, removed]);
+      if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
+      setToast(null);
+    });
   };
 
   const handleEnd = () => {
     // TODO: 보관 처리 로직
     closeConfirm();
-    if (undoTimer) clearTimeout(undoTimer);
-    setDeletedActivity(null);
-    setToastMessage('활동 기록이 활동 보관함에 보관되었습니다.');
-    setShowToast(true);
-    setTimeout(() => setShowToast(false), 2000);
+    fireToast('활동 기록이 활동 보관함에 보관되었습니다.');
   };
 
   const handleClose = () => {
@@ -78,25 +66,22 @@ export default function Home() {
   };
 
   const handleSubmit = (data: Omit<Activity, 'id' | 'recordCount' | 'completedCount'>) => {
-    if (undoTimer) clearTimeout(undoTimer);
-    setDeletedActivity(null);
     if (selectedActivity) {
       setActivities(prev => prev.map(a => a.id === selectedActivity.id ? { ...a, ...data } : a));
-      setToastMessage('변경사항이 저장되었습니다.');
+      handleClose();
+      fireToast('변경사항이 저장되었습니다.');
     } else {
       setActivities(prev => [...prev, { id: Date.now().toString(), ...data, recordCount: 0, completedCount: 0 }]);
-      setToastMessage('활동이 성공적으로 생성되었습니다.');
+      handleClose();
+      fireToast('활동이 성공적으로 생성되었습니다.');
     }
-    handleClose();
-    setShowToast(true);
-    setTimeout(() => setShowToast(false), 2000);
   };
 
   return (
     <>
-      {showToast && (
+      {toast && (
         <div className="fixed top-4 left-1/2 -translate-x-1/2 z-[100]">
-          <Toast message={toastMessage} onUndo={deletedActivity ? handleUndo : undefined} />
+          <Toast message={toast.message} onUndo={toast.onUndo} />
         </div>
       )}
       <Card>

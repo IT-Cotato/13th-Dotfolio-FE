@@ -12,8 +12,10 @@ interface DatePickerProps {
 
 export const DatePicker = ({ value, onChange, onClose }: DatePickerProps) => {
   const today = new Date();
-  const [year, setYear] = useState(today.getFullYear());
-  const [month, setMonth] = useState(today.getMonth());
+  const parsed = value ? value.split('.').map(Number) : null;
+  const [year, setYear] = useState(parsed ? parsed[0] : today.getFullYear());
+  const [month, setMonth] = useState(parsed ? parsed[1] - 1 : today.getMonth());
+  
 
   const weeks = getCalendarWeeks(year, month);
   const todayStr = formatDate(today);

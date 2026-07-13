@@ -1,5 +1,7 @@
-import activityData from '@/mock/activeday';
+import activityDataRaw from '@/mock/activeday.json';
 import type { ActivityType, DayType } from '@/types/activity';
+
+const activityData = activityDataRaw as Record<string, ActivityType>;
 import { DAY_LABELS, DAY_LABEL_COLORS } from '@/constants/calendar';
 import { toDateStr, getCalendarWeeks } from '@/utils/date';
 

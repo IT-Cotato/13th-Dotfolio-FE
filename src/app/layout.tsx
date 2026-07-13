@@ -1,11 +1,21 @@
-import { Routes, Route } from 'react-router-dom'
-import Home from './home'
-import { ImmersionToggle } from '@/components/home/ImmersionToggle'
-import { Sidebar } from '@/components/common/sidebar'
-import AlarmIcon from '@/assets/alarm.svg'
-import ProfileIcon from '@/assets/profile.svg'
+import { Routes, Route } from "react-router-dom";
+import Home from "./home";
+import Login from "./login";
+import { ImmersionToggle } from "@/components/home/ImmersionToggle";
+import { Sidebar } from "@/components/common/sidebar";
+import AlarmIcon from "@/assets/alarm.svg";
+import ProfileIcon from "@/assets/profile.svg";
 
 export default function Layout() {
+  return (
+    <Routes>
+      <Route path="/login" element={<Login />} />
+      <Route path="*" element={<HomeLayout />} />
+    </Routes>
+  );
+}
+
+function HomeLayout() {
   return (
     <div className="w-full h-screen bg-home">
       <header className="w-full h-20 relative flex items-center justify-end pr-6">
@@ -29,5 +39,5 @@ export default function Layout() {
         </main>
       </div>
     </div>
-  )
+  );
 }

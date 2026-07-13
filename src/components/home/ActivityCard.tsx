@@ -1,4 +1,5 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useLayoutEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import FolderCard from '@/assets/folder-card.svg';
 import { Tag } from '@/components/home/folder/Tag';
 import { ActivityMenu } from '@/components/home/folder/ActivityMenu';
@@ -15,7 +16,9 @@ interface ActivityCardProps {
 
 export const ActivityCard = ({ activity, onClick, onEdit, onEnd, onDelete }: ActivityCardProps) => {
   const [menuOpen, setMenuOpen] = useState(false);
-  const menuRef = useRef<HTMLDivElement>(null);
+  const [menuPos, setMenuPos] = useState<{ top: number; left: number } | null>(null);
+  const triggerRef = useRef<HTMLDivElement>(null);
+  const menuPanelRef = useRef<HTMLDivElement>(null);
   const firstTag = activity.tags[0] ?? '';
   const endLabel = activity.endDateUnknown ? '현재 진행 중' : activity.endDate;
   const inProgress = activity.recordCount - activity.completedCount;
@@ -23,12 +26,44 @@ export const ActivityCard = ({ activity, onClick, onEdit, onEnd, onDelete }: Act
   useEffect(() => {
     if (!menuOpen) return;
     const handleOutsideClick = (e: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+      const target = e.target as Node;
+      if (
+        triggerRef.current && !triggerRef.current.contains(target) &&
+        menuPanelRef.current && !menuPanelRef.current.contains(target)
+      ) {
         setMenuOpen(false);
       }
     };
     document.addEventListener('mousedown', handleOutsideClick);
     return () => document.removeEventListener('mousedown', handleOutsideClick);
+  }, [menuOpen]);
+
+  useEffect(() => {
+    if (!menuOpen) return;
+    const close = () => setMenuOpen(false);
+    window.addEventListener('scroll', close, true);
+    window.addEventListener('resize', close);
+    return () => {
+      window.removeEventListener('scroll', close, true);
+      window.removeEventListener('resize', close);
+    };
+  }, [menuOpen]);
+
+  useLayoutEffect(() => {
+    if (!menuOpen || !triggerRef.current || !menuPanelRef.current) {
+      setMenuPos(null);
+      return;
+    }
+    const gap = 4;
+    const triggerRect = triggerRef.current.getBoundingClientRect();
+    const menuRect = menuPanelRef.current.getBoundingClientRect();
+
+    const spaceBelow = window.innerHeight - triggerRect.bottom;
+    const openUpward = spaceBelow < menuRect.height + gap && triggerRect.top > menuRect.height + gap;
+    const top = openUpward ? triggerRect.top - menuRect.height - gap : triggerRect.bottom + gap;
+    const left = Math.max(8, Math.min(triggerRect.right - menuRect.width, window.innerWidth - menuRect.width - 8));
+
+    setMenuPos({ top, left });
   }, [menuOpen]);
 
   return (
@@ -58,7 +93,7 @@ export const ActivityCard = ({ activity, onClick, onEdit, onEnd, onDelete }: Act
             <div className="flex items-start justify-between gap-2">
               <p className="text-sub1-sb text-grey-950 truncate">{activity.title}</p>
               <div
-                ref={menuRef}
+                ref={triggerRef}
                 className="relative shrink-0"
                 onClick={e => e.stopPropagation()}
               >
@@ -69,16 +104,26 @@ export const ActivityCard = ({ activity, onClick, onEdit, onEnd, onDelete }: Act
                 >
                   ···
                 </button>
-                {menuOpen && (
-                  <div className="absolute right-0 top-full mt-1 z-10">
-                    <ActivityMenu
-                      onEnd={() => { setMenuOpen(false); onEnd?.(); }}
-                      onEdit={() => { setMenuOpen(false); onEdit?.(); }}
-                      onDelete={() => { setMenuOpen(false); onDelete?.(); }}
-                    />
-                  </div>
-                )}
               </div>
+              {menuOpen && createPortal(
+                <div
+                  ref={menuPanelRef}
+                  className="fixed z-50"
+                  style={{
+                    top: menuPos?.top ?? 0,
+                    left: menuPos?.left ?? 0,
+                    visibility: menuPos ? 'visible' : 'hidden',
+                  }}
+                  onClick={e => e.stopPropagation()}
+                >
+                  <ActivityMenu
+                    onEnd={() => { setMenuOpen(false); onEnd?.(); }}
+                    onEdit={() => { setMenuOpen(false); onEdit?.(); }}
+                    onDelete={() => { setMenuOpen(false); onDelete?.(); }}
+                  />
+                </div>,
+                document.body
+              )}
             </div>
             <p className="text-body3-md text-grey-900 truncate">
               {activity.startDate}{endLabel ? ` ~ ${endLabel}` : ''}

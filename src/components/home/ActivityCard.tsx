@@ -48,7 +48,7 @@ export const ActivityCard = ({ activity, onClick, onEdit, onEnd, onDelete }: Act
       </div>
 
       <div className="absolute inset-0">
-        <div className="absolute top-4 left-4">
+        <div className="absolute top-4 left-4 max-w-[calc(100%-2rem)]">
           <Tag label={firstTag} />
         </div>
 
@@ -80,13 +80,13 @@ export const ActivityCard = ({ activity, onClick, onEdit, onEnd, onDelete }: Act
                 )}
               </div>
             </div>
-            <p className="text-body3-md text-grey-900">
+            <p className="text-body3-md text-grey-900 truncate">
               {activity.startDate}{endLabel ? ` ~ ${endLabel}` : ''}
             </p>
           </div>
 
           <div className="flex flex-col gap-2 mt-auto">
-            <p className="text-body3-md text-grey-700">
+            <p className="text-body3-md text-grey-700 truncate">
               기록 중 <span className="text-sub3-sb">{inProgress}</span> · 기록 완료{' '}
               <span className="text-sub3-sb">{activity.completedCount}</span>
             </p>

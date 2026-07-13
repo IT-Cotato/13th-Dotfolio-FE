@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 const DotOneIcon = () => (
   <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
@@ -61,37 +61,29 @@ const NavItem = ({ icon, label, hasChevron = false, isActive = false, onClick }:
   </button>
 );
 
+const NAV_ITEMS: { icon: React.ReactNode; label: string; path?: string; hasChevron?: boolean }[] = [
+  { icon: <DotOneIcon />, label: '홈', path: '/' },
+  { icon: <DotTwoIcon />, label: '메모하기' },
+  { icon: <DotThreeIcon />, label: '기록하기', path: '/record', hasChevron: true },
+  { icon: <DotGridIcon />, label: '나의 스토리', hasChevron: true },
+];
+
 export const Sidebar = () => {
-  const [active, setActive] = useState('홈');
+  const navigate = useNavigate();
+  const location = useLocation();
 
   return (
     <nav className="w-full flex flex-col gap-3">
-      <NavItem
-        icon={<DotOneIcon />}
-        label="홈"
-        isActive={active === '홈'}
-        onClick={() => setActive('홈')}
-      />
-      <NavItem
-        icon={<DotTwoIcon />}
-        label="메모하기"
-        isActive={active === '메모하기'}
-        onClick={() => setActive('메모하기')}
-      />
-      <NavItem
-        icon={<DotThreeIcon />}
-        label="기록하기"
-        hasChevron
-        isActive={active === '기록하기'}
-        onClick={() => setActive('기록하기')}
-      />
-      <NavItem
-        icon={<DotGridIcon />}
-        label="나의 스토리"
-        hasChevron
-        isActive={active === '나의 스토리'}
-        onClick={() => setActive('나의 스토리')}
-      />
+      {NAV_ITEMS.map(item => (
+        <NavItem
+          key={item.label}
+          icon={item.icon}
+          label={item.label}
+          hasChevron={item.hasChevron}
+          isActive={item.path !== undefined && location.pathname === item.path}
+          onClick={item.path !== undefined ? () => navigate(item.path!) : undefined}
+        />
+      ))}
     </nav>
   );
 };

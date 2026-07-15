@@ -5,11 +5,16 @@ import { ImmersionToggle } from '@/components/home/ImmersionToggle'
 import { Sidebar } from '@/components/common/sidebar'
 import AlarmIcon from '@/assets/alarm.svg'
 import ProfileIcon from '@/assets/profile.svg'
+import MenuIcon from '@/assets/menu.svg'
 
 export default function Layout() {
   return (
     <div className="w-full h-screen bg-home">
-      <header className="w-full h-20 relative flex items-center justify-end pr-6">
+      <header className="w-full h-20 relative flex items-center justify-between pl-8 pr-6">
+        <div className="flex items-center gap-4">
+          <MenuIcon className="w-6 h-6 text-grey-700 cursor-pointer" />
+          <span className="font-nexon text-logo text-grey-600">Dotfolio</span>
+        </div>
         <div className="flex items-center gap-5">
           <div className="relative p-0.75">
             <AlarmIcon className="w-6 h-6 text-grey-700 cursor-pointer"  />

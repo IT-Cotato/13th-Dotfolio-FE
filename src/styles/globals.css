@@ -29,9 +29,13 @@
 
   /* category */
   --color-category-mint: #c7f1f6;
+  --color-category-mint-bg: #eafcfe;
   --color-category-purple: #d7d9ff;
+  --color-category-purple-bg: #F2F0FF;
   --color-category-pink: #f6dcf9;
+  --color-category-pink-bg: #FDF3FF;
   --color-category-coral: #fcdcd2;
+  --color-category-coral-bg: #FFF5F2;
 
   /* error */
   --color-error-bg: #fff3f4;

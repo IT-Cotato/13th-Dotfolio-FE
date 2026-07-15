@@ -19,7 +19,7 @@ export default function Layout() {
         </div>
       </header>
       <div className="flex h-[calc(100vh-80px)]">
-        <nav className="w-60 shrink-0 flex flex-col items-start pt-6 px-6 gap-6">
+        <nav className="w-60 shrink-0 flex flex-col items-start py-6 px-6 gap-6">
           <ImmersionToggle />
           <Sidebar />
         </nav>

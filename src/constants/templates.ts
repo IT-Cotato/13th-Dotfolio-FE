@@ -1,0 +1,38 @@
+export interface RecordTemplate {
+  id: string;
+  title: string;
+  description: string;
+  bgClassName: string;
+  borderClassName: string;
+}
+
+export const RECORD_TEMPLATES: RecordTemplate[] = [
+  {
+    id: 'idea-planning',
+    title: '아이디어 · 기획',
+    description: '문득 떠오른 생각이 좋은 결과로 이어졌던 순간을 남겨보세요.',
+    bgClassName: 'bg-category-mint-bg',
+    borderClassName: 'border-category-mint',
+  },
+  {
+    id: 'collabo-conflict',
+    title: '협업 · 갈등',
+    description: '함께 일하며 의견을 맞춰갔던 경험을 기록해보세요.',
+    bgClassName: 'bg-category-purple-bg',
+    borderClassName: 'border-category-purple',
+  },
+  {
+    id: 'solving-result',
+    title: '문제 해결 · 성과',
+    description: '고민 끝에 답을 찾고 성과를 만들었던 경험을 남겨보세요.',
+    bgClassName: 'bg-category-pink-bg',
+    borderClassName: 'border-category-pink',
+  },
+  {
+    id: 'challenge-immersion',
+    title: '도전 · 몰입',
+    description: '망설였지만 결국 도전했던 순간을 기록해보세요.',
+    bgClassName: 'bg-category-coral-bg',
+    borderClassName: 'border-category-coral',
+  },
+];

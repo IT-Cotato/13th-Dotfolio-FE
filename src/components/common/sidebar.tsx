@@ -1,6 +1,7 @@
 import { useLayoutEffect, useRef, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import AddIcon from '@/assets/add.svg';
+import { RECORD_ACTIVITIES } from '@/constants/recordActivities';
 
 const DotOneIcon = () => (
   <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
@@ -68,14 +69,12 @@ const NavItem = ({ icon, label, hasChevron = false, chevronOpen = false, isActiv
   </button>
 );
 
-const RECORD_ACTIVITIES = ['코테이토 13기 프로젝트', '경영 데이터분석 워크샵', '마케팅 공모전'];
-
 export const Sidebar = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const isRecordActive = location.pathname === '/record';
   const [recordOpen, setRecordOpen] = useState(isRecordActive);
-  const [selectedActivity, setSelectedActivity] = useState(RECORD_ACTIVITIES[1]);
+  const [selectedActivityId, setSelectedActivityId] = useState(RECORD_ACTIVITIES[1].id);
   const listRef = useRef<HTMLDivElement>(null);
   const itemRefs = useRef<Record<string, HTMLButtonElement | null>>({});
   const [activeBar, setActiveBar] = useState<{ top: number; height: number } | null>(null);
@@ -83,12 +82,12 @@ export const Sidebar = () => {
   useLayoutEffect(() => {
     if (!recordOpen) return;
     const container = listRef.current;
-    const activeEl = itemRefs.current[selectedActivity];
+    const activeEl = itemRefs.current[selectedActivityId];
     if (!container || !activeEl) return;
     const containerRect = container.getBoundingClientRect();
     const activeRect = activeEl.getBoundingClientRect();
     setActiveBar({ top: activeRect.top - containerRect.top, height: activeRect.height });
-  }, [recordOpen, selectedActivity]);
+  }, [recordOpen, selectedActivityId]);
 
   return (
     <nav className="w-full flex flex-col gap-3">
@@ -123,18 +122,18 @@ export const Sidebar = () => {
                 />
               )}
               {RECORD_ACTIVITIES.map(activity => {
-                const isSelected = activity === selectedActivity;
+                const isSelected = activity.id === selectedActivityId;
                 return (
                   <button
-                    key={activity}
-                    ref={el => { itemRefs.current[activity] = el; }}
+                    key={activity.id}
+                    ref={el => { itemRefs.current[activity.id] = el; }}
                     type="button"
-                    onClick={() => setSelectedActivity(activity)}
+                    onClick={() => setSelectedActivityId(activity.id)}
                     className={`w-full text-left py-3 pl-4 pr-4 cursor-pointer transition-colors text-grey-900 ${
                       isSelected ? 'text-sub2-sb' : 'text-body2-md'
                     }`}
                   >
-                    {activity}
+                    {activity.title}
                   </button>
                 );
               })}

@@ -2,6 +2,7 @@ import { useLayoutEffect, useRef, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import AddIcon from '@/assets/add.svg';
 import { RECORD_ACTIVITIES } from '@/constants/recordActivities';
+import { ActivityModal } from '@/components/home/ActivityModal';
 
 const DotOneIcon = () => (
   <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
@@ -78,6 +79,7 @@ export const Sidebar = () => {
   const listRef = useRef<HTMLDivElement>(null);
   const itemRefs = useRef<Record<string, HTMLButtonElement | null>>({});
   const [activeBar, setActiveBar] = useState<{ top: number; height: number } | null>(null);
+  const [isActivityModalOpen, setIsActivityModalOpen] = useState(false);
 
   useLayoutEffect(() => {
     if (!recordOpen) return;
@@ -140,6 +142,7 @@ export const Sidebar = () => {
             </div>
             <button
               type="button"
+              onClick={() => setIsActivityModalOpen(true)}
               className="w-full flex gap-2 px-4 py-3 rounded-xl border border-dashed border-primary-200 text-primary-400 text-body2-md cursor-pointer"
             >
               <AddIcon className="w-5 h-5" />
@@ -150,6 +153,12 @@ export const Sidebar = () => {
       </div>
 
       <NavItem icon={<DotGridIcon />} label="나의 스토리" hasChevron />
+
+      <ActivityModal
+        isOpen={isActivityModalOpen}
+        onClose={() => setIsActivityModalOpen(false)}
+        onSubmit={() => setIsActivityModalOpen(false)}
+      />
     </nav>
   );
 };

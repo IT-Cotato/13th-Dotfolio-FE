@@ -14,6 +14,7 @@ export const RECORD_TEMPLATES: RecordTemplate[] = [
     description: '문득 떠오른 생각이 좋은 결과로 이어졌던 순간을 남겨보세요.',
     bgClassName: 'bg-category-mint-bg',
     borderClassName: 'border-category-mint',
+    textClassName: 'text-category-mint-text',
   },
   {
     id: 'collabo-conflict',
@@ -37,5 +38,15 @@ export const RECORD_TEMPLATES: RecordTemplate[] = [
     description: '망설였지만 결국 도전했던 순간을 기록해보세요.',
     bgClassName: 'bg-category-coral-bg',
     borderClassName: 'border-category-coral',
+    textClassName: 'text-category-coral-text',
+  },
+  {
+    id: 'custon',
+    title: '커스텀 템플릿',
+    description: '커스텀 템플릿 설명 커스텀 템플릿 설명 커스텀 템플릿 설명',
+    bgClassName: 'bg-grey-50',
+    borderClassName: 'border-grey-100',
+    textClassName: 'text-grey-900'
+
   },
 ];

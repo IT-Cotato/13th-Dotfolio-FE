@@ -4,6 +4,7 @@ export interface RecordTemplate {
   description: string;
   bgClassName: string;
   borderClassName: string;
+  textClassName?: string;
 }
 
 export const RECORD_TEMPLATES: RecordTemplate[] = [
@@ -20,6 +21,7 @@ export const RECORD_TEMPLATES: RecordTemplate[] = [
     description: '함께 일하며 의견을 맞춰갔던 경험을 기록해보세요.',
     bgClassName: 'bg-category-purple-bg',
     borderClassName: 'border-category-purple',
+    textClassName: 'text-category-purple-text',
   },
   {
     id: 'solving-result',
@@ -27,6 +29,7 @@ export const RECORD_TEMPLATES: RecordTemplate[] = [
     description: '고민 끝에 답을 찾고 성과를 만들었던 경험을 남겨보세요.',
     bgClassName: 'bg-category-pink-bg',
     borderClassName: 'border-category-pink',
+    textClassName: 'text-category-pink-text',
   },
   {
     id: 'challenge-immersion',

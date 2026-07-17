@@ -12,5 +12,12 @@
     "date": "2026.06.10",
     "status": "기록 중",
     "templateId": "solving-result"
+  },
+  {
+    "id": "3",
+    "title": "새로운 아이디어 발산 워크숍 회고",
+    "date": "2026.05.28",
+    "status": "기록 완료",
+    "templateId": "idea-planning"
   }
 ]

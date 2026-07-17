@@ -13,9 +13,9 @@ export function LoginForm() {
       className="flex w-full max-w-[463px] flex-col items-center gap-8 p-6"
       onSubmit={(event) => event.preventDefault()}
     >
-      <div className="w-full">
-        <h1 className="text-title1 text-grey-900">반가워요!</h1>
-        <p className="mt-2 text-body1-md text-grey-600">
+      <div className="w-full flex flex-col items-start justify-center gap-2 self-stretch">
+        <h1 className="text-title1 text-grey-900 self-stretch">반가워요!</h1>
+        <p className="text-body1-md text-grey-600">
           메모와 경험을 기록하고 성장의 흐름을 확인해보세요.
         </p>
       </div>
@@ -46,7 +46,7 @@ export function LoginForm() {
 
       <div className="flex items-center gap-3">
         <p className="text-body3-md text-grey-600">계정이 없으신가요?</p>
-        <button className="text-sub3-sb text-primary-400" type="button">
+        <button className="text-sub3-sb text-primary-500" type="button">
           회원가입하기
         </button>
       </div>

@@ -1,4 +1,5 @@
 import { LoginHeader } from "@/components/login/LoginHeader";
+import { LoginForm } from "@/components/login/LoginForm";
 
 export default function Login() {
   return (
@@ -8,7 +9,7 @@ export default function Login() {
           <LoginHeader />
 
           <div className="flex flex-1 items-center justify-center px-5 py-12 sm:px-8">
-            <div className="w-full max-w-[284px]" aria-label="로그인 폼 영역" />
+            <LoginForm />
           </div>
         </div>
 

@@ -1,4 +1,13 @@
+import { useState } from "react";
+import { GoogleLoginButton } from "@/components/login/GoogleLoginButton";
+import { LoginFields } from "@/components/login/LoginFields";
+
 export function LoginForm() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [keepSignedIn, setKeepSignedIn] = useState(false);
+  const isLoginEnabled = email.trim().length > 0 && password.length > 0;
+
   return (
     <form
       className="flex w-full max-w-[463px] flex-col items-center gap-8 p-6"
@@ -11,45 +20,28 @@ export function LoginForm() {
         </p>
       </div>
 
-      <div className="flex w-full flex-col gap-4">
-        <div className="flex w-full flex-col gap-3">
-          <input
-            className="h-12 w-full rounded-[14px] border border-grey-100 p-4 text-body2-md text-grey-900 outline-none placeholder:text-grey-400"
-            placeholder="이메일 입력"
-            type="email"
-          />
-          <input
-            className="h-12 w-full rounded-[14px] border border-grey-100 p-4 text-body2-md text-grey-900 outline-none placeholder:text-grey-400"
-            placeholder="비밀번호 입력"
-            type="password"
-          />
-        </div>
-        <div className="flex items-center justify-between text-body3-md text-grey-600">
-          <label className="flex items-center gap-2">
-            <input
-              className="size-5 rounded-sm border-grey-200"
-              type="checkbox"
-            />
-            로그인 상태 유지
-          </label>
-          <button type="button">비밀번호 찾기</button>
-        </div>
-      </div>
+      <LoginFields
+        email={email}
+        keepSignedIn={keepSignedIn}
+        onEmailChange={setEmail}
+        onKeepSignedInChange={setKeepSignedIn}
+        onPasswordChange={setPassword}
+        password={password}
+      />
 
       <div className="flex w-full flex-col gap-3">
         <button
-          className="w-full px-5 py-[14px] rounded-[14px] bg-grey-300 text-title2 text-grey-0"
-          disabled
+          className={`w-full px-5 py-3.5 rounded-[14px] text-title2 text-grey-0 ${
+            isLoginEnabled
+              ? "flex items-center justify-center gap-2 bg-primary-gradient cursor-pointer"
+              : "bg-grey-300 "
+          }`}
+          disabled={!isLoginEnabled}
           type="submit"
         >
           로그인
         </button>
-        <button
-          className="w-full px-5 py-[14px] rounded-[14px] border border-grey-100 text-body2-md text-grey-900"
-          type="button"
-        >
-          Google로 시작하기
-        </button>
+        <GoogleLoginButton />
       </div>
 
       <div className="flex items-center gap-3">

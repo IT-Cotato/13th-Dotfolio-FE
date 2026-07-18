@@ -6,12 +6,24 @@ export function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [keepSignedIn, setKeepSignedIn] = useState(false);
+  const [hasLoginError, setHasLoginError] = useState(false);
   const isLoginEnabled = email.trim().length > 0 && password.length > 0;
+
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    {
+      /* 임시 동작 확인 용*/
+    }
+    if (isLoginEnabled) {
+      setHasLoginError(true);
+    }
+  };
 
   return (
     <form
       className="flex w-full max-w-[463px] flex-col items-center gap-8 p-6"
-      onSubmit={(event) => event.preventDefault()}
+      onSubmit={handleSubmit}
     >
       <div className="w-full flex flex-col items-start justify-center gap-2 self-stretch">
         <h1 className="text-title1 text-grey-900 self-stretch">반가워요!</h1>
@@ -22,10 +34,17 @@ export function LoginForm() {
 
       <LoginFields
         email={email}
+        hasError={hasLoginError}
         keepSignedIn={keepSignedIn}
-        onEmailChange={setEmail}
+        onEmailChange={(value) => {
+          setEmail(value);
+          setHasLoginError(false);
+        }}
         onKeepSignedInChange={setKeepSignedIn}
-        onPasswordChange={setPassword}
+        onPasswordChange={(value) => {
+          setPassword(value);
+          setHasLoginError(false);
+        }}
         password={password}
       />
 

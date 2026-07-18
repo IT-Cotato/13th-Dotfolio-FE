@@ -7,6 +7,7 @@ interface LoginFieldsProps {
   email: string;
   password: string;
   keepSignedIn: boolean;
+  hasError: boolean;
   onEmailChange: (email: string) => void;
   onPasswordChange: (password: string) => void;
   onKeepSignedInChange: (checked: boolean) => void;
@@ -16,6 +17,7 @@ export function LoginFields({
   email,
   password,
   keepSignedIn,
+  hasError,
   onEmailChange,
   onPasswordChange,
   onKeepSignedInChange,
@@ -28,7 +30,11 @@ export function LoginFields({
         {/* 이메일 입력 */}
         <input
           aria-label="이메일"
-          className="h-12 w-full rounded-[14px] border border-grey-100 bg-grey-0 p-4 text-body2-md text-grey-900 outline-none placeholder:text-grey-400 focus:border-primary-500"
+          className={`h-12 w-full rounded-[14px] border p-4 text-body2-md text-grey-900 outline-none placeholder:text-grey-400 ${
+            hasError
+              ? "border-error-border bg-error-bg"
+              : "border-grey-100 bg-grey-0 focus:border-primary-500"
+          }`}
           onChange={(event) => onEmailChange(event.target.value)}
           placeholder="이메일 입력"
           type="email"
@@ -36,10 +42,15 @@ export function LoginFields({
         />
 
         {/* 비밀번호 입력 */}
-        <div className="relative">
+        <div className="flex flex-col items-start gap-1.5 self-stretch">
+          <div className="relative flex h-12 shrink-0 self-stretch items-center justify-between">
           <input
             aria-label="비밀번호"
-            className="h-12 w-full rounded-[14px] border border-grey-100 bg-grey-0 p-4 text-body2-md text-grey-900 outline-none placeholder:text-grey-400 focus:border-primary-500"
+            className={`h-full w-full rounded-[14px] border p-4 text-body2-md text-grey-900 outline-none placeholder:text-grey-400 ${
+              hasError
+                ? "border-error-border bg-error-bg"
+                : "border-grey-100 bg-grey-0 focus:border-primary-500"
+            }`}
             onChange={(event) => onPasswordChange(event.target.value)}
             placeholder="비밀번호 입력"
             type={isPasswordVisible ? "text" : "password"}
@@ -53,6 +64,12 @@ export function LoginFields({
           >
             {isPasswordVisible ? <VisibilityIcon /> : <VisibilityOffIcon />}
           </button>
+          </div>
+          {hasError && (
+            <p className="flex-1 text-body3-r text-error-text">
+              아이디 또는 비밀번호가 올바르지 않습니다.
+            </p>
+          )}
         </div>
       </div>
 

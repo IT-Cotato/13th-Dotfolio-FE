@@ -19,5 +19,75 @@
     "date": "2026.05.28",
     "status": "기록 완료",
     "templateId": "idea-planning"
+  },
+  {
+    "id": "4",
+    "title": "데이터 시각화 대시보드 개선",
+    "date": "2026.06.10",
+    "status": "기록 중",
+    "templateId": "solving-result"
+  },
+  {
+    "id": "5",
+    "title": "데이터 시각화 대시보드 개선",
+    "date": "2026.06.10",
+    "status": "기록 중",
+    "templateId": "challenge-immersion"
+  },
+  {
+    "id": "6",
+    "title": "데이터 시각화 대시보드 개선",
+    "date": "2026.06.10",
+    "status": "기록 중",
+    "templateId": "solving-result"
+  },
+  {
+    "id": "7",
+    "title": "데이터 시각화 대시보드 개선",
+    "date": "2026.06.10",
+    "status": "기록 중",
+    "templateId": "idea-planning"
+  },
+  {
+    "id": "8",
+    "title": "데이터 시각화 대시보드 개선",
+    "date": "2026.06.10",
+    "status": "기록 중",
+    "templateId": "challenge-immersion"
+  },
+  {
+    "id": "9",
+    "title": "데이터 시각화 대시보드 개선",
+    "date": "2026.06.10",
+    "status": "기록 중",
+    "templateId": "solving-result"
+  },
+  {
+    "id": "10",
+    "title": "데이터 시각화 대시보드 개선",
+    "date": "2026.06.10",
+    "status": "기록 완료",
+    "templateId": "collabo-conflict"
+  },
+  {
+    "id": "11",
+    "title": "데이터 시각화 대시보드 개선",
+    "date": "2026.06.10",
+    "status": "기록 완료",
+    "templateId": "challenge-immersion"
+  },
+  {
+    "id": "12",
+    "title": "데이터 시각화 대시보드 개선",
+    "date": "2026.06.10",
+    "status": "기록 완료",
+    "templateId": "solving-result"
+  },
+  {
+    "id": "13",
+    "title": "데이터 시각화 대시보드 개선",
+    "date": "2026.06.10",
+    "status": "기록 중",
+    "templateId": "challenge-immersion"
   }
 ]

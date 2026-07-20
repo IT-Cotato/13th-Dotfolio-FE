@@ -13,7 +13,7 @@ export default function Login() {
           </div>
         </div>
 
-        <aside className="hidden w-1/2 md:block" aria-label="Dotfolio 브랜딩 영역" />
+        <aside className="hidden w-1/2 md:block" aria-hidden="true" />
       </section>
     </main>
   );

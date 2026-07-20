@@ -30,6 +30,7 @@ export function LoginFields({
         {/* 이메일 입력 */}
         <input
           aria-label="이메일"
+          autoComplete="email"
           className={`h-12 w-full rounded-[14px] border p-4 text-body2-md text-grey-900 outline-none placeholder:text-grey-400 ${
             hasError
               ? "border-error-border bg-error-bg"
@@ -46,6 +47,7 @@ export function LoginFields({
           <div className="relative flex h-12 shrink-0 self-stretch items-center justify-between">
             <input
               aria-label="비밀번호"
+              autoComplete="current-password"
               className={`h-full w-full rounded-[14px] border p-4 text-body2-md text-grey-900 outline-none placeholder:text-grey-400 ${
                 hasError
                   ? "border-error-border bg-error-bg"

@@ -6,6 +6,7 @@ export interface RecordTemplate {
   borderClassName: string;
   textClassName?: string;
   isCustom?: boolean;
+  author?: string;
 }
 
 export const RECORD_TEMPLATES: RecordTemplate[] = [
@@ -49,6 +50,7 @@ export const RECORD_TEMPLATES: RecordTemplate[] = [
     borderClassName: 'border-grey-100',
     textClassName: 'text-grey-900',
     isCustom: true,
+    author: '홍길동',
   },
   {
     id: 'custom-2',
@@ -58,6 +60,7 @@ export const RECORD_TEMPLATES: RecordTemplate[] = [
     borderClassName: 'border-grey-100',
     textClassName: 'text-grey-900',
     isCustom: true,
+    author: '홍길동',
   },
   {
     id: 'custom-3',
@@ -67,6 +70,7 @@ export const RECORD_TEMPLATES: RecordTemplate[] = [
     borderClassName: 'border-grey-100',
     textClassName: 'text-grey-900',
     isCustom: true,
+    author: '홍길동',
   },
   {
     id: 'custom-4',
@@ -76,5 +80,6 @@ export const RECORD_TEMPLATES: RecordTemplate[] = [
     borderClassName: 'border-grey-100',
     textClassName: 'text-grey-900',
     isCustom: true,
+    author: '홍길동',
   },
 ];

@@ -46,6 +46,7 @@ export default function TemplateAll() {
                 description={template.description}
                 bgClassName={template.bgClassName}
                 borderClassName={template.borderClassName}
+                footerLabel={template.author ? `${template.author}의 템플릿` : undefined}
               />
             ))}
           </div>

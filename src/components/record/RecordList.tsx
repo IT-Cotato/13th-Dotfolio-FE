@@ -11,9 +11,10 @@ const STATUS_STYLES: Record<string, { bgClassName: string; borderClassName: stri
 
 interface RecordListProps {
   records: RecordEntry[];
+  onDeleteClick?: (record: RecordEntry) => void;
 }
 
-export const RecordList = ({ records }: RecordListProps) => (
+export const RecordList = ({ records, onDeleteClick }: RecordListProps) => (
   <div className="w-full grid grid-cols-[1fr_auto_auto_auto] items-center gap-x-6">
     {records.map((record, i) => {
       const template = RECORD_TEMPLATES.find(t => t.id === record.templateId);
@@ -43,7 +44,11 @@ export const RecordList = ({ records }: RecordListProps) => (
               />
             </div>
           ) : <div />}
-          <button type="button" className="cursor-pointer justify-self-end">
+          <button
+            type="button"
+            onClick={() => onDeleteClick?.(record)}
+            className="cursor-pointer justify-self-end"
+          >
             <TrashIcon className="w-5 h-5 text-grey-700" />
           </button>
         </Fragment>

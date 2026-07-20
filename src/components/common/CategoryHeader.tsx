@@ -6,9 +6,10 @@ interface CategoryHeaderProps {
   moreLabel?: string;
   onMoreClick?: () => void;
   onBack?: () => void;
+  extra?: React.ReactNode;
 }
 
-export const CategoryHeader = ({ title, moreLabel, onMoreClick, onBack }: CategoryHeaderProps) => (
+export const CategoryHeader = ({ title, moreLabel, onMoreClick, onBack, extra }: CategoryHeaderProps) => (
   <div className="w-full flex items-center justify-between">
     <div className="flex items-center gap-2">
       {onBack && (
@@ -18,7 +19,7 @@ export const CategoryHeader = ({ title, moreLabel, onMoreClick, onBack }: Catego
       )}
       <span className="text-grey-900 text-title1">{title}</span>
     </div>
-    {moreLabel && (
+    {extra ?? (moreLabel && (
       <button
         type="button"
         onClick={onMoreClick}
@@ -27,6 +28,6 @@ export const CategoryHeader = ({ title, moreLabel, onMoreClick, onBack }: Catego
         {moreLabel}
         <ArrowIcon className="w-4 h-4 text-grey-400" />
       </button>
-    )}
+    ))}
   </div>
 );

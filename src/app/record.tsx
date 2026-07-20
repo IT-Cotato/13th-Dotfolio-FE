@@ -39,9 +39,13 @@ export default function Record() {
         ]}
       />
       <div className="w-full flex flex-col gap-6">
-        <CategoryHeader title="기록 템플릿" moreLabel="더 많은 템플릿 보기" />
-        <div className="w-full grid grid-cols-[repeat(auto-fill,minmax(240px,1fr))] gap-6">
-          {RECORD_TEMPLATES.map(template => (
+        <CategoryHeader 
+            title="기록 템플릿" 
+            moreLabel="더 많은 템플릿 보기" 
+            onMoreClick={() => navigate('/template-all')}
+            />
+        <div className="w-full grid grid-cols-[repeat(auto-fit,minmax(240px,1fr))] gap-6">
+          {RECORD_TEMPLATES.filter(template => !template.isCustom).map(template => (
             <Template
               key={template.id}
               title={template.title}

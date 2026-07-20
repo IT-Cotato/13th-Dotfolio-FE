@@ -20,13 +20,14 @@ export const Template = ({
 }: TemplateProps) => (
   <div
     className={`w-full flex flex-col rounded-2xl border overflow-hidden cursor-pointer ${borderClassName}`}
+    style={{ aspectRatio: '266/201' }}
     onClick={onClick}
   >
-    <div className={`w-full flex flex-col items-start gap-4 px-4 pt-4 pb-13 border-b ${borderClassName} ${bgClassName}`}>
+    <div className={`w-full flex-1 flex flex-col items-start gap-4 px-4 pt-4 pb-13 border-b ${borderClassName} ${bgClassName}`}>
       <p className="text-grey-950 text-sub1-sb">{title}</p>
       <p className="text-grey-700 text-body3-r">{description}</p>
     </div>
-    <div className="w-full flex items-center justify-between p-4 bg-grey-0">
+    <div className="w-full shrink-0 flex items-center justify-between p-4 bg-grey-0">
       <span className="flex items-center gap-1 text-grey-600 text-caption1">
         <DocumentIcon className="w-4 h-4 text-grey-600" />
         {footerLabel}

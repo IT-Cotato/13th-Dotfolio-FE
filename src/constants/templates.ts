@@ -5,6 +5,7 @@ export interface RecordTemplate {
   bgClassName: string;
   borderClassName: string;
   textClassName?: string;
+  isCustom?: boolean;
 }
 
 export const RECORD_TEMPLATES: RecordTemplate[] = [
@@ -46,7 +47,34 @@ export const RECORD_TEMPLATES: RecordTemplate[] = [
     description: '커스텀 템플릿 설명 커스텀 템플릿 설명 커스텀 템플릿 설명',
     bgClassName: 'bg-grey-50',
     borderClassName: 'border-grey-100',
-    textClassName: 'text-grey-900'
-
+    textClassName: 'text-grey-900',
+    isCustom: true,
+  },
+  {
+    id: 'custom-2',
+    title: '커스텀 템플릿',
+    description: '커스텀 템플릿 설명 커스텀 템플릿 설명 커스텀 템플릿 설명',
+    bgClassName: 'bg-grey-50',
+    borderClassName: 'border-grey-100',
+    textClassName: 'text-grey-900',
+    isCustom: true,
+  },
+  {
+    id: 'custom-3',
+    title: '커스텀 템플릿',
+    description: '커스텀 템플릿 설명 커스텀 템플릿 설명 커스텀 템플릿 설명',
+    bgClassName: 'bg-grey-50',
+    borderClassName: 'border-grey-100',
+    textClassName: 'text-grey-900',
+    isCustom: true,
+  },
+  {
+    id: 'custom-4',
+    title: '커스텀 템플릿',
+    description: '커스텀 템플릿 설명 커스텀 템플릿 설명 커스텀 템플릿 설명',
+    bgClassName: 'bg-grey-50',
+    borderClassName: 'border-grey-100',
+    textClassName: 'text-grey-900',
+    isCustom: true,
   },
 ];

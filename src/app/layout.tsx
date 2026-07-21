@@ -1,6 +1,7 @@
 import { Routes, Route } from "react-router-dom";
 import Home from "./home";
 import Login from "./login";
+import PasswordReset from "./password-reset";
 import { ImmersionToggle } from "@/components/home/ImmersionToggle";
 import { Sidebar } from "@/components/common/sidebar";
 import AlarmIcon from "@/assets/alarm.svg";
@@ -10,6 +11,7 @@ export default function Layout() {
   return (
     <Routes>
       <Route path="/login" element={<Login />} />
+      <Route path="/password-reset" element={<PasswordReset />} />
       <Route path="*" element={<HomeLayout />} />
     </Routes>
   );

@@ -1,5 +1,6 @@
 import { Routes, Route } from 'react-router-dom'
 import Home from './home'
+import Login from './login'
 import Record from './record'
 import RecordAll from './record-all'
 import TemplateAll from './template-all'

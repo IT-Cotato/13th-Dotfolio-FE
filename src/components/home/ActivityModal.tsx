@@ -39,6 +39,21 @@ export const ActivityModal = ({ isOpen, onClose, onSubmit, activity }: ActivityM
   const endPickerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    if (!isOpen) return;
+    setTitle(activity?.title ?? '');
+    setSelectedTags(activity?.tags ?? []);
+    setExtraTags(
+      activity?.tags.filter(t => !ACTIVITY_TYPES.includes(t as (typeof ACTIVITY_TYPES)[number])) ?? []
+    );
+    setIsAddingTag(false);
+    setNewTagValue('');
+    setStartDate(activity?.startDate ?? '');
+    setEndDate(activity?.endDate ?? '');
+    setEndDateUnknown(activity?.endDateUnknown ?? false);
+    setOpenPicker(null);
+  }, [isOpen, activity]);
+
+  useEffect(() => {
     if (!openPicker) return;
     const handleOutsideClick = (e: MouseEvent) => {
       const ref = openPicker === 'start' ? startPickerRef : endPickerRef;

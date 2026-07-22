@@ -1,4 +1,8 @@
-import { useState } from 'react';
+import { useLayoutEffect, useRef, useState } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import AddIcon from '@/assets/add.svg';
+import { RECORD_ACTIVITIES } from '@/constants/recordActivities';
+import { ActivityModal } from '@/components/home/ActivityModal';
 
 const DotOneIcon = () => (
   <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
@@ -40,11 +44,12 @@ interface NavItemProps {
   icon: React.ReactNode;
   label: string;
   hasChevron?: boolean;
+  chevronOpen?: boolean;
   isActive?: boolean;
   onClick?: () => void;
 }
 
-const NavItem = ({ icon, label, hasChevron = false, isActive = false, onClick }: NavItemProps) => (
+const NavItem = ({ icon, label, hasChevron = false, chevronOpen = false, isActive = false, onClick }: NavItemProps) => (
   <button
     onClick={onClick}
     className={`w-full flex items-center justify-between p-3 rounded-[14px] cursor-pointer ${
@@ -57,40 +62,102 @@ const NavItem = ({ icon, label, hasChevron = false, isActive = false, onClick }:
       {icon}
       <span className={isActive ? 'text-sub2-sb' : 'text-body2-md'}>{label}</span>
     </div>
-    {hasChevron && <ChevronRightIcon />}
+    {hasChevron && (
+      <span className={`transition-transform ${chevronOpen ? 'rotate-90' : ''}`}>
+        <ChevronRightIcon />
+      </span>
+    )}
   </button>
 );
 
 export const Sidebar = () => {
-  const [active, setActive] = useState('홈');
+  const navigate = useNavigate();
+  const location = useLocation();
+  const isRecordActive = location.pathname === '/record';
+  const [recordOpen, setRecordOpen] = useState(isRecordActive);
+  const [selectedActivityId, setSelectedActivityId] = useState(RECORD_ACTIVITIES[1].id);
+  const listRef = useRef<HTMLDivElement>(null);
+  const itemRefs = useRef<Record<string, HTMLButtonElement | null>>({});
+  const [activeBar, setActiveBar] = useState<{ top: number; height: number } | null>(null);
+  const [isActivityModalOpen, setIsActivityModalOpen] = useState(false);
+
+  useLayoutEffect(() => {
+    if (!recordOpen) return;
+    const container = listRef.current;
+    const activeEl = itemRefs.current[selectedActivityId];
+    if (!container || !activeEl) return;
+    const containerRect = container.getBoundingClientRect();
+    const activeRect = activeEl.getBoundingClientRect();
+    setActiveBar({ top: activeRect.top - containerRect.top, height: activeRect.height });
+  }, [recordOpen, selectedActivityId]);
 
   return (
     <nav className="w-full flex flex-col gap-3">
       <NavItem
         icon={<DotOneIcon />}
         label="홈"
-        isActive={active === '홈'}
-        onClick={() => setActive('홈')}
+        isActive={location.pathname === '/'}
+        onClick={() => navigate('/')}
       />
-      <NavItem
-        icon={<DotTwoIcon />}
-        label="메모하기"
-        isActive={active === '메모하기'}
-        onClick={() => setActive('메모하기')}
-      />
-      <NavItem
-        icon={<DotThreeIcon />}
-        label="기록하기"
-        hasChevron
-        isActive={active === '기록하기'}
-        onClick={() => setActive('기록하기')}
-      />
-      <NavItem
-        icon={<DotGridIcon />}
-        label="나의 스토리"
-        hasChevron
-        isActive={active === '나의 스토리'}
-        onClick={() => setActive('나의 스토리')}
+      <NavItem icon={<DotTwoIcon />} label="메모하기" />
+
+      <div className="w-full flex flex-col gap-3">
+        <NavItem
+          icon={<DotThreeIcon />}
+          label="기록하기"
+          hasChevron
+          chevronOpen={recordOpen}
+          isActive={isRecordActive}
+          onClick={() => {
+            navigate('/record');
+            setRecordOpen(prev => !prev);
+          }}
+        />
+        {recordOpen && (
+          <div className="w-full flex flex-col gap-3">
+            <div ref={listRef} className="relative flex flex-col gap-2">
+              <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-grey-200" />
+              {activeBar && (
+                <div
+                  className="absolute left-0 w-0.5 bg-grey-700 transition-all"
+                  style={{ top: activeBar.top, height: activeBar.height }}
+                />
+              )}
+              {RECORD_ACTIVITIES.map(activity => {
+                const isSelected = activity.id === selectedActivityId;
+                return (
+                  <button
+                    key={activity.id}
+                    ref={el => { itemRefs.current[activity.id] = el; }}
+                    type="button"
+                    onClick={() => setSelectedActivityId(activity.id)}
+                    className={`w-full text-left py-3 pl-4 pr-4 cursor-pointer transition-colors text-grey-900 ${
+                      isSelected ? 'text-sub2-sb' : 'text-body2-md'
+                    }`}
+                  >
+                    {activity.title}
+                  </button>
+                );
+              })}
+            </div>
+            <button
+              type="button"
+              onClick={() => setIsActivityModalOpen(true)}
+              className="w-full flex gap-2 px-4 py-3 rounded-xl border border-dashed border-primary-200 text-primary-400 text-body2-md cursor-pointer"
+            >
+              <AddIcon className="w-5 h-5" />
+              활동 추가
+            </button>
+          </div>
+        )}
+      </div>
+
+      <NavItem icon={<DotGridIcon />} label="나의 스토리" hasChevron />
+
+      <ActivityModal
+        isOpen={isActivityModalOpen}
+        onClose={() => setIsActivityModalOpen(false)}
+        onSubmit={() => setIsActivityModalOpen(false)}
       />
     </nav>
   );

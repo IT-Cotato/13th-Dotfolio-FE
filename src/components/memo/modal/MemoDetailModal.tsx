@@ -17,13 +17,20 @@ export const MemoDetailModal = ({ memo, onClose, onUpdate, onDelete, onToggleImp
   const [content, setContent] = useState(memo.memo);
   const contentRef = useRef<HTMLTextAreaElement>(null);
 
+  const updatedMemo = () => ({
+    ...memo,
+    title: title.trim() || undefined,
+    memo: content.trim() || memo.memo,
+  });
+
   const closeAndSave = () => {
-    onUpdate({
-      ...memo,
-      title: title.trim() || undefined,
-      memo: content.trim() || memo.memo,
-    });
+    onUpdate(updatedMemo());
     onClose();
+  };
+
+  const deleteAndSave = () => {
+    onUpdate(updatedMemo());
+    onDelete();
   };
 
   useEffect(() => {
@@ -62,7 +69,7 @@ export const MemoDetailModal = ({ memo, onClose, onUpdate, onDelete, onToggleImp
             <MemoMoreMenu
               isImportant={!!memo.isImportant}
               onToggleImportant={onToggleImportant}
-              onDelete={onDelete}
+              onDelete={deleteAndSave}
               onMove={onMove}
               align="right"
             />

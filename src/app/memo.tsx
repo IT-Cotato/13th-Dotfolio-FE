@@ -8,8 +8,15 @@ import {
   MemoList,
   MemoDetailModal,
   MoveToRecordModal,
+  DeleteMemoModal,
+  MemoDeleteToast,
   type MemoData,
 } from '@/components/memo';
+
+interface DeletedMemo {
+  memo: MemoData;
+  index: number;
+}
 
 export default function Memo() {
   const [isCreateOpen, setIsCreateOpen] = useState(false);
@@ -18,6 +25,8 @@ export default function Memo() {
   const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
   const [openMemoId, setOpenMemoId] = useState<number>();
   const [isMoveOpen, setIsMoveOpen] = useState(false);
+  const [deleteMemoId, setDeleteMemoId] = useState<number>();
+  const [deletedMemo, setDeletedMemo] = useState<DeletedMemo>();
 
   const tags = [...new Set(memos.flatMap((memo) => memo.tag ? [memo.tag] : []))];
   const visibleMemos = selectedTag
@@ -39,6 +48,33 @@ export default function Memo() {
     });
   };
 
+  const deleteMemo = () => {
+    if (deleteMemoId === undefined) return;
+    const deletedMemoIndex = memos.findIndex((memo) => memo.id === deleteMemoId);
+    if (deletedMemoIndex === -1) return;
+
+    setDeletedMemo({ memo: memos[deletedMemoIndex], index: deletedMemoIndex });
+    setMemos((current) => current.filter((memo) => memo.id !== deleteMemoId));
+    setSelectedIds((current) => {
+      const next = new Set(current);
+      next.delete(deleteMemoId);
+      return next;
+    });
+    if (openMemoId === deleteMemoId) setOpenMemoId(undefined);
+    setDeleteMemoId(undefined);
+  };
+
+  const undoDeleteMemo = () => {
+    if (!deletedMemo) return;
+    setMemos((current) => {
+      if (current.some((memo) => memo.id === deletedMemo.memo.id)) return current;
+      const next = [...current];
+      next.splice(Math.min(deletedMemo.index, next.length), 0, deletedMemo.memo);
+      return next;
+    });
+    setDeletedMemo(undefined);
+  };
+
   return (
     <Card className="relative items-stretch gap-0">
       <MemoHeader
@@ -54,7 +90,7 @@ export default function Memo() {
       {memos.length > 0 && (
         <MemoList
           memos={visibleMemos}
-          onDelete={(id) => setMemos((current) => current.filter((memo) => memo.id !== id))}
+          onDelete={setDeleteMemoId}
           onToggleImportant={(id) => setMemos((current) => current.map((memo) => (
             memo.id === id ? { ...memo, isImportant: !memo.isImportant } : memo
           )))}
@@ -65,7 +101,7 @@ export default function Memo() {
         />
       )}
       {isCreateOpen && <CreateMemoModal onClose={() => setIsCreateOpen(false)} onCreate={createMemo} />}
-      {openMemo && (
+      {openMemo && deleteMemoId === undefined && (
         <MemoDetailModal
           memo={openMemo}
           onClose={() => setOpenMemoId(undefined)}
@@ -76,13 +112,16 @@ export default function Memo() {
             memo.id === openMemo.id ? { ...memo, isImportant: !memo.isImportant } : memo
           )))}
           onMove={() => setIsMoveOpen(true)}
-          onDelete={() => {
-            setMemos((current) => current.filter((memo) => memo.id !== openMemo.id));
-            setOpenMemoId(undefined);
-          }}
+          onDelete={() => setDeleteMemoId(openMemo.id)}
         />
       )}
       {isMoveOpen && <MoveToRecordModal onClose={() => setIsMoveOpen(false)} />}
+      {deleteMemoId !== undefined && (
+        <DeleteMemoModal onClose={() => setDeleteMemoId(undefined)} onConfirm={deleteMemo} />
+      )}
+      {deletedMemo && (
+        <MemoDeleteToast onClose={() => setDeletedMemo(undefined)} onUndo={undoDeleteMemo} />
+      )}
     </Card>
   );
 }

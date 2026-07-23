@@ -1,0 +1,42 @@
+[
+  {
+    "id": "1",
+    "title": "코테이토 13기 프로젝트",
+    "tags": ["프로젝트"],
+    "startDate": "2026.03.01",
+    "endDate": "2026.06.30",
+    "endDateUnknown": false,
+    "recordCount": 5,
+    "completedCount": 0
+  },
+  {
+    "id": "2",
+    "title": "도트폴리오 개발",
+    "tags": ["프로젝트"],
+    "startDate": "2026.04.01",
+    "endDate": "",
+    "endDateUnknown": true,
+    "recordCount": 6,
+    "completedCount": 4
+  },
+  {
+    "id": "3",
+    "title": "포트폴리오 사이트 리뉴얼",
+    "tags": ["프로젝트"],
+    "startDate": "2026.01.10",
+    "endDate": "2026.05.31",
+    "endDateUnknown": false,
+    "recordCount": 4,
+    "completedCount": 4
+  },
+  {
+    "id": "4",
+    "title": "IT 연합 동아리",
+    "tags": ["동아리/학회"],
+    "startDate": "2026.03.01",
+    "endDate": "",
+    "endDateUnknown": true,
+    "recordCount": 4,
+    "completedCount": 2
+  }
+]

@@ -6,8 +6,23 @@
   src: url('/fonts/PretendardVariable.woff2') format('woff2-variations');
 }
 
+@font-face {
+  font-family: 'NEXON Lv1 Gothic';
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  src: url('/fonts/NEXONLv1Gothic.woff2') format('woff2');
+}
+
 @theme {
   --font-pretendard: 'Pretendard Variable', sans-serif;
+  --font-nexon: 'NEXON Lv1 Gothic', 'Pretendard Variable', sans-serif;
+
+  /* logo */
+  --text-logo: 1.25rem; /* 20px */
+  --text-logo--font-weight: 400;
+  --text-logo--line-height: 140%;
+  --text-logo--letter-spacing: -0.0125rem; /* -0.2px */
 
   /* header */
   --text-header: 2rem; /* 32px */

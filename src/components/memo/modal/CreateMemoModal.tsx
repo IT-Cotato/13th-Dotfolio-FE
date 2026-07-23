@@ -63,7 +63,7 @@ export const CreateMemoModal = ({ onClose, onCreate }: CreateMemoModalProps) => 
           <button type="button" aria-label="닫기" onClick={onClose} className="text-title2 text-grey-400 hover:text-grey-700">×</button>
         </div>
 
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-8">
           <label className="flex flex-col gap-2">
             <span className="text-label1-md text-grey-900">제목</span>
             <input
@@ -98,7 +98,7 @@ export const CreateMemoModal = ({ onClose, onCreate }: CreateMemoModalProps) => 
                 event.preventDefault();
                 selectFile(event.dataTransfer.files);
               }}
-              className="flex h-[76px] flex-col items-center justify-center rounded-2xl border border-dashed border-grey-200 text-grey-400 hover:border-primary-300 hover:text-primary-400"
+              className="flex h-20 flex-col items-center justify-center rounded-2xl border border-dashed border-grey-200 text-grey-400 hover:border-primary-300 hover:text-primary-400"
             >
               <UploadIcon />
               <span className="mt-1 text-caption1">이미지를 드래그하거나 클릭해서 업로드하세요. (허용 확장자 : JPG, PNG)</span>
@@ -143,7 +143,7 @@ export const CreateMemoModal = ({ onClose, onCreate }: CreateMemoModalProps) => 
           type="button"
           disabled={!memo.trim()}
           onClick={handleCreate}
-          className="bg-primary-gradient mt-6 h-[52px] w-full rounded-[14px] text-sub2-sb text-white disabled:cursor-not-allowed disabled:bg-none disabled:bg-grey-300"
+          className="bg-primary-gradient mt-8 h-[52px] w-full rounded-[14px] text-sub2-sb text-white disabled:cursor-not-allowed disabled:bg-none disabled:bg-grey-300"
         >
           메모 생성
         </button>

@@ -19,7 +19,7 @@ export const DeleteMemoModal = ({ onClose, onConfirm }: DeleteMemoModalProps) =>
 
   return (
     <div
-      className="fixed inset-0 z-[80] flex items-center justify-center bg-grey-950/55 px-5"
+      className="fixed inset-0 z-[80] flex items-center justify-center bg-[rgba(28,28,26,0.62)] px-5 backdrop-blur-[2px]"
       onMouseDown={onClose}
     >
       <section
@@ -27,7 +27,7 @@ export const DeleteMemoModal = ({ onClose, onConfirm }: DeleteMemoModalProps) =>
         aria-modal="true"
         aria-labelledby="delete-memo-title"
         aria-describedby="delete-memo-description"
-        className="w-full max-w-[438px] rounded-[24px] bg-white p-6 shadow-[0_0_20px_rgba(0,0,0,0.18)]"
+        className="w-full max-w-[438px] rounded-[24px] bg-white p-6 shadow-[0_0_20px_0_rgba(0,0,0,0.18),0_8px_36px_0_rgba(0,0,0,0.16)]"
         onMouseDown={(event) => event.stopPropagation()}
       >
         <div className="flex flex-col gap-2 text-center">

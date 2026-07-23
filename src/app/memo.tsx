@@ -7,6 +7,7 @@ import {
   MemoHeader,
   MemoList,
   MemoDetailModal,
+  MoveToRecordModal,
   type MemoData,
 } from '@/components/memo';
 
@@ -16,6 +17,7 @@ export default function Memo() {
   const [selectedTag, setSelectedTag] = useState('');
   const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
   const [openMemoId, setOpenMemoId] = useState<number>();
+  const [isMoveOpen, setIsMoveOpen] = useState(false);
 
   const tags = [...new Set(memos.flatMap((memo) => memo.tag ? [memo.tag] : []))];
   const visibleMemos = selectedTag
@@ -46,7 +48,7 @@ export default function Memo() {
         onCreate={() => setIsCreateOpen(true)}
       />
       {selectedIds.size > 0 && (
-        <MemoBar count={selectedIds.size} onCancel={() => setSelectedIds(new Set())} />
+        <MemoBar count={selectedIds.size} onCancel={() => setSelectedIds(new Set())} onMove={() => setIsMoveOpen(true)} />
       )}
       {memos.length === 0 && <EmptyMemo />}
       {memos.length > 0 && (
@@ -56,6 +58,7 @@ export default function Memo() {
           onToggleImportant={(id) => setMemos((current) => current.map((memo) => (
             memo.id === id ? { ...memo, isImportant: !memo.isImportant } : memo
           )))}
+          onMove={() => setIsMoveOpen(true)}
           selectedIds={selectedIds}
           onSelect={selectMemo}
           onOpen={setOpenMemoId}
@@ -72,12 +75,14 @@ export default function Memo() {
           onToggleImportant={() => setMemos((current) => current.map((memo) => (
             memo.id === openMemo.id ? { ...memo, isImportant: !memo.isImportant } : memo
           )))}
+          onMove={() => setIsMoveOpen(true)}
           onDelete={() => {
             setMemos((current) => current.filter((memo) => memo.id !== openMemo.id));
             setOpenMemoId(undefined);
           }}
         />
       )}
+      {isMoveOpen && <MoveToRecordModal onClose={() => setIsMoveOpen(false)} />}
     </Card>
   );
 }

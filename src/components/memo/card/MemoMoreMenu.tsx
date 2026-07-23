@@ -6,12 +6,14 @@ import StarIcon from '@/assets/memo_star.svg';
 
 interface MemoMoreMenuProps {
   isImportant: boolean;
+  emphasized?: boolean;
   onToggleImportant: () => void;
   onDelete: () => void;
+  onMove: () => void;
   align?: 'left' | 'right';
 }
 
-export const MemoMoreMenu = ({ isImportant, onToggleImportant, onDelete, align = 'left' }: MemoMoreMenuProps) => {
+export const MemoMoreMenu = ({ isImportant, emphasized = false, onToggleImportant, onDelete, onMove, align = 'left' }: MemoMoreMenuProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -35,7 +37,7 @@ export const MemoMoreMenu = ({ isImportant, onToggleImportant, onDelete, align =
         aria-label="메모 더보기"
         aria-expanded={isOpen}
         onClick={() => setIsOpen((open) => !open)}
-        className={`flex h-8 w-8 items-center justify-center rounded-xl ${isImportant ? 'text-primary-300' : 'text-grey-400'} ${isOpen ? 'bg-primary-100' : ''}`}
+        className={`flex h-8 w-8 items-center justify-center rounded-xl ${isImportant || emphasized ? 'text-primary-300' : 'text-grey-400'} ${isOpen ? 'bg-primary-100' : ''}`}
       >
         <MoreIcon />
       </button>
@@ -47,7 +49,7 @@ export const MemoMoreMenu = ({ isImportant, onToggleImportant, onDelete, align =
             <StarIcon className="h-5 w-5" />
             {isImportant ? '중요한 메모 취소' : '중요한 메모'}
           </button>
-          <button type="button" onClick={() => run()} className="flex h-11 w-full items-center gap-4 text-body2-md text-grey-900">
+          <button type="button" onClick={() => run(onMove)} className="flex h-11 w-full items-center gap-4 text-body2-md text-grey-900">
             <RecordIcon className="h-5 w-5" />
             기록하기로 이동
           </button>

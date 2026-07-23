@@ -9,9 +9,10 @@ interface MemoDetailModalProps {
   onUpdate: (memo: MemoData) => void;
   onDelete: () => void;
   onToggleImportant: () => void;
+  onMove: () => void;
 }
 
-export const MemoDetailModal = ({ memo, onClose, onUpdate, onDelete, onToggleImportant }: MemoDetailModalProps) => {
+export const MemoDetailModal = ({ memo, onClose, onUpdate, onDelete, onToggleImportant, onMove }: MemoDetailModalProps) => {
   const [title, setTitle] = useState(memo.title ?? '');
   const [content, setContent] = useState(memo.memo);
   const contentRef = useRef<HTMLTextAreaElement>(null);
@@ -57,11 +58,12 @@ export const MemoDetailModal = ({ memo, onClose, onUpdate, onDelete, onToggleImp
             </span>
             <span className="whitespace-nowrap">{memo.dDay}</span>
           </span>
-          <div className="ml-auto -translate-y-2">
+          <div className="ml-auto">
             <MemoMoreMenu
               isImportant={!!memo.isImportant}
               onToggleImportant={onToggleImportant}
               onDelete={onDelete}
+              onMove={onMove}
               align="right"
             />
           </div>

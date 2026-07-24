@@ -1,9 +1,9 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useLayoutEffect, useRef } from 'react';
 
 export const useEscapeKey = (onEscape: () => void) => {
   const onEscapeRef = useRef(onEscape);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     onEscapeRef.current = onEscape;
   }, [onEscape]);
 

@@ -99,7 +99,12 @@ export const Sidebar = () => {
         isActive={location.pathname === '/'}
         onClick={() => navigate('/')}
       />
-      <NavItem icon={<DotTwoIcon />} label="메모하기" />
+      <NavItem
+        icon={<DotTwoIcon />}
+        label="메모하기"
+        isActive={location.pathname === '/memo'}
+        onClick={() => navigate('/memo')}
+      />
 
       <div className="w-full flex flex-col gap-3">
         <NavItem

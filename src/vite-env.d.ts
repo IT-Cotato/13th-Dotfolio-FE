@@ -4,4 +4,6 @@ declare module '*.svg' {
   export default ReactComponent;
 }
 
+declare module '*.css';
+
 /// <reference types="vite/client" />

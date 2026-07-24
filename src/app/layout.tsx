@@ -1,5 +1,7 @@
 import { Routes, Route } from 'react-router-dom'
 import Home from './home'
+import Memo from './memo'
+import Login from './login'
 import Record from './record'
 import RecordAll from './record-all'
 import TemplateAll from './template-all'
@@ -43,6 +45,7 @@ function HomeLayout() {
         <main className="flex-1 pb-8 pr-6 h-full overflow-y-auto">
           <Routes>
             <Route path="/" element={<Home />} />
+            <Route path="/memo" element={<Memo />} />
             <Route path="/record" element={<Record />} />
             <Route path="/record-all" element={<RecordAll />} />
             <Route path="/template-all" element={<TemplateAll />} />

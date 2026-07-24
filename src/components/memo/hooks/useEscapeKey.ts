@@ -1,5 +1,17 @@
 import { useEffect, useLayoutEffect, useRef } from 'react';
 
+interface EscapeHandler {
+  id: symbol;
+  callback: () => void;
+}
+
+const escapeHandlers: EscapeHandler[] = [];
+
+const handleEscape = (event: KeyboardEvent) => {
+  if (event.key !== 'Escape') return;
+  escapeHandlers.at(-1)?.callback();
+};
+
 export const useEscapeKey = (onEscape: () => void) => {
   const onEscapeRef = useRef(onEscape);
 
@@ -8,11 +20,18 @@ export const useEscapeKey = (onEscape: () => void) => {
   }, [onEscape]);
 
   useEffect(() => {
-    const handleEscape = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') onEscapeRef.current();
+    const handler = {
+      id: Symbol('escape-handler'),
+      callback: () => onEscapeRef.current(),
     };
 
-    window.addEventListener('keydown', handleEscape);
-    return () => window.removeEventListener('keydown', handleEscape);
+    escapeHandlers.push(handler);
+    if (escapeHandlers.length === 1) window.addEventListener('keydown', handleEscape);
+
+    return () => {
+      const handlerIndex = escapeHandlers.findIndex(({ id }) => id === handler.id);
+      if (handlerIndex >= 0) escapeHandlers.splice(handlerIndex, 1);
+      if (escapeHandlers.length === 0) window.removeEventListener('keydown', handleEscape);
+    };
   }, []);
 };

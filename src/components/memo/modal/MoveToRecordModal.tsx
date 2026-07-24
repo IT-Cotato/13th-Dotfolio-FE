@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useEscapeKey } from '../hooks/useEscapeKey';
+import { useModalFocus } from '../hooks/useModalFocus';
 
 interface MoveToRecordModalProps {
   onClose: () => void;
@@ -35,6 +36,7 @@ export const MoveToRecordModal = ({ onClose, onMove }: MoveToRecordModalProps) =
   const [selectedActivity, setSelectedActivity] = useState('');
   const [selectedTemplate, setSelectedTemplate] = useState('');
   const canMove = Boolean(selectedActivity && selectedTemplate);
+  const dialogRef = useModalFocus<HTMLElement>();
 
   useEscapeKey(onClose);
 
@@ -47,6 +49,8 @@ export const MoveToRecordModal = ({ onClose, onMove }: MoveToRecordModalProps) =
   return (
     <div className="fixed inset-0 z-[60] flex items-center justify-center bg-grey-950/55 px-5" onMouseDown={onClose}>
       <section
+        ref={dialogRef}
+        tabIndex={-1}
         role="dialog"
         aria-modal="true"
         aria-labelledby="move-to-record-title"

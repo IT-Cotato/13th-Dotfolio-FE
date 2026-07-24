@@ -1,5 +1,6 @@
-import { useEffect, useRef } from 'react';
+import { useRef } from 'react';
 import { useEscapeKey } from '../hooks/useEscapeKey';
+import { useModalFocus } from '../hooks/useModalFocus';
 
 interface DeleteMemoModalProps {
   onClose: () => void;
@@ -8,12 +9,9 @@ interface DeleteMemoModalProps {
 
 export const DeleteMemoModal = ({ onClose, onConfirm }: DeleteMemoModalProps) => {
   const cancelButtonRef = useRef<HTMLButtonElement>(null);
+  const dialogRef = useModalFocus<HTMLElement>(cancelButtonRef);
 
   useEscapeKey(onClose);
-
-  useEffect(() => {
-    cancelButtonRef.current?.focus();
-  }, []);
 
   return (
     <div
@@ -21,6 +19,8 @@ export const DeleteMemoModal = ({ onClose, onConfirm }: DeleteMemoModalProps) =>
       onMouseDown={onClose}
     >
       <section
+        ref={dialogRef}
+        tabIndex={-1}
         role="alertdialog"
         aria-modal="true"
         aria-labelledby="delete-memo-title"

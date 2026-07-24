@@ -16,6 +16,7 @@ interface MemoMoreMenuProps {
 export const MemoMoreMenu = ({ isImportant, emphasized = false, onToggleImportant, onDelete, onMove, align = 'left' }: MemoMoreMenuProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     const close = (event: MouseEvent) => {
@@ -26,13 +27,15 @@ export const MemoMoreMenu = ({ isImportant, emphasized = false, onToggleImportan
   }, []);
 
   const run = (action?: () => void) => {
-    action?.();
     setIsOpen(false);
+    triggerRef.current?.focus();
+    action?.();
   };
 
   return (
     <div ref={menuRef} className="relative ml-auto" onClick={(event) => event.stopPropagation()}>
       <button
+        ref={triggerRef}
         type="button"
         aria-label="메모 더보기"
         aria-expanded={isOpen}

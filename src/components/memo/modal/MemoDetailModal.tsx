@@ -3,6 +3,7 @@ import DdayIcon from '@/assets/memo_dday.svg';
 import type { MemoData } from '../types';
 import { MemoMoreMenu } from '../card/MemoMoreMenu';
 import { useEscapeKey } from '../hooks/useEscapeKey';
+import { useModalFocus } from '../hooks/useModalFocus';
 
 interface MemoDetailModalProps {
   memo: MemoData;
@@ -16,21 +17,28 @@ interface MemoDetailModalProps {
 export const MemoDetailModal = ({ memo, onClose, onUpdate, onDelete, onToggleImportant, onMove }: MemoDetailModalProps) => {
   const [title, setTitle] = useState(memo.title ?? '');
   const [content, setContent] = useState(memo.memo);
+  const [contentError, setContentError] = useState(false);
   const contentRef = useRef<HTMLTextAreaElement>(null);
+  const dialogRef = useModalFocus<HTMLElement>();
 
-  const updatedMemo = () => ({
+  const updatedMemo = (normalizedContent: string) => ({
     ...memo,
     title: title.trim() || undefined,
-    memo: content.trim() || memo.memo,
+    memo: normalizedContent,
   });
 
   const closeAndSave = () => {
-    onUpdate(updatedMemo());
+    const normalizedContent = contentRef.current?.value.trim() ?? content.trim();
+    if (!normalizedContent) {
+      setContentError(true);
+      contentRef.current?.focus();
+      return;
+    }
+    onUpdate(updatedMemo(normalizedContent));
     onClose();
   };
 
   const deleteAndSave = () => {
-    onUpdate(updatedMemo());
     onDelete();
   };
 
@@ -46,6 +54,8 @@ export const MemoDetailModal = ({ memo, onClose, onUpdate, onDelete, onToggleImp
   return (
     <div className="fixed inset-0 z-40 flex items-center justify-center bg-grey-950/55 px-5" onMouseDown={closeAndSave}>
       <section
+        ref={dialogRef}
+        tabIndex={-1}
         role="dialog"
         aria-modal="true"
         aria-label="메모 상세보기"
@@ -97,11 +107,23 @@ export const MemoDetailModal = ({ memo, onClose, onUpdate, onDelete, onToggleImp
             <textarea
               ref={contentRef}
               aria-label="메모 내용"
+              aria-invalid={contentError}
+              aria-describedby={contentError ? 'memo-content-error' : undefined}
               maxLength={500}
               value={content}
-              onChange={(event) => setContent(event.target.value)}
-              className="min-h-[208px] w-full resize-none overflow-hidden bg-transparent text-body-reading2-md text-grey-900 outline-none"
+              onChange={(event) => {
+                setContent(event.target.value);
+                if (event.target.value.trim()) setContentError(false);
+              }}
+              className={`min-h-[208px] w-full resize-none overflow-hidden rounded-lg bg-transparent text-body-reading2-md text-grey-900 outline-none ${
+                contentError ? 'ring-1 ring-error-text' : ''
+              }`}
             />
+            {contentError && (
+              <p id="memo-content-error" className="text-caption1 text-error-text">
+                메모 내용을 입력해주세요.
+              </p>
+            )}
 
             {memo.attachmentUrl && (
               <img

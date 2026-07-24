@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Card } from '@/components/common/card';
 import {
   CreateMemoModal,
@@ -27,6 +27,7 @@ export default function Memo() {
   const [isMoveOpen, setIsMoveOpen] = useState(false);
   const [deleteMemoId, setDeleteMemoId] = useState<number>();
   const [deletedMemo, setDeletedMemo] = useState<DeletedMemo>();
+  const ownedAttachmentUrlsRef = useRef(new Set<string>());
 
   const tags = [...new Set(memos.flatMap((memo) => memo.tag ? [memo.tag] : []))];
   const activeTag = selectedTag && tags.includes(selectedTag) ? selectedTag : '';
@@ -36,9 +37,24 @@ export default function Memo() {
   const openMemo = memos.find((memo) => memo.id === openMemoId);
 
   const createMemo = (memo: Omit<MemoData, 'id'>) => {
+    if (memo.attachmentUrl?.startsWith('blob:')) {
+      ownedAttachmentUrlsRef.current.add(memo.attachmentUrl);
+    }
     setMemos((current) => [{ ...memo, id: Date.now() }, ...current]);
     setIsCreateOpen(false);
   };
+
+  const revokeAttachmentUrl = (memo?: MemoData) => {
+    const attachmentUrl = memo?.attachmentUrl;
+    if (!attachmentUrl || !ownedAttachmentUrlsRef.current.has(attachmentUrl)) return;
+    URL.revokeObjectURL(attachmentUrl);
+    ownedAttachmentUrlsRef.current.delete(attachmentUrl);
+  };
+
+  useEffect(() => () => {
+    ownedAttachmentUrlsRef.current.forEach((attachmentUrl) => URL.revokeObjectURL(attachmentUrl));
+    ownedAttachmentUrlsRef.current.clear();
+  }, []);
 
   const selectMemo = (id: number, selected: boolean) => {
     setSelectedIds((current) => {
@@ -54,6 +70,7 @@ export default function Memo() {
     const deletedMemoIndex = memos.findIndex((memo) => memo.id === deleteMemoId);
     if (deletedMemoIndex === -1) return;
 
+    revokeAttachmentUrl(deletedMemo?.memo);
     setDeletedMemo({ memo: memos[deletedMemoIndex], index: deletedMemoIndex });
     setMemos((current) => current.filter((memo) => memo.id !== deleteMemoId));
     setSelectedIds((current) => {
@@ -73,6 +90,11 @@ export default function Memo() {
       next.splice(Math.min(deletedMemo.index, next.length), 0, deletedMemo.memo);
       return next;
     });
+    setDeletedMemo(undefined);
+  };
+
+  const finishDeleteMemo = () => {
+    revokeAttachmentUrl(deletedMemo?.memo);
     setDeletedMemo(undefined);
   };
 
@@ -121,7 +143,11 @@ export default function Memo() {
         <DeleteMemoModal onClose={() => setDeleteMemoId(undefined)} onConfirm={deleteMemo} />
       )}
       {deletedMemo && (
-        <MemoDeleteToast onClose={() => setDeletedMemo(undefined)} onUndo={undoDeleteMemo} />
+        <MemoDeleteToast
+          key={deletedMemo.memo.id}
+          onClose={finishDeleteMemo}
+          onUndo={undoDeleteMemo}
+        />
       )}
     </Card>
   );

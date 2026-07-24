@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react';
 import type { MemoData } from '../types';
 import { useEscapeKey } from '../hooks/useEscapeKey';
+import { useModalFocus } from '../hooks/useModalFocus';
 
 interface CreateMemoModalProps {
   onClose: () => void;
@@ -20,6 +21,7 @@ export const CreateMemoModal = ({ onClose, onCreate }: CreateMemoModalProps) => 
   const [memo, setMemo] = useState('');
   const [file, setFile] = useState<File | null>(null);
   const [selectedTag, setSelectedTag] = useState<string>();
+  const dialogRef = useModalFocus<HTMLElement>();
 
   const tags = ['코테이토 13기 프로젝트', '경영 데이터분석 워크샵', '마케팅 공모전'];
 
@@ -50,6 +52,8 @@ export const CreateMemoModal = ({ onClose, onCreate }: CreateMemoModalProps) => 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-grey-950/55 px-5" onMouseDown={onClose}>
       <section
+        ref={dialogRef}
+        tabIndex={-1}
         role="dialog"
         aria-modal="true"
         aria-labelledby="create-memo-title"

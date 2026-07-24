@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { useEscapeKey } from '../hooks/useEscapeKey';
 
 interface DeleteMemoModalProps {
   onClose: () => void;
@@ -8,14 +9,11 @@ interface DeleteMemoModalProps {
 export const DeleteMemoModal = ({ onClose, onConfirm }: DeleteMemoModalProps) => {
   const cancelButtonRef = useRef<HTMLButtonElement>(null);
 
+  useEscapeKey(onClose);
+
   useEffect(() => {
     cancelButtonRef.current?.focus();
-    const closeOnEscape = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') onClose();
-    };
-    window.addEventListener('keydown', closeOnEscape);
-    return () => window.removeEventListener('keydown', closeOnEscape);
-  }, [onClose]);
+  }, []);
 
   return (
     <div

@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import DdayIcon from '@/assets/memo_dday.svg';
 import type { MemoData } from '../types';
 import { MemoMoreMenu } from '../card/MemoMoreMenu';
+import { useEscapeKey } from '../hooks/useEscapeKey';
 
 interface MemoDetailModalProps {
   memo: MemoData;
@@ -33,13 +34,7 @@ export const MemoDetailModal = ({ memo, onClose, onUpdate, onDelete, onToggleImp
     onDelete();
   };
 
-  useEffect(() => {
-    const closeOnEscape = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') closeAndSave();
-    };
-    window.addEventListener('keydown', closeOnEscape);
-    return () => window.removeEventListener('keydown', closeOnEscape);
-  });
+  useEscapeKey(closeAndSave);
 
   useEffect(() => {
     const textarea = contentRef.current;
@@ -78,23 +73,20 @@ export const MemoDetailModal = ({ memo, onClose, onUpdate, onDelete, onToggleImp
 
         <div className="relative z-0 min-h-0 flex-1 overflow-y-auto px-4 pb-4 pt-4 scrollbar-hide">
           <div className="flex flex-col gap-4">
-            {(memo.isImportant || memo.title) && (
-              <div className="flex items-center gap-1">
-                {memo.isImportant && (
-                  <svg aria-hidden="true" width="20" height="20" viewBox="0 0 20 20" fill="none" className="shrink-0">
-                    <path d="m10 1.8 2.45 4.97 5.49.8-3.97 3.87.94 5.47L10 14.33l-4.91 2.58.94-5.47-3.97-3.87 5.49-.8L10 1.8Z" fill="#FFB516" />
-                  </svg>
-                )}
-                {memo.title && (
-                  <input
-                    aria-label="메모 제목"
-                    value={title}
-                    onChange={(event) => setTitle(event.target.value)}
-                    className="min-w-0 flex-1 bg-transparent text-sub1-sb text-grey-950 outline-none"
-                  />
-                )}
-              </div>
-            )}
+            <div className="flex items-center gap-1">
+              {memo.isImportant && (
+                <svg aria-hidden="true" width="20" height="20" viewBox="0 0 20 20" fill="none" className="shrink-0">
+                  <path d="m10 1.8 2.45 4.97 5.49.8-3.97 3.87.94 5.47L10 14.33l-4.91 2.58.94-5.47-3.97-3.87 5.49-.8L10 1.8Z" fill="#FFB516" />
+                </svg>
+              )}
+              <input
+                aria-label="메모 제목"
+                value={title}
+                onChange={(event) => setTitle(event.target.value)}
+                placeholder="제목을 추가해보세요."
+                className="min-w-0 flex-1 bg-transparent text-sub1-sb text-grey-950 outline-none placeholder:text-grey-400"
+              />
+            </div>
 
             {memo.tag && (
               <span className="w-fit max-w-full truncate rounded-full bg-grey-500 px-3 py-1 text-label3-sb text-white">

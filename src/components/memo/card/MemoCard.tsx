@@ -17,19 +17,24 @@ interface MemoCardProps {
 
 export const MemoCard = ({ memo, onDelete, onToggleImportant, onMove, selected, selectionMode, onSelect, onOpen }: MemoCardProps) => (
   <article
-    onClick={onOpen}
     className={`group relative flex min-h-[266px] w-[266px] max-h-[454px] shrink-0 cursor-pointer overflow-visible rounded-[20px] ${selected ? 'bg-primary-gradient p-0.5 shadow-[0_0_30px_rgba(22,53,164,0.08)]' : `border ${memo.isImportant ? 'border-primary-100' : 'border-grey-100'}`}`}
   >
-    <div className={`flex min-h-0 flex-1 flex-col overflow-visible ${selected ? 'rounded-[18px]' : 'rounded-[19px]'} ${memo.isImportant || selected ? 'bg-primary-50' : 'bg-white'}`}>
-    <label onClick={(event) => event.stopPropagation()} className="peer group/check absolute left-0 top-0 z-20 h-[54px] w-11 cursor-pointer">
+    <button
+      type="button"
+      aria-label={`${memo.title || '제목 없는 메모'} 상세보기`}
+      onClick={onOpen}
+      className="absolute inset-0 z-0 rounded-[20px] outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2"
+    />
+    <div className={`pointer-events-none relative z-10 flex min-h-0 flex-1 flex-col overflow-visible ${selected ? 'rounded-[18px]' : 'rounded-[19px]'} ${memo.isImportant || selected ? 'bg-primary-50' : 'bg-white'}`}>
+    <label className="peer group/check pointer-events-auto absolute left-0 top-0 z-20 h-[54px] w-11 cursor-pointer">
       <span className="sr-only">메모 선택</span>
       <input
         type="checkbox"
         checked={selected}
         onChange={(event) => onSelect(event.target.checked)}
-        className="absolute inset-0 cursor-pointer opacity-0"
+        className="peer/checkbox absolute inset-0 cursor-pointer opacity-0"
       />
-      <span className={`absolute left-4 top-[17px] flex h-5 w-5 items-center justify-center rounded-[4px] border transition-opacity ${selected ? 'border-primary-500 bg-primary-500 opacity-100' : `border-grey-100 bg-white ${selectionMode ? 'opacity-100' : 'opacity-0 group-hover/check:opacity-100'}`}`}>
+      <span className={`absolute left-4 top-[17px] flex h-5 w-5 items-center justify-center rounded-[4px] border transition-opacity peer-focus-visible/checkbox:ring-2 peer-focus-visible/checkbox:ring-primary-500 peer-focus-visible/checkbox:ring-offset-2 ${selected ? 'border-primary-500 bg-primary-500 opacity-100' : `border-grey-100 bg-white ${selectionMode ? 'opacity-100' : 'opacity-0 group-hover/check:opacity-100 peer-focus-visible/checkbox:opacity-100'}`}`}>
         {selected && <CheckIcon />}
       </span>
     </label>
@@ -41,8 +46,8 @@ export const MemoCard = ({ memo, onDelete, onToggleImportant, onMove, selected, 
         </span>
         <span className="whitespace-nowrap">{memo.dDay}</span>
       </span>
-      <div className="ml-auto">
-        <MemoMoreMenu isImportant={!!memo.isImportant} emphasized={selected} onToggleImportant={onToggleImportant} onDelete={onDelete} onMove={onMove} />
+      <div className="pointer-events-auto ml-auto">
+        <MemoMoreMenu isImportant={!!memo.isImportant} emphasized={selected} onToggleImportant={onToggleImportant} onDelete={onDelete} onMove={onMove} align="right" />
       </div>
     </header>
 

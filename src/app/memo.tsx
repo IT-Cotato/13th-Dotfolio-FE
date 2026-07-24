@@ -29,8 +29,9 @@ export default function Memo() {
   const [deletedMemo, setDeletedMemo] = useState<DeletedMemo>();
 
   const tags = [...new Set(memos.flatMap((memo) => memo.tag ? [memo.tag] : []))];
-  const visibleMemos = selectedTag
-    ? memos.filter((memo) => memo.tag === selectedTag)
+  const activeTag = selectedTag && tags.includes(selectedTag) ? selectedTag : '';
+  const visibleMemos = activeTag
+    ? memos.filter((memo) => memo.tag === activeTag)
     : memos;
   const openMemo = memos.find((memo) => memo.id === openMemoId);
 
@@ -79,7 +80,7 @@ export default function Memo() {
     <Card className="relative items-stretch gap-0">
       <MemoHeader
         tags={tags}
-        selectedTag={selectedTag}
+        selectedTag={activeTag}
         onTagChange={setSelectedTag}
         onCreate={() => setIsCreateOpen(true)}
       />

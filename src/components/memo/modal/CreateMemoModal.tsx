@@ -1,5 +1,6 @@
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import type { MemoData } from '../types';
+import { useEscapeKey } from '../hooks/useEscapeKey';
 
 interface CreateMemoModalProps {
   onClose: () => void;
@@ -22,15 +23,12 @@ export const CreateMemoModal = ({ onClose, onCreate }: CreateMemoModalProps) => 
 
   const tags = ['코테이토 13기 프로젝트', '경영 데이터분석 워크샵', '마케팅 공모전'];
 
-  useEffect(() => {
-    const closeOnEscape = (event: KeyboardEvent) => event.key === 'Escape' && onClose();
-    window.addEventListener('keydown', closeOnEscape);
-    return () => window.removeEventListener('keydown', closeOnEscape);
-  }, [onClose]);
+  useEscapeKey(onClose);
 
   const selectFile = (files: FileList | null) => {
     const nextFile = files?.[0];
     if (nextFile?.type === 'image/jpeg' || nextFile?.type === 'image/png') setFile(nextFile);
+    if (inputRef.current) inputRef.current.value = '';
   };
 
   const handleCreate = () => {

@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import CheckIcon from '@/assets/memo_check.svg';
 
 interface MemoDeleteToastProps {
@@ -7,10 +7,16 @@ interface MemoDeleteToastProps {
 }
 
 export const MemoDeleteToast = ({ onClose, onUndo }: MemoDeleteToastProps) => {
+  const onCloseRef = useRef(onClose);
+
   useEffect(() => {
-    const timer = window.setTimeout(onClose, 2500);
-    return () => window.clearTimeout(timer);
+    onCloseRef.current = onClose;
   }, [onClose]);
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => onCloseRef.current(), 2500);
+    return () => window.clearTimeout(timer);
+  }, []);
 
   return (
     <div

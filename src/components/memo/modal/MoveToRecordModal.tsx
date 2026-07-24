@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import { useEscapeKey } from '../hooks/useEscapeKey';
 
 interface MoveToRecordModalProps {
   onClose: () => void;
@@ -35,11 +36,7 @@ export const MoveToRecordModal = ({ onClose, onMove }: MoveToRecordModalProps) =
   const [selectedTemplate, setSelectedTemplate] = useState('');
   const canMove = Boolean(selectedActivity && selectedTemplate);
 
-  useEffect(() => {
-    const closeOnEscape = (event: KeyboardEvent) => event.key === 'Escape' && onClose();
-    window.addEventListener('keydown', closeOnEscape);
-    return () => window.removeEventListener('keydown', closeOnEscape);
-  }, [onClose]);
+  useEscapeKey(onClose);
 
   const handleMove = () => {
     if (!canMove) return;

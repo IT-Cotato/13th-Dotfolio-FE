@@ -5,9 +5,12 @@ import { Breadcrumb } from '@/components/common/Breadcrumb';
 import { CategoryHeader } from '@/components/common/CategoryHeader';
 import { Toast } from '@/components/common/Toast';
 import { RecordActionButtons } from '@/components/record/RecordActionButtons';
+import { MemoSelectModal } from '@/components/record/MemoSelectModal';
 import { RECORD_TEMPLATES } from '@/constants/templates';
 import { useActivities } from '@/contexts/ActivitiesContext';
 import { useToast } from '@/hooks/useToast';
+import MEMOS from '@/mock/memos.json';
+import type { Memo } from '@/types/memo';
 import MemoUploadIcon from '@/assets/memoupload.svg';
 
 export default function RecordWrite() {
@@ -23,7 +26,8 @@ export default function RecordWrite() {
 
   const [title, setTitle] = useState('');
   const [answers, setAnswers] = useState<Record<string, string>>({});
-  const memoCount = 0;
+  const [selectedMemos, setSelectedMemos] = useState<Memo[]>([]);
+  const [isMemoModalOpen, setIsMemoModalOpen] = useState(false);
 
   if (!template) {
     navigate('/record');
@@ -85,7 +89,7 @@ export default function RecordWrite() {
 
         <div className="w-full grid grid-cols-[280px_1fr] gap-6 items-start">
           <div className="flex flex-col gap-4">
-            <p className="text-sub1-sb text-grey-900">메모 {memoCount}</p>
+            <p className="text-sub1-sb text-grey-900">메모 {selectedMemos.length}</p>
             <div className="w-full flex flex-col items-center gap-6 px-4 py-4 rounded-2xl border border-dashed border-grey-100 text-center">
               <div className="flex flex-col items-center gap-2">
                 <MemoUploadIcon className="w-6 h-6 text-primary-400" />
@@ -96,6 +100,7 @@ export default function RecordWrite() {
               </div>
               <button
                 type="button"
+                onClick={() => setIsMemoModalOpen(true)}
                 className="w-full px-5 py-2.5 rounded-xl border border-grey-100 text-primary-500 text-sub2-sb cursor-pointer"
               >
                 메모 선택
@@ -135,6 +140,16 @@ export default function RecordWrite() {
           </div>
         </div>
       </div>
+
+      <MemoSelectModal
+        isOpen={isMemoModalOpen}
+        memos={MEMOS}
+        onClose={() => setIsMemoModalOpen(false)}
+        onSelect={memos => {
+          setSelectedMemos(memos);
+          setIsMemoModalOpen(false);
+        }}
+      />
 
       {toast && (
         <div className="fixed top-4 left-1/2 -translate-x-1/2 z-[100]">

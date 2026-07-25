@@ -10,10 +10,10 @@ import { ActivityCard } from '@/components/home/ActivityCard';
 import { Toast } from '@/components/common/Toast';
 import { ConfirmModal } from '@/components/common/ConfirmModal';
 import type { Activity } from '@/types/activity';
-import MOCK_ACTIVITIES from '@/mock/activities.json';
+import { useActivities } from '@/contexts/ActivitiesContext';
 
 export default function Home() {
-  const [activities, setActivities] = useState<Activity[]>(MOCK_ACTIVITIES);
+  const { activities, addActivity, updateActivity, removeActivity, restoreActivity } = useActivities();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedActivity, setSelectedActivity] = useState<Activity | null>(null);
   const [toast, setToast] = useState<{ message: string; onUndo?: () => void } | null>(null);
@@ -45,10 +45,10 @@ export default function Home() {
   const handleDelete = () => {
     if (!targetActivity) return;
     const removed = targetActivity;
-    setActivities(prev => prev.filter(a => a.id !== removed.id));
+    removeActivity(removed.id);
     closeConfirm();
     fireToast('활동이 삭제되었습니다.', () => {
-      setActivities(prev => [...prev, removed]);
+      restoreActivity(removed);
       if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
       setToast(null);
     });
@@ -67,11 +67,11 @@ export default function Home() {
 
   const handleSubmit = (data: Omit<Activity, 'id' | 'recordCount' | 'completedCount'>) => {
     if (selectedActivity) {
-      setActivities(prev => prev.map(a => a.id === selectedActivity.id ? { ...a, ...data } : a));
+      updateActivity(selectedActivity.id, data);
       handleClose();
       fireToast('변경사항이 저장되었습니다.');
     } else {
-      setActivities(prev => [...prev, { id: Date.now().toString(), ...data, recordCount: 0, completedCount: 0 }]);
+      addActivity(data);
       handleClose();
       fireToast('활동이 성공적으로 생성되었습니다.');
     }

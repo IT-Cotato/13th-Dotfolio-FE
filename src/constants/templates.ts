@@ -1,3 +1,10 @@
+export interface TemplateQuestion {
+  id: string;
+  label: string;
+  description?: string;
+  required?: boolean;
+}
+
 export interface RecordTemplate {
   id: string;
   title: string;
@@ -7,6 +14,7 @@ export interface RecordTemplate {
   textClassName?: string;
   isCustom?: boolean;
   author?: string;
+  questions?: TemplateQuestion[];
 }
 
 export const RECORD_TEMPLATES: RecordTemplate[] = [
@@ -17,6 +25,11 @@ export const RECORD_TEMPLATES: RecordTemplate[] = [
     bgClassName: 'bg-category-mint-bg',
     borderClassName: 'border-category-mint',
     textClassName: 'text-category-mint-text',
+    questions: [
+      { id: 'situation', label: '상황', description: '어떤 문제나 기회를 발견했나요?', required: true },
+      { id: 'idea', label: '아이디어', description: '어떤 아이디어를 떠올렸나요?' },
+      { id: 'process', label: '실행과정', description: '아이디어를 어떻게 실행에 옮겼나요?' },
+    ],
   },
   {
     id: 'collabo-conflict',
@@ -25,6 +38,11 @@ export const RECORD_TEMPLATES: RecordTemplate[] = [
     bgClassName: 'bg-category-purple-bg',
     borderClassName: 'border-category-purple',
     textClassName: 'text-category-purple-text',
+    questions: [
+      { id: 'situation', label: '상황', description: '어떤 협업 상황이었나요?', required: true },
+      { id: 'conflict', label: '갈등', description: '어떤 의견 차이나 갈등이 있었나요?' },
+      { id: 'resolution', label: '해결과정', description: '갈등을 어떻게 해결했나요?' },
+    ],
   },
   {
     id: 'solving-result',
@@ -33,6 +51,11 @@ export const RECORD_TEMPLATES: RecordTemplate[] = [
     bgClassName: 'bg-category-pink-bg',
     borderClassName: 'border-category-pink',
     textClassName: 'text-category-pink-text',
+    questions: [
+      { id: 'problem', label: '문제 상황', description: '어떤 문제에 부딪혔나요?', required: true },
+      { id: 'solution', label: '해결 방법', description: '문제를 어떻게 해결했나요?' },
+      { id: 'result', label: '성과', description: '그 결과 어떤 성과를 얻었나요?' },
+    ],
   },
   {
     id: 'challenge-immersion',
@@ -41,6 +64,11 @@ export const RECORD_TEMPLATES: RecordTemplate[] = [
     bgClassName: 'bg-category-coral-bg',
     borderClassName: 'border-category-coral',
     textClassName: 'text-category-coral-text',
+    questions: [
+      { id: 'motivation', label: '도전 계기', description: '무엇에 도전하게 되었나요?', required: true },
+      { id: 'immersion', label: '몰입 과정', description: '어떻게 몰입해서 임했나요?' },
+      { id: 'learning', label: '배운 점', description: '이 경험을 통해 무엇을 느끼거나 배웠나요?' },
+    ],
   },
   {
     id: 'custon',

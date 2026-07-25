@@ -3,6 +3,7 @@ import Home from './home'
 import Login from './login'
 import Record from './record'
 import RecordAll from './record-all'
+import RecordWrite from './record-write'
 import TemplateAll from './template-all'
 import { ImmersionToggle } from '@/components/home/ImmersionToggle'
 import { Sidebar } from '@/components/common/sidebar'
@@ -48,6 +49,7 @@ function HomeLayout() {
               <Route path="/" element={<Home />} />
               <Route path="/record" element={<Record />} />
               <Route path="/record-all" element={<RecordAll />} />
+              <Route path="/record/write/:templateId" element={<RecordWrite />} />
               <Route path="/template-all" element={<TemplateAll />} />
             </Routes>
           </main>

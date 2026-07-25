@@ -10,11 +10,13 @@ import { Toast } from '@/components/common/Toast';
 import { RecordList } from '@/components/record/RecordList';
 import { RECORD_TEMPLATES } from '@/constants/templates';
 import { useToast } from '@/hooks/useToast';
+import { useActivities } from '@/contexts/ActivitiesContext';
 import RECORDS from '@/mock/records.json';
 import type { RecordEntry } from '@/types/record';
 
 export default function Record() {
   const navigate = useNavigate();
+  const { selectedActivity } = useActivities();
   const [records, setRecords] = useState<RecordEntry[]>(RECORDS as RecordEntry[]);
   const [deleteTarget, setDeleteTarget] = useState<RecordEntry | null>(null);
   const { toast, fireToast, dismissToast } = useToast();
@@ -35,7 +37,7 @@ export default function Record() {
       <Breadcrumb
         items={[
           { label: '기록하기' },
-          { label: '경영 데이터분석 워크샵' },
+          { label: selectedActivity?.title ?? '' },
         ]}
       />
       <div className="w-full flex flex-col gap-6">
@@ -52,6 +54,7 @@ export default function Record() {
               description={template.description}
               bgClassName={template.bgClassName}
               borderClassName={template.borderClassName}
+              onClick={() => navigate(`/record/write/${template.id}`)}
             />
           ))}
         </div>

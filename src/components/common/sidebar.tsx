@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { useLayoutEffect, useRef, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import AddIcon from '@/assets/add.svg';
 import { ActivityModal } from '@/components/home/ActivityModal';
@@ -73,19 +73,13 @@ const NavItem = ({ icon, label, hasChevron = false, chevronOpen = false, isActiv
 export const Sidebar = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { activities, addActivity } = useActivities();
+  const { activities, addActivity, selectedActivityId, setSelectedActivityId } = useActivities();
   const isRecordActive = location.pathname === '/record';
   const [recordOpen, setRecordOpen] = useState(isRecordActive);
-  const [selectedActivityId, setSelectedActivityId] = useState<string | null>(null);
   const listRef = useRef<HTMLDivElement>(null);
   const itemRefs = useRef<Record<string, HTMLButtonElement | null>>({});
   const [activeBar, setActiveBar] = useState<{ top: number; height: number } | null>(null);
   const [isActivityModalOpen, setIsActivityModalOpen] = useState(false);
-
-  useEffect(() => {
-    if (selectedActivityId && activities.some(a => a.id === selectedActivityId)) return;
-    setSelectedActivityId(activities[0]?.id ?? null);
-  }, [activities, selectedActivityId]);
 
   useLayoutEffect(() => {
     if (!recordOpen || !selectedActivityId) return;

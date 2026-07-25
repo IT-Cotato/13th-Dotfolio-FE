@@ -53,8 +53,8 @@ export default function RecordWrite() {
       fireToast('필수 항목을 입력해주세요.', undefined, 'error');
       return;
     }
-    fireToast('기록이 완료되었습니다.');
-    navigate('/record');
+    fireToast('기록을 성공적으로 저장하였습니다.');
+    setTimeout(() => navigate('/record'), 2000);
   };
 
   return (

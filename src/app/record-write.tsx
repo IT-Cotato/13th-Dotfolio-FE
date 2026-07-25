@@ -4,10 +4,11 @@ import { Card } from '@/components/common/card';
 import { Breadcrumb } from '@/components/common/Breadcrumb';
 import { CategoryHeader } from '@/components/common/CategoryHeader';
 import { Toast } from '@/components/common/Toast';
+import { RecordActionButtons } from '@/components/record/RecordActionButtons';
 import { RECORD_TEMPLATES } from '@/constants/templates';
 import { useActivities } from '@/contexts/ActivitiesContext';
 import { useToast } from '@/hooks/useToast';
-import DocumentIcon from '@/assets/document.svg';
+import MemoUploadIcon from '@/assets/memoupload.svg';
 
 export default function RecordWrite() {
   const navigate = useNavigate();
@@ -22,6 +23,7 @@ export default function RecordWrite() {
 
   const [title, setTitle] = useState('');
   const [answers, setAnswers] = useState<Record<string, string>>({});
+  const memoCount = 0;
 
   if (!template) {
     navigate('/record');
@@ -64,26 +66,7 @@ export default function RecordWrite() {
           title={template.title}
           onBack={() => navigate('/record')}
           extra={
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={handleTempSave}
-                className="px-5 py-2.5 rounded-xl border border-grey-100 bg-grey-50 text-grey-600 text-sub2-sb cursor-pointer"
-              >
-                임시저장
-              </button>
-              <button
-                type="button"
-                onClick={handleComplete}
-                className={`px-5 py-2.5 rounded-xl text-sub2-sb transition-colors ${
-                  isValid
-                    ? 'bg-primary-500 text-grey-0 cursor-pointer'
-                    : 'bg-grey-300 text-grey-0 cursor-not-allowed'
-                }`}
-              >
-                기록완료
-              </button>
-            </div>
+            <RecordActionButtons isValid={isValid} onTempSave={handleTempSave} onComplete={handleComplete} />
           }
         />
 
@@ -100,51 +83,55 @@ export default function RecordWrite() {
           />
         </div>
 
-        <div className="w-full grid grid-cols-[280px_1fr] gap-8 items-start">
-          <div className="flex flex-col gap-3">
-            <p className="text-sub1-sb text-grey-900">메모 0</p>
-            <div className="w-full flex flex-col items-center gap-2 px-4 py-6 rounded-2xl border border-dashed border-grey-100 text-center">
-              <DocumentIcon className="w-6 h-6 text-primary-400" />
-              <p className="text-sub2-sb text-grey-900">메모 불러오기</p>
-              <p className="text-body3-r text-grey-600">
-                저장된 메모를 불러와<br />기록 작성에 활용해보세요.
-              </p>
+        <div className="w-full grid grid-cols-[280px_1fr] gap-6 items-start">
+          <div className="flex flex-col gap-4">
+            <p className="text-sub1-sb text-grey-900">메모 {memoCount}</p>
+            <div className="w-full flex flex-col items-center gap-6 px-4 py-4 rounded-2xl border border-dashed border-grey-100 text-center">
+              <div className="flex flex-col items-center gap-2">
+                <MemoUploadIcon className="w-6 h-6 text-primary-400" />
+                <p className="text-sub2-sb text-grey-900">메모 불러오기</p>
+                <p className="text-body-reading2-md text-grey-700">
+                  저장된 메모를 불러와<br />기록 작성에 활용해보세요.
+                </p>
+              </div>
+              <button
+                type="button"
+                className="w-full px-5 py-2.5 rounded-xl border border-grey-100 text-primary-500 text-sub2-sb cursor-pointer"
+              >
+                메모 선택
+              </button>
             </div>
-            <button
-              type="button"
-              className="w-full py-3 rounded-xl border border-grey-100 text-grey-700 text-body2-md cursor-pointer"
-            >
-              메모 선택
-            </button>
           </div>
 
-          <div className="flex flex-col gap-6">
-            <p className="text-sub2-sb text-grey-900">템플릿 양식</p>
-            {template.questions?.map((question, index) => (
-              <div key={question.id} className="flex flex-col gap-2">
-                <div className="flex items-center gap-2">
-                  <span className="w-5 h-5 shrink-0 flex items-center justify-center rounded-full bg-grey-700 text-grey-0 text-label3-sb">
-                    {index + 1}
-                  </span>
-                  <p className="text-sub2-sb text-grey-900">
-                    {question.required && <span className="text-error-text">* </span>}
-                    {question.label}
-                  </p>
+          <div className="flex flex-col gap-4">
+            <p className="text-sub1-sb text-grey-900">템플릿 양식</p>
+            <div className="flex flex-col gap-8 p-6 rounded-3xl border border-grey-100">
+              {template.questions?.map((question, index) => (
+                <div key={question.id} className="flex flex-col gap-2">
+                  <div className="flex items-center gap-3">
+                    <span className="w-5 h-5 shrink-0 flex items-center justify-center rounded-md bg-primary-50 text-primary-500 text-label3-sb">
+                      {index + 1}
+                    </span>
+                    <p className="text-sub2-sb text-grey-900">
+                      {question.required && <span className="text-error-text">* </span>}
+                      {question.label}
+                    </p>
+                  </div>
+                  <div className="flex flex-col gap-2 pl-8">
+                    {question.description && (
+                      <p className="text-body2-md text-grey-700">{question.description}</p>
+                    )}
+                    <textarea
+                      value={answers[question.id] ?? ''}
+                      onChange={e => handleAnswerChange(question.id, e.target.value)}
+                      placeholder="내용을 입력해주세요."
+                      rows={4}
+                      className="w-full p-4 rounded-xl border border-grey-100 text-body-reading2-md text-grey-900 placeholder:text-grey-400 outline-none resize-none transition-colors"
+                    />
+                  </div>
                 </div>
-                <div className="flex flex-col gap-2 pl-7">
-                  {question.description && (
-                    <p className="text-body3-r text-grey-600">{question.description}</p>
-                  )}
-                  <textarea
-                    value={answers[question.id] ?? ''}
-                    onChange={e => handleAnswerChange(question.id, e.target.value)}
-                    placeholder="내용을 입력해주세요."
-                    rows={4}
-                    className="w-full p-4 rounded-xl border border-grey-100 text-body2-md text-grey-900 placeholder:text-grey-400 outline-none resize-none focus:border-primary-500 transition-colors"
-                  />
-                </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
       </div>

@@ -6,6 +6,7 @@ import { CategoryHeader } from '@/components/common/CategoryHeader';
 import { Toast } from '@/components/common/Toast';
 import { RecordActionButtons } from '@/components/record/RecordActionButtons';
 import { MemoSelectModal } from '@/components/record/MemoSelectModal';
+import { MemoLoadedCard } from '@/components/record/MemoLoadedCard';
 import { RECORD_TEMPLATES } from '@/constants/templates';
 import { useActivities } from '@/contexts/ActivitiesContext';
 import { useToast } from '@/hooks/useToast';
@@ -89,22 +90,41 @@ export default function RecordWrite() {
 
         <div className="w-full grid grid-cols-[280px_1fr] gap-6 items-start">
           <div className="flex flex-col gap-4">
-            <p className="text-sub1-sb text-grey-900">메모 {selectedMemos.length}</p>
-            <div className="w-full flex flex-col items-center gap-6 px-4 py-4 rounded-2xl border border-dashed border-grey-100 text-center">
-              <div className="flex flex-col items-center gap-2">
-                <MemoUploadIcon className="w-6 h-6 text-primary-400" />
-                <p className="text-sub2-sb text-grey-900">메모 불러오기</p>
-                <p className="text-body-reading2-md text-grey-700">
-                  저장된 메모를 불러와<br />기록 작성에 활용해보세요.
-                </p>
-              </div>
-              <button
-                type="button"
-                onClick={() => setIsMemoModalOpen(true)}
-                className="w-full px-5 py-2.5 rounded-xl border border-grey-100 text-primary-500 text-sub2-sb cursor-pointer"
-              >
-                메모 선택
-              </button>
+            <div className="w-full flex items-center justify-between">
+              <p className="text-sub1-sb text-grey-900 pl-1">메모 {selectedMemos.length}</p>
+              {selectedMemos.length > 0 && (
+                <button
+                  type="button"
+                  onClick={() => setIsMemoModalOpen(true)}
+                  className="px-3 py-1 mr-1 rounded-lg border border-grey-100 bg-grey-0 text-primary-500 text-label3-sb cursor-pointer"
+                >
+                  메모 추가
+                </button>
+              )}
+            </div>
+            <div className="w-full flex flex-col gap-4 px-4 py-4 rounded-2xl border border-dashed border-grey-100">
+              {selectedMemos.length === 0 ? (
+                <div className="flex flex-col items-center gap-6 text-center">
+                  <div className="flex flex-col items-center gap-2">
+                    <MemoUploadIcon className="w-6 h-6 text-primary-400" />
+                    <p className="text-sub2-sb text-grey-900">메모 불러오기</p>
+                    <p className="text-body-reading2-md text-grey-700">
+                      저장된 메모를 불러와<br />기록 작성에 활용해보세요.
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setIsMemoModalOpen(true)}
+                    className="w-full px-5 py-2.5 rounded-xl border border-grey-100 text-primary-500 text-sub2-sb cursor-pointer"
+                  >
+                    메모 선택
+                  </button>
+                </div>
+              ) : (
+                selectedMemos.map(memo => (
+                  <MemoLoadedCard key={memo.id} memo={memo} />
+                ))
+              )}
             </div>
           </div>
 

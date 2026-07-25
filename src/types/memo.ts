@@ -5,4 +5,5 @@ export interface Memo {
   title: string;
   tag: string;
   content: string;
+  image?: string;
 }

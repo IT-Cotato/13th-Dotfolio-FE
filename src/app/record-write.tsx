@@ -122,7 +122,11 @@ export default function RecordWrite() {
                 </div>
               ) : (
                 selectedMemos.map(memo => (
-                  <MemoLoadedCard key={memo.id} memo={memo} />
+                  <MemoLoadedCard
+                    key={memo.id}
+                    memo={memo}
+                    onDelete={() => setSelectedMemos(prev => prev.filter(m => m.id !== memo.id))}
+                  />
                 ))
               )}
             </div>

@@ -38,7 +38,7 @@ export const MemoSelectModal = ({ isOpen, memos, onClose, onSelect }: MemoSelect
       onClick={onClose}
     >
       <div
-        className="relative w-full max-w-155 max-h-[80vh] bg-white rounded-3xl px-8 pt-6 pb-8 flex flex-col gap-[46px]"
+        className="relative w-full max-w-155 h-173 max-h-[80vh] bg-white rounded-3xl px-8 pt-6 pb-8 flex flex-col gap-11.5"
         onClick={e => e.stopPropagation()}
       >
         <div className="w-full shrink-0 flex items-center justify-between">

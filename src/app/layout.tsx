@@ -44,7 +44,7 @@ function HomeLayout() {
             <ImmersionToggle />
             <Sidebar />
           </nav>
-          <main className="flex-1 pb-8 pr-6 h-full overflow-y-auto">
+          <main className="flex-1 pb-8 pr-6 h-full overflow-y-auto scrollbar-hide">
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/record" element={<Record />} />

@@ -28,7 +28,7 @@ export const RECORD_TEMPLATES: RecordTemplate[] = [
     questions: [
       { id: 'situation', label: '상황', description: '어떤 문제나 기회를 발견했나요?', required: true },
       { id: 'idea', label: '아이디어', description: '어떤 아이디어를 떠올렸나요?' },
-      { id: 'process', label: '실행과정', description: '아이디어를 어떻게 실행에 옮겼나요?' },
+      { id: 'process', label: '실행과정'},
     ],
   },
   {

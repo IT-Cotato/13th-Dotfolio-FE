@@ -7,6 +7,7 @@ import { Toast } from '@/components/common/Toast';
 import { RecordActionButtons } from '@/components/record/RecordActionButtons';
 import { MemoSelectModal } from '@/components/record/MemoSelectModal';
 import { MemoLoadedCard } from '@/components/record/MemoLoadedCard';
+import { MemoDetailModal } from '@/components/record/MemoDetailModal';
 import { RECORD_TEMPLATES } from '@/constants/templates';
 import { useActivities } from '@/contexts/ActivitiesContext';
 import { useToast } from '@/hooks/useToast';
@@ -29,6 +30,7 @@ export default function RecordWrite() {
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [selectedMemos, setSelectedMemos] = useState<Memo[]>([]);
   const [isMemoModalOpen, setIsMemoModalOpen] = useState(false);
+  const [detailMemo, setDetailMemo] = useState<Memo | null>(null);
 
   if (!template) {
     navigate('/record');
@@ -126,6 +128,7 @@ export default function RecordWrite() {
                     key={memo.id}
                     memo={memo}
                     onDelete={() => setSelectedMemos(prev => prev.filter(m => m.id !== memo.id))}
+                    onOpenDetail={() => setDetailMemo(memo)}
                   />
                 ))
               )}
@@ -174,6 +177,8 @@ export default function RecordWrite() {
           setIsMemoModalOpen(false);
         }}
       />
+
+      <MemoDetailModal memo={detailMemo} onClose={() => setDetailMemo(null)} />
 
       {toast && (
         <div className="fixed top-4 left-1/2 -translate-x-1/2 z-[100]">

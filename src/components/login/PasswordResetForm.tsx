@@ -3,14 +3,37 @@ import { Button } from "@/components/common/button";
 import { AuthFormIntro } from "@/components/login/AuthFormIntro";
 import { EmailInput } from "@/components/login/EmailInput";
 
+const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 export function PasswordResetForm() {
   const [email, setEmail] = useState("");
-  const isSubmitEnabled = email.trim().length > 0;
+  const [isEmailNotFound, setIsEmailNotFound] = useState(false);
+  const isEmailFormatValid = emailPattern.test(email);
+  const hasFormatError = email.length > 0 && !isEmailFormatValid;
+  const errorMessage = hasFormatError
+    ? "올바른 이메일 형식으로 입력해주세요. 예: dotfolio@gmail.com"
+    : isEmailNotFound
+      ? "해당 이메일로 가입된 계정을 찾을 수 없습니다."
+      : undefined;
+
+  const handleEmailChange = (value: string) => {
+    setEmail(value);
+    setIsEmailNotFound(false);
+  };
+
+  const handleResetMailRequest = () => {
+    if (isEmailFormatValid) {
+      setIsEmailNotFound(true);
+    }
+  };
 
   return (
     <form
       className="flex w-full max-w-[463px] flex-col gap-8 p-6"
-      onSubmit={(event) => event.preventDefault()}
+      onSubmit={(event) => {
+        event.preventDefault();
+        handleResetMailRequest();
+      }}
     >
       <AuthFormIntro title="비밀번호 재설정">
         <p>도트폴리오에 가입한 이메일 주소를 입력해 주세요.</p>
@@ -18,11 +41,17 @@ export function PasswordResetForm() {
       </AuthFormIntro>
 
       <EmailInput
-        onChange={setEmail}
+        errorMessage={errorMessage}
+        hasError={Boolean(errorMessage)}
+        onChange={handleEmailChange}
         value={email}
       />
 
-      <Button disabled={!isSubmitEnabled} label="재설정 메일 보내기" />
+      <Button
+        disabled={!isEmailFormatValid}
+        label="재설정 메일 보내기"
+        onClick={handleResetMailRequest}
+      />
     </form>
   );
 }

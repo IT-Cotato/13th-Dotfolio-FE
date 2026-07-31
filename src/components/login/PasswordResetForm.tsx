@@ -4,11 +4,17 @@ import { AuthFormIntro } from "@/components/login/AuthFormIntro";
 import { EmailInput } from "@/components/login/EmailInput";
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const mockRegisteredEmail = "dotfolio@gmail.com";
 
-export function PasswordResetForm() {
+interface PasswordResetFormProps {
+  onComplete: (email: string) => void;
+}
+
+export function PasswordResetForm({ onComplete }: PasswordResetFormProps) {
   const [email, setEmail] = useState("");
   const [isEmailNotFound, setIsEmailNotFound] = useState(false);
-  const isEmailFormatValid = emailPattern.test(email);
+  const normalizedEmail = email.trim().toLowerCase();
+  const isEmailFormatValid = emailPattern.test(normalizedEmail);
   const hasFormatError = email.length > 0 && !isEmailFormatValid;
   const errorMessage = hasFormatError
     ? "올바른 이메일 형식으로 입력해주세요. 예: dotfolio@gmail.com"
@@ -23,6 +29,11 @@ export function PasswordResetForm() {
 
   const handleResetMailRequest = () => {
     if (isEmailFormatValid) {
+      if (normalizedEmail === mockRegisteredEmail) {
+        onComplete(normalizedEmail);
+        return;
+      }
+
       setIsEmailNotFound(true);
     }
   };

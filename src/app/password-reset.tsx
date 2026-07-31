@@ -1,9 +1,10 @@
 import { AuthLayout } from "@/components/login/AuthLayout";
+import { PasswordResetForm } from "@/components/login/PasswordResetForm";
 
 export default function PasswordReset() {
   return (
     <AuthLayout>
-      <div aria-label="비밀번호 재설정 폼 영역" />
+      <PasswordResetForm />
     </AuthLayout>
   );
 }

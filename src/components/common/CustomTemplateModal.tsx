@@ -92,39 +92,36 @@ export const CustomTemplateModal = ({ isOpen, onClose, onSubmit }: CustomTemplat
             value={title}
             onChange={e => setTitle(e.target.value)}
             placeholder="템플릿 제목을 입력해주세요."
-            className="w-full px-4 py-4 rounded-2xl border border-grey-100 text-body-reading2-md text-grey-900 placeholder:text-grey-400 outline-none focus:border-primary-500 transition-colors"
+            className="w-full px-4 py-4 rounded-[14px] border border-grey-100 text-body-reading2-md text-grey-900 placeholder:text-grey-400 outline-none"
           />
         </div>
 
         {/* 템플릿 설명 */}
         <div className="flex flex-col gap-2 mt-8">
           <p className="text-sub2-sb text-grey-900">템플릿 설명</p>
-          <div className="relative">
-            <textarea
-              value={description}
-              onChange={e => setDescription(e.target.value.slice(0, DESCRIPTION_MAX_LENGTH))}
-              placeholder="템플릿에 대해 간단히 설명해주세요."
-              rows={3}
-              className="w-full resize-none px-4 pt-4 pb-6 rounded-2xl border border-grey-100 text-body-reading2-md text-grey-900 placeholder:text-grey-400 outline-none focus:border-primary-500 transition-colors"
-            />
-            <span className="absolute bottom-2 right-4 text-caption1 text-grey-400">
-              {description.length} / {DESCRIPTION_MAX_LENGTH}
-            </span>
-          </div>
+          <textarea
+            value={description}
+            onChange={e => setDescription(e.target.value.slice(0, DESCRIPTION_MAX_LENGTH))}
+            placeholder="템플릿에 대해 간단히 설명해주세요."
+            rows={3}
+            className="w-full h-17.5 resize-none px-4 py-4 rounded-2xl border border-grey-100 text-body-reading2-md text-grey-900 placeholder:text-grey-400 outline-none"
+          />
+          <span className="self-end text-caption1 text-grey-400">
+            {description.length} / {DESCRIPTION_MAX_LENGTH}
+          </span>
         </div>
 
-        {/* 항목 목록 */}
         <div className="flex flex-col gap-6 mt-8">
           {questions.map((question, index) => (
             <div
               key={question.id}
-              className="relative rounded-2xl border border-grey-100 pt-6 px-4 pb-4 flex flex-col gap-2"
+              className="relative rounded-[14px] border border-grey-100 pt-6 px-4 pb-4 flex flex-col gap-2"
             >
               <div className="flex items-center gap-2">
                 <span className="cursor-grab text-grey-300 shrink-0">
                   <GripIcon className="w-4 h-4" />
                 </span>
-                <span className="flex items-center justify-center w-5 h-5 rounded-full bg-primary-500 text-grey-0 text-caption2 shrink-0">
+                <span className="flex items-center justify-center w-6 h-6 rounded-[6px] bg-primary-50 text-primary-500 text-sub3-sb shrink-0">
                   {index + 1}
                 </span>
                 <p className="flex-1 text-sub2-sb text-grey-900">
@@ -157,7 +154,7 @@ export const CustomTemplateModal = ({ isOpen, onClose, onSubmit }: CustomTemplat
                 value={question.label}
                 onChange={e => updateQuestion(question.id, { label: e.target.value })}
                 placeholder="항목 제목을 입력해주세요. (예: 어려웠던 점)"
-                className="w-full px-4 py-3.5 rounded-2xl border border-grey-100 text-body-reading2-md text-grey-900 placeholder:text-grey-400 outline-none focus:border-primary-500 transition-colors"
+                className="w-full px-4 py-4 rounded-[14px] border border-grey-100 text-body-reading2-md text-grey-900 placeholder:text-grey-400 outline-none"
               />
 
               <div className="flex flex-col gap-2 mt-3">
@@ -167,12 +164,12 @@ export const CustomTemplateModal = ({ isOpen, onClose, onSubmit }: CustomTemplat
                   value={question.description}
                   onChange={e => updateQuestion(question.id, { description: e.target.value })}
                   placeholder="항목 설명을 입력해주세요. (예: 업무 중 가장 어려웠던 점은 무엇이었나요?)"
-                  className="w-full px-4 py-3.5 rounded-2xl border border-grey-100 text-body-reading2-md text-grey-900 placeholder:text-grey-400 outline-none focus:border-primary-500 transition-colors"
+                  className="w-full px-4 py-4 rounded-[14px] border border-grey-100 text-body-reading2-md text-grey-900 placeholder:text-grey-400 outline-none"
                 />
               </div>
 
               <label className="flex items-center justify-end gap-2 mt-2 cursor-pointer">
-                <span className="text-body2-md text-grey-900">필수 답변</span>
+                <span className="text-sub3-sb text-grey-700">필수 답변</span>
                 <button
                   type="button"
                   onClick={() => updateQuestion(question.id, { required: !question.required })}
@@ -201,7 +198,7 @@ export const CustomTemplateModal = ({ isOpen, onClose, onSubmit }: CustomTemplat
         <button
           type="button"
           onClick={addQuestion}
-          className="w-full flex items-center justify-center gap-1 py-4 mt-6 rounded-2xl border border-dashed border-grey-200 text-sub2-sb text-grey-700 cursor-pointer"
+          className="w-full flex items-center justify-center gap-1 px-4 py-4 mt-6 rounded-2xl border border-dashed border-grey-200 text-sub2-sb text-grey-700 cursor-pointer"
         >
           <AddIcon className="w-5 h-5" />
           항목 추가

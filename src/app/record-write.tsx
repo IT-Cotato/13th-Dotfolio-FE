@@ -21,7 +21,7 @@ export default function RecordWrite() {
   const { templateId } = useParams<{ templateId: string }>();
   const { selectedActivity } = useActivities();
   const { templates } = useTemplates();
-  const { addRecord } = useRecords();
+  const { saveDraft, completeRecord } = useRecords();
   const { toast, fireToast } = useToast();
 
   const template = useMemo(
@@ -29,6 +29,7 @@ export default function RecordWrite() {
     [templates, templateId]
   );
 
+  const [recordId] = useState(() => crypto.randomUUID());
   const [title, setTitle] = useState('');
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [selectedMemos, setSelectedMemos] = useState<Memo[]>([]);
@@ -50,6 +51,15 @@ export default function RecordWrite() {
   };
 
   const handleTempSave = () => {
+    if (!selectedActivity) return;
+    saveDraft({
+      id: recordId,
+      activityId: selectedActivity.id,
+      templateId: template.id,
+      title,
+      answers,
+      memoIds: selectedMemos.map(memo => memo.id),
+    });
     fireToast('임시저장되었습니다.');
   };
 
@@ -58,7 +68,15 @@ export default function RecordWrite() {
       fireToast('필수 항목을 입력해주세요.', undefined, 'error');
       return;
     }
-    addRecord({ title, templateId: template.id });
+    if (!selectedActivity) return;
+    completeRecord({
+      id: recordId,
+      activityId: selectedActivity.id,
+      templateId: template.id,
+      title,
+      answers,
+      memoIds: selectedMemos.map(memo => memo.id),
+    });
     fireToast('기록을 성공적으로 저장하였습니다.');
     setTimeout(() => navigate('/record'), 2000);
   };

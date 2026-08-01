@@ -11,9 +11,11 @@ import { Toast } from '@/components/common/Toast';
 import { ConfirmModal } from '@/components/common/ConfirmModal';
 import type { Activity } from '@/types/activity';
 import { useActivities } from '@/contexts/ActivitiesContext';
+import { useRecords } from '@/contexts/RecordsContext';
 
 export default function Home() {
   const { activities, addActivity, updateActivity, removeActivity, restoreActivity } = useActivities();
+  const { records, removeRecordsByActivity, restoreRecord } = useRecords();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedActivity, setSelectedActivity] = useState<Activity | null>(null);
   const [toast, setToast] = useState<{ message: string; onUndo?: () => void } | null>(null);
@@ -45,10 +47,13 @@ export default function Home() {
   const handleDelete = () => {
     if (!targetActivity) return;
     const removed = targetActivity;
+    const removedRecords = records.filter(record => record.activityId === removed.id);
     removeActivity(removed.id);
+    removeRecordsByActivity(removed.id);
     closeConfirm();
     fireToast('활동이 삭제되었습니다.', () => {
       restoreActivity(removed);
+      removedRecords.forEach(record => restoreRecord(record));
       if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
       setToast(null);
     });

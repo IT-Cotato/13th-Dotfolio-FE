@@ -10,6 +10,7 @@ import { MemoLoadedCard } from '@/components/record/MemoLoadedCard';
 import { MemoDetailModal } from '@/components/record/MemoDetailModal';
 import { useActivities } from '@/contexts/ActivitiesContext';
 import { useTemplates } from '@/contexts/TemplatesContext';
+import { useRecords } from '@/contexts/RecordsContext';
 import { useToast } from '@/hooks/useToast';
 import MEMOS from '@/mock/memos.json';
 import type { Memo } from '@/types/memo';
@@ -20,6 +21,7 @@ export default function RecordWrite() {
   const { templateId } = useParams<{ templateId: string }>();
   const { selectedActivity } = useActivities();
   const { templates } = useTemplates();
+  const { addRecord } = useRecords();
   const { toast, fireToast } = useToast();
 
   const template = useMemo(
@@ -56,6 +58,7 @@ export default function RecordWrite() {
       fireToast('필수 항목을 입력해주세요.', undefined, 'error');
       return;
     }
+    addRecord({ title, templateId: template.id });
     fireToast('기록을 성공적으로 저장하였습니다.');
     setTimeout(() => navigate('/record'), 2000);
   };

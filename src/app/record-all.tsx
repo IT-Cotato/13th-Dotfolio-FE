@@ -7,25 +7,26 @@ import { Toast } from '@/components/common/Toast';
 import { RecordList } from '@/components/record/RecordList';
 import { StatusTag } from '@/components/record/StatusTag';
 import { CategoryDropdown } from '@/components/record/CategoryDropdown';
-import { RECORD_TEMPLATES } from '@/constants/templates';
 import { useToast } from '@/hooks/useToast';
-import RECORDS from '@/mock/records.json';
+import { useTemplates } from '@/contexts/TemplatesContext';
+import { useRecords } from '@/contexts/RecordsContext';
 import type { RecordEntry } from '@/types/record';
 
 const STATUS_FILTERS = ['전체', '기록 중', '기록 완료'];
 
-const CATEGORY_OPTIONS = [
-  { id: 'all', label: '전체' },
-  ...RECORD_TEMPLATES.map(template => ({ id: template.id, label: template.title })),
-];
-
 export default function RecordAll() {
   const navigate = useNavigate();
-  const [records, setRecords] = useState<RecordEntry[]>(RECORDS as RecordEntry[]);
+  const { templates } = useTemplates();
+  const { records, removeRecord, restoreRecord } = useRecords();
   const [statusFilter, setStatusFilter] = useState('전체');
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [deleteTarget, setDeleteTarget] = useState<RecordEntry | null>(null);
   const { toast, fireToast, dismissToast } = useToast();
+
+  const categoryOptions = [
+    { id: 'all', label: '전체' },
+    ...templates.map(template => ({ id: template.id, label: template.title })),
+  ];
 
   const filteredRecords = records.filter(record => {
     const statusMatch = statusFilter === '전체' || record.status === statusFilter;
@@ -36,10 +37,10 @@ export default function RecordAll() {
   const handleConfirmDelete = () => {
     if (!deleteTarget) return;
     const removed = deleteTarget;
-    setRecords(prev => prev.filter(r => r.id !== removed.id));
+    removeRecord(removed.id);
     setDeleteTarget(null);
     fireToast('기록이 삭제되었습니다.', () => {
-      setRecords(prev => [...prev, removed]);
+      restoreRecord(removed);
       dismissToast();
     });
   };
@@ -60,7 +61,7 @@ export default function RecordAll() {
             ))}
           </div>
           <CategoryDropdown
-            options={CATEGORY_OPTIONS}
+            options={categoryOptions}
             value={categoryFilter}
             onChange={setCategoryFilter}
           />

@@ -11,24 +11,24 @@ import { RecordList } from '@/components/record/RecordList';
 import { useToast } from '@/hooks/useToast';
 import { useActivities } from '@/contexts/ActivitiesContext';
 import { useTemplates } from '@/contexts/TemplatesContext';
-import RECORDS from '@/mock/records.json';
+import { useRecords } from '@/contexts/RecordsContext';
 import type { RecordEntry } from '@/types/record';
 
 export default function Record() {
   const navigate = useNavigate();
   const { selectedActivity } = useActivities();
   const { templates } = useTemplates();
-  const [records, setRecords] = useState<RecordEntry[]>(RECORDS as RecordEntry[]);
+  const { records, removeRecord, restoreRecord } = useRecords();
   const [deleteTarget, setDeleteTarget] = useState<RecordEntry | null>(null);
   const { toast, fireToast, dismissToast } = useToast();
 
   const handleConfirmDelete = () => {
     if (!deleteTarget) return;
     const removed = deleteTarget;
-    setRecords(prev => prev.filter(r => r.id !== removed.id));
+    removeRecord(removed.id);
     setDeleteTarget(null);
     fireToast('기록이 삭제되었습니다.', () => {
-      setRecords(prev => [...prev, removed]);
+      restoreRecord(removed);
       dismissToast();
     });
   };

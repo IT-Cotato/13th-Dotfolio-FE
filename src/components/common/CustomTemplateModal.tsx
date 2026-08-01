@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Button } from '@/components/common/button';
 import CloseIcon from '@/assets/close.svg';
 import AddIcon from '@/assets/add.svg';
 import GripIcon from '@/assets/grip.svg';
@@ -200,21 +201,16 @@ export const CustomTemplateModal = ({ isOpen, onClose, onSubmit }: CustomTemplat
           onClick={addQuestion}
           className="w-full flex items-center justify-center gap-1 px-4 py-4 mt-6 rounded-2xl border border-dashed border-grey-200 text-sub2-sb text-grey-700 cursor-pointer"
         >
-          <AddIcon className="w-5 h-5" />
+          <span className="flex items-center justify-center w-6 h-6 rounded-full bg-grey-0 text-primary-500 border border-primary-500">
+            <AddIcon className="w-4 h-4" />
+          </span>
           항목 추가
         </button>
 
         {/* 저장 */}
-        <button
-          type="button"
-          disabled={!isValid}
-          onClick={handleSave}
-          className={`w-full py-3.5 mt-8 rounded-2xl text-sub2-sb transition-colors ${
-            isValid ? 'bg-primary-500 text-grey-0 cursor-pointer' : 'bg-grey-300 text-grey-0 cursor-not-allowed'
-          }`}
-        >
-          저장
-        </button>
+        <div className="mt-8">
+          <Button label="저장" onClick={handleSave} disabled={!isValid} />
+        </div>
       </div>
     </div>
   );

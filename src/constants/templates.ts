@@ -86,6 +86,11 @@ export const RECORD_TEMPLATES: RecordTemplate[] = [
     textClassName: 'text-grey-900',
     isCustom: true,
     author: '홍길동',
+    questions: [
+      { id: 'situation', label: '오늘의 상황', description: '커스텀템플릿입니다', required: true },
+      { id: 'action', label: '나의 행동', description: '커스텀템플릿입니다', required: true },
+      { id: 'insight', label: '느낀 점', description: '커스텀템플릿입니다', required: true },
+    ],
   },
   {
     id: 'custom-2',
@@ -96,6 +101,11 @@ export const RECORD_TEMPLATES: RecordTemplate[] = [
     textClassName: 'text-grey-900',
     isCustom: true,
     author: '홍길동',
+    questions: [
+      { id: 'situation', label: '오늘의 상황', description: '커스텀템플릿입니다', required: true },
+      { id: 'action', label: '나의 행동', description: '커스텀템플릿입니다', required: true },
+      { id: 'insight', label: '느낀 점', description: '커스텀템플릿입니다', required: true },
+    ],
   },
   {
     id: 'custom-3',
@@ -106,6 +116,11 @@ export const RECORD_TEMPLATES: RecordTemplate[] = [
     textClassName: 'text-grey-900',
     isCustom: true,
     author: '홍길동',
+    questions: [
+      { id: 'situation', label: '오늘의 상황', description: '커스텀템플릿입니다', required: true },
+      { id: 'action', label: '나의 행동', description: '커스텀템플릿입니다', required: true },
+      { id: 'insight', label: '느낀 점', description: '커스텀템플릿입니다', required: true },
+    ],
   },
   {
     id: 'custom-4',
@@ -116,5 +131,10 @@ export const RECORD_TEMPLATES: RecordTemplate[] = [
     textClassName: 'text-grey-900',
     isCustom: true,
     author: '홍길동',
+    questions: [
+      { id: 'situation', label: '오늘의 상황', description: '커스텀템플릿입니다', required: true },
+      { id: 'action', label: '나의 행동', description: '커스텀템플릿입니다', required: true },
+      { id: 'insight', label: '느낀 점', description: '커스텀템플릿입니다', required: true },
+    ],
   },
 ];

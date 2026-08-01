@@ -4,6 +4,7 @@ import CloseIcon from '@/assets/close.svg';
 import AddIcon from '@/assets/add.svg';
 import GripIcon from '@/assets/grip.svg';
 import MoreIcon from '@/assets/more.svg';
+import TrashIcon from '@/assets/trash.svg';
 import type { TemplateQuestion } from '@/constants/templates';
 
 export interface CustomTemplateData {
@@ -116,81 +117,87 @@ export const CustomTemplateModal = ({ isOpen, onClose, onSubmit }: CustomTemplat
           {questions.map((question, index) => (
             <div
               key={question.id}
-              className="relative rounded-[14px] border border-grey-100 pt-6 px-4 pb-4 flex flex-col gap-2"
+              className="relative rounded-[14px] border border-grey-100 p-4 flex items-start gap-3"
             >
-              <div className="flex items-center gap-2">
-                <span className="cursor-grab text-grey-300 shrink-0">
+              <div className="flex items-center gap-2 shrink-0">
+                <span className="cursor-pointer text-grey-300 shrink-0">
                   <GripIcon className="w-4 h-4" />
                 </span>
                 <span className="flex items-center justify-center w-6 h-6 rounded-[6px] bg-primary-50 text-primary-500 text-sub3-sb shrink-0">
                   {index + 1}
                 </span>
-                <p className="flex-1 text-sub2-sb text-grey-900">
-                  항목 제목 <span className="text-error-text">*</span>
-                </p>
-                <div className="relative shrink-0">
-                  <button
-                    type="button"
-                    onClick={() => setOpenMenuId(prev => (prev === question.id ? null : question.id))}
-                    className="w-5 h-5 flex items-center justify-center text-grey-400 cursor-pointer"
-                  >
-                    <MoreIcon className="w-4 h-4" />
-                  </button>
-                  {openMenuId === question.id && (
-                    <div className="absolute right-0 top-full mt-1 z-10 bg-white border border-grey-100 rounded-xl shadow-md py-1 w-20">
-                      <button
-                        type="button"
-                        onClick={() => removeQuestion(question.id)}
-                        className="w-full px-3 py-2 text-left text-body3-md text-error-text cursor-pointer"
-                      >
-                        삭제
-                      </button>
-                    </div>
-                  )}
-                </div>
               </div>
 
-              <input
-                type="text"
-                value={question.label}
-                onChange={e => updateQuestion(question.id, { label: e.target.value })}
-                placeholder="항목 제목을 입력해주세요. (예: 어려웠던 점)"
-                className="w-full px-4 py-4 rounded-[14px] border border-grey-100 text-body-reading2-md text-grey-900 placeholder:text-grey-400 outline-none"
-              />
+              <div className="flex-1 flex flex-col gap-2 min-w-0">
+                <div className="flex items-center gap-2">
+                  <p className="flex-1 text-sub2-sb text-grey-900">
+                    항목 제목 <span className="text-error-text">*</span>
+                  </p>
+                  <div className="relative shrink-0">
+                    <button
+                      type="button"
+                      onClick={() => setOpenMenuId(prev => (prev === question.id ? null : question.id))}
+                      className="w-6 h-6 flex items-center justify-center rounded-[5px] text-grey-400 hover:bg-[#EAEEF4] transition-colors cursor-pointer"
+                    >
+                      <MoreIcon className="w-4 h-4" />
+                    </button>
+                    {openMenuId === question.id && (
+                      <div className="absolute right-0 top-full mt-1 z-10 bg-white border border-grey-100 rounded-xl shadow-md py-1 w-44">
+                        <button
+                          type="button"
+                          onClick={() => removeQuestion(question.id)}
+                          className="w-full flex items-center gap-2 px-1.5 py-2 text-left text-body2-md text-grey-900 cursor-pointer"
+                        >
+                          <TrashIcon className="w-5 h-5 text-grey-700" />
+                          삭제
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </div>
 
-              <div className="flex flex-col gap-2 mt-3">
-                <p className="text-sub2-sb text-grey-900">항목 설명 (선택)</p>
                 <input
                   type="text"
-                  value={question.description}
-                  onChange={e => updateQuestion(question.id, { description: e.target.value })}
-                  placeholder="항목 설명을 입력해주세요. (예: 업무 중 가장 어려웠던 점은 무엇이었나요?)"
+                  value={question.label}
+                  onChange={e => updateQuestion(question.id, { label: e.target.value })}
+                  placeholder="항목 제목을 입력해주세요. (예: 어려웠던 점)"
                   className="w-full px-4 py-4 rounded-[14px] border border-grey-100 text-body-reading2-md text-grey-900 placeholder:text-grey-400 outline-none"
                 />
-              </div>
 
-              <label className="flex items-center justify-end gap-2 mt-2 cursor-pointer">
-                <span className="text-sub3-sb text-grey-700">필수 답변</span>
-                <button
-                  type="button"
-                  onClick={() => updateQuestion(question.id, { required: !question.required })}
-                  className={`w-4 h-4 rounded-[4px] border flex items-center justify-center transition-colors ${
-                    question.required ? 'bg-primary-500 border-primary-500' : 'bg-white border-grey-200'
-                  }`}
-                >
-                  {question.required && (
-                    <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
-                      <path
-                        d="M1 4L3.5 6.5L9 1"
-                        stroke="white"
-                        strokeWidth="1.5"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
-                  )}
-                </button>
-              </label>
+                <div className="flex flex-col gap-2 mt-3">
+                  <p className="text-sub2-sb text-grey-900">항목 설명 (선택)</p>
+                  <input
+                    type="text"
+                    value={question.description}
+                    onChange={e => updateQuestion(question.id, { description: e.target.value })}
+                    placeholder="항목 설명을 입력해주세요. (예: 업무 중 가장 어려웠던 점은 무엇이었나요?)"
+                    className="w-full px-4 py-4 rounded-[14px] border border-grey-100 text-body-reading2-md text-grey-900 placeholder:text-grey-400 outline-none"
+                  />
+                </div>
+
+                <label className="flex items-center justify-end gap-2 mt-2 cursor-pointer">
+                  <span className="text-sub3-sb text-grey-700">필수 답변</span>
+                  <button
+                    type="button"
+                    onClick={() => updateQuestion(question.id, { required: !question.required })}
+                    className={`w-4 h-4 rounded-[4px] border flex items-center justify-center transition-colors ${
+                      question.required ? 'bg-primary-500 border-primary-500' : 'bg-white border-grey-200'
+                    }`}
+                  >
+                    {question.required && (
+                      <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
+                        <path
+                          d="M1 4L3.5 6.5L9 1"
+                          stroke="white"
+                          strokeWidth="1.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                    )}
+                  </button>
+                </label>
+              </div>
             </div>
           ))}
         </div>

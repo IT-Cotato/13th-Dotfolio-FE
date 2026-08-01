@@ -52,6 +52,7 @@ function HomeLayout() {
               <main className="flex-1 pb-8 pr-6 h-full overflow-y-auto scrollbar-hide">
                 <Routes>
                   <Route path="/" element={<Home />} />
+                  <Route path="/memo" element={<Memo />} />
                   <Route path="/record" element={<Record />} />
                   <Route path="/record-all" element={<RecordAll />} />
                   <Route path="/record/write/:templateId" element={<RecordWrite />} />
@@ -63,24 +64,5 @@ function HomeLayout() {
         </RecordsProvider>
       </TemplatesProvider>
     </ActivitiesProvider>
-          <ProfileIcon className="w-6 h-6 text-grey-700 cursor-pointer" />
-        </div>
-      </header>
-      <div className="flex h-[calc(100vh-80px)]">
-        <nav className="w-60 shrink-0 flex flex-col items-start py-6 px-6 gap-6">
-          <ImmersionToggle />
-          <Sidebar />
-        </nav>
-        <main className="flex-1 pb-8 pr-6 h-full overflow-y-auto">
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/memo" element={<Memo />} />
-            <Route path="/record" element={<Record />} />
-            <Route path="/record-all" element={<RecordAll />} />
-            <Route path="/template-all" element={<TemplateAll />} />
-          </Routes>
-        </main>
-      </div>
-    </div>
   );
 }

@@ -40,6 +40,9 @@ const ChevronRightIcon = () => (
   </svg>
 );
 
+const isRecordPath = (pathname: string) =>
+  pathname === '/record' || pathname === '/record-all' || pathname.startsWith('/record/write');
+
 interface NavItemProps {
   icon: React.ReactNode;
   label: string;
@@ -74,7 +77,7 @@ export const Sidebar = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { activities, addActivity, selectedActivityId, setSelectedActivityId } = useActivities();
-  const isRecordActive = location.pathname === '/record';
+  const isRecordActive = isRecordPath(location.pathname);
   const [recordOpen, setRecordOpen] = useState(isRecordActive);
   const listRef = useRef<HTMLDivElement>(null);
   const itemRefs = useRef<Record<string, HTMLButtonElement | null>>({});

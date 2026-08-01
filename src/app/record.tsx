@@ -8,24 +8,27 @@ import { PrimaryButton } from '@/components/common/createButton';
 import { ConfirmModal } from '@/components/common/ConfirmModal';
 import { Toast } from '@/components/common/Toast';
 import { RecordList } from '@/components/record/RecordList';
-import { RECORD_TEMPLATES } from '@/constants/templates';
 import { useToast } from '@/hooks/useToast';
-import RECORDS from '@/mock/records.json';
+import { useActivities } from '@/contexts/ActivitiesContext';
+import { useTemplates } from '@/contexts/TemplatesContext';
+import { useRecords } from '@/contexts/RecordsContext';
 import type { RecordEntry } from '@/types/record';
 
 export default function Record() {
   const navigate = useNavigate();
-  const [records, setRecords] = useState<RecordEntry[]>(RECORDS as RecordEntry[]);
+  const { selectedActivity } = useActivities();
+  const { templates } = useTemplates();
+  const { records, removeRecord, restoreRecord } = useRecords();
   const [deleteTarget, setDeleteTarget] = useState<RecordEntry | null>(null);
   const { toast, fireToast, dismissToast } = useToast();
 
   const handleConfirmDelete = () => {
     if (!deleteTarget) return;
     const removed = deleteTarget;
-    setRecords(prev => prev.filter(r => r.id !== removed.id));
+    removeRecord(removed.id);
     setDeleteTarget(null);
     fireToast('기록이 삭제되었습니다.', () => {
-      setRecords(prev => [...prev, removed]);
+      restoreRecord(removed);
       dismissToast();
     });
   };
@@ -35,7 +38,7 @@ export default function Record() {
       <Breadcrumb
         items={[
           { label: '기록하기' },
-          { label: '경영 데이터분석 워크샵' },
+          { label: selectedActivity?.title ?? '' },
         ]}
       />
       <div className="w-full flex flex-col gap-6">
@@ -45,13 +48,14 @@ export default function Record() {
             onMoreClick={() => navigate('/template-all')}
             />
         <div className="w-full grid grid-cols-[repeat(auto-fit,minmax(240px,1fr))] gap-6">
-          {RECORD_TEMPLATES.filter(template => !template.isCustom).map(template => (
+          {templates.filter(template => !template.isCustom).map(template => (
             <Template
               key={template.id}
               title={template.title}
               description={template.description}
               bgClassName={template.bgClassName}
               borderClassName={template.borderClassName}
+              onClick={() => navigate(`/record/write/${template.id}`)}
             />
           ))}
         </div>

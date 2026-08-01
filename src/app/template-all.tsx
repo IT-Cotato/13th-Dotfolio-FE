@@ -5,27 +5,16 @@ import { CategoryHeader } from '@/components/common/CategoryHeader';
 import { Breadcrumb } from '@/components/common/Breadcrumb';
 import { PrimaryButton } from '@/components/common/createButton';
 import { CustomTemplateModal, type CustomTemplateData } from '@/components/common/CustomTemplateModal';
-import { RECORD_TEMPLATES, type RecordTemplate } from '@/constants/templates';
 import { Template } from '@/components/common/Template';
+import { useTemplates } from '@/contexts/TemplatesContext';
 
 export default function TemplateAll() {
   const navigate = useNavigate();
+  const { templates, addCustomTemplate } = useTemplates();
   const [isCustomModalOpen, setIsCustomModalOpen] = useState(false);
-  const [customTemplates, setCustomTemplates] = useState<RecordTemplate[]>([]);
 
   const handleCreateCustomTemplate = (data: CustomTemplateData) => {
-    // TODO: 커스텀 템플릿 생성 API 연동
-    const newTemplate: RecordTemplate = {
-      id: crypto.randomUUID(),
-      title: data.title,
-      description: data.description,
-      bgClassName: 'bg-grey-50',
-      borderClassName: 'border-grey-100',
-      textClassName: 'text-grey-900',
-      isCustom: true,
-      questions: data.questions,
-    };
-    setCustomTemplates(prev => [...prev, newTemplate]);
+    addCustomTemplate(data);
     setIsCustomModalOpen(false);
   };
 
@@ -44,7 +33,7 @@ export default function TemplateAll() {
           extra={<PrimaryButton label="커스텀 템플릿 만들기" onClick={() => setIsCustomModalOpen(true)} />}
         />
         <div className="w-full grid grid-cols-4 gap-6">
-          {[...RECORD_TEMPLATES, ...customTemplates].map(template => (
+          {templates.map(template => (
             <Template
               key={template.id}
               title={template.title}

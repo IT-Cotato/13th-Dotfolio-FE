@@ -8,6 +8,7 @@ import TemplateAll from './template-all'
 import { ImmersionToggle } from '@/components/home/ImmersionToggle'
 import { Sidebar } from '@/components/common/sidebar'
 import { ActivitiesProvider } from '@/contexts/ActivitiesContext'
+import { TemplatesProvider } from '@/contexts/TemplatesContext'
 import AlarmIcon from '@/assets/alarm.svg'
 import ProfileIcon from '@/assets/profile.svg'
 import MenuIcon from '@/assets/menu.svg'
@@ -25,6 +26,7 @@ export default function Layout() {
 function HomeLayout() {
   return (
     <ActivitiesProvider>
+      <TemplatesProvider>
       <div className="w-full h-screen bg-home">
         <header className="w-full h-20 relative flex items-center justify-between pl-8 pr-6">
           <div className="flex items-center gap-4">
@@ -55,6 +57,7 @@ function HomeLayout() {
           </main>
         </div>
       </div>
+      </TemplatesProvider>
     </ActivitiesProvider>
   );
 }

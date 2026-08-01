@@ -8,8 +8,8 @@ import { RecordActionButtons } from '@/components/record/RecordActionButtons';
 import { MemoSelectModal } from '@/components/record/MemoSelectModal';
 import { MemoLoadedCard } from '@/components/record/MemoLoadedCard';
 import { MemoDetailModal } from '@/components/record/MemoDetailModal';
-import { RECORD_TEMPLATES } from '@/constants/templates';
 import { useActivities } from '@/contexts/ActivitiesContext';
+import { useTemplates } from '@/contexts/TemplatesContext';
 import { useToast } from '@/hooks/useToast';
 import MEMOS from '@/mock/memos.json';
 import type { Memo } from '@/types/memo';
@@ -19,11 +19,12 @@ export default function RecordWrite() {
   const navigate = useNavigate();
   const { templateId } = useParams<{ templateId: string }>();
   const { selectedActivity } = useActivities();
+  const { templates } = useTemplates();
   const { toast, fireToast } = useToast();
 
   const template = useMemo(
-    () => RECORD_TEMPLATES.find(t => t.id === templateId),
-    [templateId]
+    () => templates.find(t => t.id === templateId),
+    [templates, templateId]
   );
 
   const [title, setTitle] = useState('');

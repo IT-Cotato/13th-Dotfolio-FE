@@ -8,15 +8,16 @@ import { PrimaryButton } from '@/components/common/createButton';
 import { ConfirmModal } from '@/components/common/ConfirmModal';
 import { Toast } from '@/components/common/Toast';
 import { RecordList } from '@/components/record/RecordList';
-import { RECORD_TEMPLATES } from '@/constants/templates';
 import { useToast } from '@/hooks/useToast';
 import { useActivities } from '@/contexts/ActivitiesContext';
+import { useTemplates } from '@/contexts/TemplatesContext';
 import RECORDS from '@/mock/records.json';
 import type { RecordEntry } from '@/types/record';
 
 export default function Record() {
   const navigate = useNavigate();
   const { selectedActivity } = useActivities();
+  const { templates } = useTemplates();
   const [records, setRecords] = useState<RecordEntry[]>(RECORDS as RecordEntry[]);
   const [deleteTarget, setDeleteTarget] = useState<RecordEntry | null>(null);
   const { toast, fireToast, dismissToast } = useToast();
@@ -47,7 +48,7 @@ export default function Record() {
             onMoreClick={() => navigate('/template-all')}
             />
         <div className="w-full grid grid-cols-[repeat(auto-fit,minmax(240px,1fr))] gap-6">
-          {RECORD_TEMPLATES.filter(template => !template.isCustom).map(template => (
+          {templates.filter(template => !template.isCustom).map(template => (
             <Template
               key={template.id}
               title={template.title}

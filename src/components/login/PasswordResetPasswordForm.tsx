@@ -3,7 +3,7 @@ import { AuthForm } from "@/components/login/AuthForm";
 export function PasswordResetPasswordForm() {
   return (
     <AuthForm>
-      <h1 className="text-header text-grey-900">비밀번호 재설정</h1>
+      <h1 className="self-stretch text-header text-grey-900">비밀번호 재설정</h1>
 
       <div className="flex w-full flex-col gap-12">
         <section className="flex flex-col gap-3">

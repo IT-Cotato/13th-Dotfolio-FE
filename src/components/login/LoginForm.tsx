@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { AuthForm } from "@/components/login/AuthForm";
 import { AuthFormIntro } from "@/components/login/AuthFormIntro";
 import { GoogleLoginButton } from "@/components/login/GoogleLoginButton";
 import { LoginFields } from "@/components/login/LoginFields";
@@ -22,10 +23,7 @@ export function LoginForm() {
   };
 
   return (
-    <form
-      className="flex w-full max-w-[463px] flex-col items-center gap-8 p-6"
-      onSubmit={handleSubmit}
-    >
+    <AuthForm onSubmit={handleSubmit}>
       <AuthFormIntro title="반가워요!">
         <p>메모와 경험을 기록하고 성장의 흐름을 확인해보세요.</p>
       </AuthFormIntro>
@@ -67,6 +65,6 @@ export function LoginForm() {
           회원가입하기
         </button>
       </div>
-    </form>
+    </AuthForm>
   );
 }

@@ -3,6 +3,7 @@ import VisibilityIcon from "@/assets/visibility.svg";
 import VisibilityOffIcon from "@/assets/visibility_off.svg";
 import CheckIcon from "@/assets/checkicon.svg";
 import { EmailInput } from "@/components/login/EmailInput";
+import { Link } from "react-router-dom";
 
 interface LoginFieldsProps {
   email: string;
@@ -93,7 +94,7 @@ export function LoginFields({
           </span>
           로그인 상태 유지
         </label>
-        <button type="button">비밀번호 찾기</button>
+        <Link to="/password-reset">비밀번호 찾기</Link>
       </div>
     </div>
   );

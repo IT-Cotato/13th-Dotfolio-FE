@@ -1,25 +1,26 @@
-import { Routes, Route } from 'react-router-dom'
-import Home from './home'
-import Memo from './memo'
-import Login from './login'
-import Record from './record'
-import RecordAll from './record-all'
-import RecordWrite from './record-write'
-import TemplateAll from './template-all'
-import { ImmersionToggle } from '@/components/home/ImmersionToggle'
-import { Sidebar } from '@/components/common/sidebar'
-import { ActivitiesProvider } from '@/contexts/ActivitiesContext'
-import { TemplatesProvider } from '@/contexts/TemplatesContext'
-import { RecordsProvider } from '@/contexts/RecordsContext'
-import AlarmIcon from '@/assets/alarm.svg'
-import ProfileIcon from '@/assets/profile.svg'
-import MenuIcon from '@/assets/menu.svg'
-
+import { Routes, Route } from "react-router-dom";
+import Home from "./home";
+import Memo from "./memo";
+import Login from "./login";
+import PasswordReset from "./password-reset";
+import Record from "./record";
+import RecordAll from "./record-all";
+import RecordWrite from "./record-write";
+import TemplateAll from "./template-all";
+import { ImmersionToggle } from "@/components/home/ImmersionToggle";
+import { Sidebar } from "@/components/common/sidebar";
+import { ActivitiesProvider } from "@/contexts/ActivitiesContext";
+import { TemplatesProvider } from "@/contexts/TemplatesContext";
+import { RecordsProvider } from "@/contexts/RecordsContext";
+import AlarmIcon from "@/assets/alarm.svg";
+import ProfileIcon from "@/assets/profile.svg";
+import MenuIcon from "@/assets/menu.svg";
 
 export default function Layout() {
   return (
     <Routes>
       <Route path="/login" element={<Login />} />
+      <Route path="/password-reset" element={<PasswordReset />} />
       <Route path="*" element={<HomeLayout />} />
     </Routes>
   );
@@ -34,11 +35,13 @@ function HomeLayout() {
             <header className="w-full h-20 relative flex items-center justify-between pl-8 pr-6">
               <div className="flex items-center gap-4">
                 <MenuIcon className="w-6 h-6 text-grey-700 cursor-pointer" />
-                <span className="font-nexon text-logo text-grey-600">Dotfolio</span>
+                <span className="font-nexon text-logo text-grey-600">
+                  Dotfolio
+                </span>
               </div>
               <div className="flex items-center gap-5">
                 <div className="relative p-0.75">
-                  <AlarmIcon className="w-6 h-6 text-grey-700 cursor-pointer"  />
+                  <AlarmIcon className="w-6 h-6 text-grey-700 cursor-pointer" />
                   <span className="absolute top-0 right-0 w-1.5 h-1.5 rounded-full bg-error-text" />
                 </div>
                 <ProfileIcon className="w-6 h-6 text-grey-700 cursor-pointer" />
@@ -55,7 +58,10 @@ function HomeLayout() {
                   <Route path="/memo" element={<Memo />} />
                   <Route path="/record" element={<Record />} />
                   <Route path="/record-all" element={<RecordAll />} />
-                  <Route path="/record/write/:templateId" element={<RecordWrite />} />
+                  <Route
+                    path="/record/write/:templateId"
+                    element={<RecordWrite />}
+                  />
                   <Route path="/template-all" element={<TemplateAll />} />
                 </Routes>
               </main>

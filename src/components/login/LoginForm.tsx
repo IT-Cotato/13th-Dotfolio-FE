@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { AuthFormIntro } from "@/components/login/AuthFormIntro";
 import { GoogleLoginButton } from "@/components/login/GoogleLoginButton";
 import { LoginFields } from "@/components/login/LoginFields";
 
@@ -25,12 +26,9 @@ export function LoginForm() {
       className="flex w-full max-w-[463px] flex-col items-center gap-8 p-6"
       onSubmit={handleSubmit}
     >
-      <div className="w-full flex flex-col items-start justify-center gap-2 self-stretch">
-        <h1 className="text-title1 text-grey-900 self-stretch">반가워요!</h1>
-        <p className="text-body1-md text-grey-600">
-          메모와 경험을 기록하고 성장의 흐름을 확인해보세요.
-        </p>
-      </div>
+      <AuthFormIntro title="반가워요!">
+        <p>메모와 경험을 기록하고 성장의 흐름을 확인해보세요.</p>
+      </AuthFormIntro>
 
       <LoginFields
         email={email}

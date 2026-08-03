@@ -1,6 +1,6 @@
 import { Fragment } from 'react';
 import { Tag } from '@/components/record/tag';
-import { RECORD_TEMPLATES } from '@/constants/templates';
+import { useTemplates } from '@/contexts/TemplatesContext';
 import type { RecordEntry } from '@/types/record';
 import TrashIcon from '@/assets/trash.svg';
 
@@ -14,10 +14,12 @@ interface RecordListProps {
   onDeleteClick?: (record: RecordEntry) => void;
 }
 
-export const RecordList = ({ records, onDeleteClick }: RecordListProps) => (
+export const RecordList = ({ records, onDeleteClick }: RecordListProps) => {
+  const { templates } = useTemplates();
+  return (
   <div className="w-full grid grid-cols-[1fr_auto_auto_auto] items-center gap-x-6">
     {records.map((record, i) => {
-      const template = RECORD_TEMPLATES.find(t => t.id === record.templateId);
+      const template = templates.find(t => t.id === record.templateId);
       const statusStyle = STATUS_STYLES[record.status] ?? STATUS_STYLES['기록 중'];
       return (
         <Fragment key={record.id}>
@@ -55,4 +57,5 @@ export const RecordList = ({ records, onDeleteClick }: RecordListProps) => (
       );
     })}
   </div>
-);
+  );
+};

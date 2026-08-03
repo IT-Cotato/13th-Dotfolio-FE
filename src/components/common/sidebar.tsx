@@ -1,8 +1,8 @@
 import { useLayoutEffect, useRef, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import AddIcon from '@/assets/add.svg';
-import { RECORD_ACTIVITIES } from '@/constants/recordActivities';
 import { ActivityModal } from '@/components/home/ActivityModal';
+import { useActivities } from '@/contexts/ActivitiesContext';
 
 const DotOneIcon = () => (
   <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
@@ -40,6 +40,9 @@ const ChevronRightIcon = () => (
   </svg>
 );
 
+const isRecordPath = (pathname: string) =>
+  pathname === '/record' || pathname === '/record-all' || pathname.startsWith('/record/write');
+
 interface NavItemProps {
   icon: React.ReactNode;
   label: string;
@@ -73,16 +76,16 @@ const NavItem = ({ icon, label, hasChevron = false, chevronOpen = false, isActiv
 export const Sidebar = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const isRecordActive = location.pathname === '/record';
+  const { activities, addActivity, selectedActivityId, setSelectedActivityId } = useActivities();
+  const isRecordActive = isRecordPath(location.pathname);
   const [recordOpen, setRecordOpen] = useState(isRecordActive);
-  const [selectedActivityId, setSelectedActivityId] = useState(RECORD_ACTIVITIES[1].id);
   const listRef = useRef<HTMLDivElement>(null);
   const itemRefs = useRef<Record<string, HTMLButtonElement | null>>({});
   const [activeBar, setActiveBar] = useState<{ top: number; height: number } | null>(null);
   const [isActivityModalOpen, setIsActivityModalOpen] = useState(false);
 
   useLayoutEffect(() => {
-    if (!recordOpen) return;
+    if (!recordOpen || !selectedActivityId) return;
     const container = listRef.current;
     const activeEl = itemRefs.current[selectedActivityId];
     if (!container || !activeEl) return;
@@ -128,7 +131,7 @@ export const Sidebar = () => {
                   style={{ top: activeBar.top, height: activeBar.height }}
                 />
               )}
-              {RECORD_ACTIVITIES.map(activity => {
+              {activities.map(activity => {
                 const isSelected = activity.id === selectedActivityId;
                 return (
                   <button
@@ -162,7 +165,10 @@ export const Sidebar = () => {
       <ActivityModal
         isOpen={isActivityModalOpen}
         onClose={() => setIsActivityModalOpen(false)}
-        onSubmit={() => setIsActivityModalOpen(false)}
+        onSubmit={data => {
+          addActivity(data);
+          setIsActivityModalOpen(false);
+        }}
       />
     </nav>
   );

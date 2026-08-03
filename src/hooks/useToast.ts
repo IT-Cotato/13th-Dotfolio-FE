@@ -3,15 +3,16 @@ import { useRef, useState } from 'react';
 interface ToastState {
   message: string;
   onUndo?: () => void;
+  variant?: 'success' | 'error';
 }
 
 export function useToast() {
   const [toast, setToast] = useState<ToastState | null>(null);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const fireToast = (message: string, onUndo?: () => void) => {
+  const fireToast = (message: string, onUndo?: () => void, variant: 'success' | 'error' = 'success') => {
     if (timerRef.current) clearTimeout(timerRef.current);
-    setToast({ message, onUndo });
+    setToast({ message, onUndo, variant });
     timerRef.current = setTimeout(() => setToast(null), 2000);
   };
 

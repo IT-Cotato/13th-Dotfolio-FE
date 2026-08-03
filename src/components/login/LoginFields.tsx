@@ -1,9 +1,7 @@
-import { useState } from "react";
-import VisibilityIcon from "@/assets/visibility.svg";
-import VisibilityOffIcon from "@/assets/visibility_off.svg";
+import { Link } from "react-router-dom";
 import CheckIcon from "@/assets/checkicon.svg";
 import { EmailInput } from "@/components/login/EmailInput";
-import { Link } from "react-router-dom";
+import { PasswordInput } from "@/components/login/PasswordInput";
 
 interface LoginFieldsProps {
   email: string;
@@ -24,8 +22,6 @@ export function LoginFields({
   onPasswordChange,
   onKeepSignedInChange,
 }: LoginFieldsProps) {
-  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
-
   return (
     <div className="flex w-full flex-col gap-4">
       <div className="flex w-full flex-col gap-3">
@@ -38,31 +34,14 @@ export function LoginFields({
 
         {/* 비밀번호 입력 */}
         <div className="flex flex-col items-start gap-1.5 self-stretch">
-          <div className="relative flex h-12 shrink-0 self-stretch items-center justify-between">
-            <input
-              aria-label="비밀번호"
-              autoComplete="current-password"
-              className={`h-full w-full rounded-[14px] border p-4 text-body2-md text-grey-900 outline-none placeholder:text-grey-400 ${
-                hasError
-                  ? "border-error-border bg-error-bg"
-                  : "border-grey-100 bg-grey-0 focus:border-primary-500"
-              }`}
-              onChange={(event) => onPasswordChange(event.target.value)}
-              placeholder="비밀번호 입력"
-              type={isPasswordVisible ? "text" : "password"}
-              value={password}
-            />
-            <button
-              aria-label={
-                isPasswordVisible ? "비밀번호 숨기기" : "비밀번호 보기"
-              }
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-grey-400"
-              onClick={() => setIsPasswordVisible((visible) => !visible)}
-              type="button"
-            >
-              {isPasswordVisible ? <VisibilityIcon /> : <VisibilityOffIcon />}
-            </button>
-          </div>
+          <PasswordInput
+            ariaLabel="비밀번호"
+            autoComplete="current-password"
+            hasError={hasError}
+            onChange={onPasswordChange}
+            placeholder="비밀번호 입력"
+            value={password}
+          />
           {hasError && (
             <p role="alert" className="flex-1 text-body3-r text-error-text">
               아이디 또는 비밀번호가 올바르지 않습니다.

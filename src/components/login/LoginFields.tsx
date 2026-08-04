@@ -2,6 +2,8 @@ import { useState } from "react";
 import VisibilityIcon from "@/assets/visibility.svg";
 import VisibilityOffIcon from "@/assets/visibility_off.svg";
 import CheckIcon from "@/assets/checkicon.svg";
+import { EmailInput } from "@/components/login/EmailInput";
+import { Link } from "react-router-dom";
 
 interface LoginFieldsProps {
   email: string;
@@ -28,17 +30,9 @@ export function LoginFields({
     <div className="flex w-full flex-col gap-4">
       <div className="flex w-full flex-col gap-3">
         {/* 이메일 입력 */}
-        <input
-          aria-label="이메일"
-          autoComplete="email"
-          className={`h-12 w-full rounded-[14px] border p-4 text-body2-md text-grey-900 outline-none placeholder:text-grey-400 ${
-            hasError
-              ? "border-error-border bg-error-bg"
-              : "border-grey-100 bg-grey-0 focus:border-primary-500"
-          }`}
-          onChange={(event) => onEmailChange(event.target.value)}
-          placeholder="이메일 입력"
-          type="email"
+        <EmailInput
+          hasError={hasError}
+          onChange={onEmailChange}
           value={email}
         />
 
@@ -100,7 +94,7 @@ export function LoginFields({
           </span>
           로그인 상태 유지
         </label>
-        <button type="button">비밀번호 찾기</button>
+        <Link to="/password-reset">비밀번호 찾기</Link>
       </div>
     </div>
   );

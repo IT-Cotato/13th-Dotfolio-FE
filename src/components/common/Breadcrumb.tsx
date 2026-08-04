@@ -3,6 +3,7 @@ import PolygonIcon from '@/assets/polygon.svg';
 interface BreadcrumbItem {
   label: string;
   onClick?: () => void;
+  reverseArrowAfter?: boolean;
 }
 
 interface BreadcrumbProps {
@@ -15,7 +16,13 @@ export const Breadcrumb = ({ items }: BreadcrumbProps) => (
       const isLast = i === items.length - 1;
       return (
         <span key={i} className="flex items-center gap-1">
-          {i > 0 && <PolygonIcon className="w-[12px] h-[10px] text-grey-400 shrink-0" />}
+          {i > 0 && (
+            <PolygonIcon
+              className={`w-[12px] h-[10px] text-grey-400 shrink-0 ${
+                items[i - 1].reverseArrowAfter ? 'rotate-180' : ''
+              }`}
+            />
+          )}
           {isLast ? (
             <span className="text-primary-500 text-sub2-sb">{item.label}</span>
           ) : (

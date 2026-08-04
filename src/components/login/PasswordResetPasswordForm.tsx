@@ -14,7 +14,13 @@ const isPasswordCompositionValid = (password: string) =>
   /\d/.test(password) &&
   /[^A-Za-z0-9]/.test(password);
 
-export function PasswordResetPasswordForm() {
+interface PasswordResetPasswordFormProps {
+  onComplete: () => void;
+}
+
+export function PasswordResetPasswordForm({
+  onComplete,
+}: PasswordResetPasswordFormProps) {
   const [newPassword, setNewPassword] = useState("");
   const [passwordConfirmation, setPasswordConfirmation] = useState("");
   const hasValidLength = newPassword.length >= 8 && newPassword.length <= 16;
@@ -59,6 +65,7 @@ export function PasswordResetPasswordForm() {
       <Button
         disabled={!isNewPasswordValid || !isPasswordMatched}
         label="비밀번호 재설정하기"
+        onClick={onComplete}
       />
     </AuthForm>
   );

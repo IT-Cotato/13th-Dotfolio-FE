@@ -1,10 +1,27 @@
 import { useState } from "react";
+import { Button } from "@/components/common/button";
 import { AuthForm } from "@/components/login/AuthForm";
+import { AuthFormField } from "@/components/login/AuthFormField";
 import { PasswordInput } from "@/components/login/PasswordInput";
+import {
+  PasswordMatchIndicator,
+  PasswordRequirementList,
+} from "@/components/login/PasswordRequirementList";
+
+const isPasswordCompositionValid = (password: string) =>
+  /^[\x21-\x7E]+$/.test(password) &&
+  /[A-Za-z]/.test(password) &&
+  /\d/.test(password) &&
+  /[^A-Za-z0-9]/.test(password);
 
 export function PasswordResetPasswordForm() {
   const [newPassword, setNewPassword] = useState("");
   const [passwordConfirmation, setPasswordConfirmation] = useState("");
+  const hasValidLength = newPassword.length >= 8 && newPassword.length <= 16;
+  const hasValidComposition = isPasswordCompositionValid(newPassword);
+  const isNewPasswordValid = hasValidLength && hasValidComposition;
+  const isPasswordMatched =
+    passwordConfirmation.length > 0 && newPassword === passwordConfirmation;
 
   return (
     <AuthForm>
@@ -12,38 +29,37 @@ export function PasswordResetPasswordForm() {
         비밀번호 재설정
       </h1>
 
-      <div className="flex w-full flex-col gap-12">
-        <section className="flex flex-col gap-2">
-          <label className="text-sub2-sb text-grey-900" htmlFor="new-password">
-            새 비밀번호<span className="ml-0.5 text-error-text">*</span>
-          </label>
-          <PasswordInput
-            ariaLabel="새 비밀번호"
-            autoComplete="new-password"
-            id="new-password"
-            onChange={setNewPassword}
-            placeholder="영문+숫자+특수문자 조합 8~16자리"
-            value={newPassword}
-          />
-        </section>
+      <AuthFormField htmlFor="new-password" label="새 비밀번호">
+        <PasswordInput
+          ariaLabel="새 비밀번호"
+          autoComplete="new-password"
+          id="new-password"
+          onChange={setNewPassword}
+          placeholder="영문+숫자+특수문자 조합 8~16자리"
+          value={newPassword}
+        />
+        <PasswordRequirementList
+          hasValidComposition={hasValidComposition}
+          hasValidLength={hasValidLength}
+        />
+      </AuthFormField>
 
-        <section className="flex flex-col gap-2">
-          <label
-            className="text-sub2-sb text-grey-900"
-            htmlFor="password-confirmation"
-          >
-            비밀번호 확인<span className="ml-0.5 text-error-text">*</span>
-          </label>
-          <PasswordInput
-            ariaLabel="비밀번호 확인"
-            autoComplete="new-password"
-            id="password-confirmation"
-            onChange={setPasswordConfirmation}
-            placeholder="비밀번호를 한 번 더 입력해주세요"
-            value={passwordConfirmation}
-          />
-        </section>
-      </div>
+      <AuthFormField htmlFor="password-confirmation" label="비밀번호 확인">
+        <PasswordInput
+          ariaLabel="비밀번호 확인"
+          autoComplete="new-password"
+          id="password-confirmation"
+          onChange={setPasswordConfirmation}
+          placeholder="비밀번호를 한 번 더 입력해주세요"
+          value={passwordConfirmation}
+        />
+        <PasswordMatchIndicator isMatched={isPasswordMatched} />
+      </AuthFormField>
+
+      <Button
+        disabled={!isNewPasswordValid || !isPasswordMatched}
+        label="비밀번호 재설정하기"
+      />
     </AuthForm>
   );
 }

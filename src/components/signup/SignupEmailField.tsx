@@ -1,12 +1,9 @@
 import ArrowDropDownIcon from "@/assets/arrow_drop_down.svg";
+import { AuthFormField } from "@/components/login/AuthFormField";
 
 export function SignupEmailField() {
   return (
-    <section className="flex w-full flex-col items-start gap-2 self-stretch">
-      <label className="text-sub2-sb text-grey-900" htmlFor="signup-email-local">
-        이메일 아이디 <span className="ml-0.5 text-error-text">*</span>
-      </label>
-
+    <AuthFormField htmlFor="signup-email-local" label="이메일 아이디">
       <div className="flex items-center gap-2 self-stretch">
         <input
           aria-label="이메일 아이디"
@@ -37,6 +34,6 @@ export function SignupEmailField() {
           </span>
         </button>
       </div>
-    </section>
+    </AuthFormField>
   );
 }

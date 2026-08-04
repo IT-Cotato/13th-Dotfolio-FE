@@ -16,7 +16,7 @@ export default function TemplateAll() {
     <Card>
       <Breadcrumb
         items={[
-          { label: '경영 데이터분석 워크샵' },
+          { label: '경영 데이터분석 워크샵', reverseArrowAfter: true },
           { label: '더 많은 템플릿 보기' },
         ]}
       />

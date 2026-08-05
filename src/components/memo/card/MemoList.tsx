@@ -3,12 +3,12 @@ import type { MemoData } from '../types';
 
 interface MemoListProps {
   memos: MemoData[];
-  onDelete: (id: number) => void;
-  onToggleImportant: (id: number) => void;
-  onMove: (id: number) => void;
-  selectedIds: Set<number>;
-  onSelect: (id: number, selected: boolean) => void;
-  onOpen: (id: number) => void;
+  onDelete: (id: string) => void;
+  onToggleImportant: (id: string) => void;
+  onMove: (id: string) => void;
+  selectedIds: Set<string>;
+  onSelect: (id: string, selected: boolean) => void;
+  onOpen: (id: string) => void;
 }
 
 export const MemoList = ({ memos, onDelete, onToggleImportant, onMove, selectedIds, onSelect, onOpen }: MemoListProps) => (

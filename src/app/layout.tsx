@@ -2,6 +2,7 @@ import { Routes, Route, useNavigate } from 'react-router-dom'
 import Home from './home'
 import Memo from './memo'
 import Login from './login'
+import PasswordReset from './password-reset'
 import Record from './record'
 import RecordAll from './record-all'
 import RecordWrite from './record-write'
@@ -15,11 +16,11 @@ import AlarmIcon from '@/assets/alarm.svg'
 import ProfileIcon from '@/assets/profile.svg'
 import MenuIcon from '@/assets/menu.svg'
 
-
 export default function Layout() {
   return (
     <Routes>
       <Route path="/login" element={<Login />} />
+      <Route path="/password-reset" element={<PasswordReset />} />
       <Route path="*" element={<HomeLayout />} />
     </Routes>
   );
@@ -45,7 +46,7 @@ function HomeLayout() {
               </div>
               <div className="flex items-center gap-5">
                 <div className="relative p-0.75">
-                  <AlarmIcon className="w-6 h-6 text-grey-700 cursor-pointer"  />
+                  <AlarmIcon className="w-6 h-6 text-grey-700 cursor-pointer" />
                   <span className="absolute top-0 right-0 w-1.5 h-1.5 rounded-full bg-error-text" />
                 </div>
                 <ProfileIcon className="w-6 h-6 text-grey-700 cursor-pointer" />
@@ -62,7 +63,10 @@ function HomeLayout() {
                   <Route path="/memo" element={<Memo />} />
                   <Route path="/record" element={<Record />} />
                   <Route path="/record-all" element={<RecordAll />} />
-                  <Route path="/record/write/:templateId" element={<RecordWrite />} />
+                  <Route
+                    path="/record/write/:templateId"
+                    element={<RecordWrite />}
+                  />
                   <Route path="/template-all" element={<TemplateAll />} />
                 </Routes>
               </main>

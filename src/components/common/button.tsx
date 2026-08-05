@@ -1,11 +1,13 @@
 interface ButtonProps {
   label: string;
+  icon?: React.ReactNode;
   onClick?: () => void;
   disabled?: boolean;
   variant?: 'primary' | 'outline';
+  className?: string;
 }
 
-export const Button = ({ label, onClick, disabled = false, variant = 'primary' }: ButtonProps) => (
+export const Button = ({ label, icon, onClick, disabled = false, variant = 'primary', className = '' }: ButtonProps) => (
   <button
     type="button"
     onClick={onClick}
@@ -18,8 +20,9 @@ export const Button = ({ label, onClick, disabled = false, variant = 'primary' }
         : variant === 'outline'
         ? 'border border-primary-500 bg-white text-primary-500 cursor-pointer'
         : 'bg-primary-gradient text-grey-0 cursor-pointer'
-    }`}
+    } ${className}`}
   >
+    {icon && <span className="mr-2 flex shrink-0 items-center justify-center">{icon}</span>}
     {label}
   </button>
 );

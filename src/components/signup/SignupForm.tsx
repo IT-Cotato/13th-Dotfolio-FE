@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Button } from "@/components/common/button";
 import { AuthForm } from "@/components/login/AuthForm";
 import { AuthFormField } from "@/components/login/AuthFormField";
 import { PasswordInput } from "@/components/login/PasswordInput";
@@ -7,6 +8,7 @@ import {
   PasswordRequirementList,
 } from "@/components/login/PasswordRequirementList";
 import { SignupEmailField } from "@/components/signup/SignupEmailField";
+import { TermsAgreement } from "@/components/signup/TermsAgreement";
 
 const isPasswordCompositionValid = (password: string) =>
   /^[\x21-\x7E]+$/.test(password) &&
@@ -18,16 +20,26 @@ export function SignupForm() {
   const [password, setPassword] = useState("");
   const [passwordConfirmation, setPasswordConfirmation] = useState("");
   const [name, setName] = useState("");
+  const [isEmailValid, setIsEmailValid] = useState(false);
+  const [isRequiredAgreed, setIsRequiredAgreed] = useState(false);
+  const [isOptionalAgreed, setIsOptionalAgreed] = useState(false);
   const hasValidLength = password.length >= 8 && password.length <= 16;
   const hasValidComposition = isPasswordCompositionValid(password);
   const isPasswordMatched =
     passwordConfirmation.length > 0 && password === passwordConfirmation;
+  const isSignupEnabled =
+    isEmailValid &&
+    hasValidLength &&
+    hasValidComposition &&
+    isPasswordMatched &&
+    name.trim().length > 0 &&
+    isRequiredAgreed;
 
   return (
     <AuthForm bottomPadding="none">
       <h1 className="self-stretch text-header text-grey-900">회원가입</h1>
 
-      <SignupEmailField />
+      <SignupEmailField onValidityChange={setIsEmailValid} />
 
       <AuthFormField htmlFor="signup-password" label="비밀번호">
         <PasswordInput
@@ -67,6 +79,15 @@ export function SignupForm() {
           value={name}
         />
       </AuthFormField>
+
+      <TermsAgreement
+        isOptionalAgreed={isOptionalAgreed}
+        isRequiredAgreed={isRequiredAgreed}
+        onOptionalAgreedChange={setIsOptionalAgreed}
+        onRequiredAgreedChange={setIsRequiredAgreed}
+      />
+
+      <Button disabled={!isSignupEnabled} label="회원가입하기" />
     </AuthForm>
   );
 }

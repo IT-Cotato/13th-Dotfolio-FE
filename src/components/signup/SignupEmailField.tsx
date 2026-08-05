@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import ArrowDropDownIcon from "@/assets/arrow_drop_down.svg";
 import { AuthFormField } from "@/components/login/AuthFormField";
 
@@ -6,6 +6,10 @@ const DOMAIN_OPTIONS = ["naver.com", "gmail.com", "kakao.com", "daum.com"];
 const MOCK_REGISTERED_EMAIL = "cotato@gmail.com";
 
 type EmailError = "format" | "duplicate" | null;
+
+interface SignupEmailFieldProps {
+  onValidityChange: (isValid: boolean) => void;
+}
 
 function getEmailError(localPart: string, domain: string): EmailError {
   const email = `${localPart.trim()}@${domain.trim()}`;
@@ -21,13 +25,21 @@ function getEmailError(localPart: string, domain: string): EmailError {
   return email.toLowerCase() === MOCK_REGISTERED_EMAIL ? "duplicate" : null;
 }
 
-export function SignupEmailField() {
+export function SignupEmailField({ onValidityChange }: SignupEmailFieldProps) {
   const [localPart, setLocalPart] = useState("");
   const [domain, setDomain] = useState("");
   const [emailError, setEmailError] = useState<EmailError>(null);
   const [isDomainMenuOpen, setIsDomainMenuOpen] = useState(false);
   const domainInputRef = useRef<HTMLInputElement>(null);
   const hasError = emailError !== null;
+  const isEmailValid =
+    localPart.trim().length > 0 &&
+    domain.trim().length > 0 &&
+    getEmailError(localPart, domain) === null;
+
+  useEffect(() => {
+    onValidityChange(isEmailValid);
+  }, [isEmailValid, onValidityChange]);
 
   const validateEmail = () => {
     setEmailError(getEmailError(localPart, domain));

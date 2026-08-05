@@ -8,16 +8,20 @@ import { useModalFocus } from '../hooks/useModalFocus';
 interface MemoDetailModalProps {
   memo: MemoData;
   onClose: () => void;
-  onUpdate: (memo: MemoData) => void;
+  onUpdate: (memo: MemoData) => Promise<void>;
   onDelete: () => void;
-  onToggleImportant: () => void;
+  onToggleImportant: () => Promise<void>;
+  onDeleteImage: (imageId: string) => Promise<void>;
   onMove: () => void;
 }
 
-export const MemoDetailModal = ({ memo, onClose, onUpdate, onDelete, onToggleImportant, onMove }: MemoDetailModalProps) => {
+export const MemoDetailModal = ({ memo, onClose, onUpdate, onDelete, onToggleImportant, onDeleteImage, onMove }: MemoDetailModalProps) => {
   const [title, setTitle] = useState(memo.title ?? '');
   const [content, setContent] = useState(memo.memo);
   const [contentError, setContentError] = useState(false);
+  const [submitError, setSubmitError] = useState('');
+  const [isSaving, setIsSaving] = useState(false);
+  const [deletingImageId, setDeletingImageId] = useState<string>();
   const contentRef = useRef<HTMLTextAreaElement>(null);
   const dialogRef = useModalFocus<HTMLElement>();
 
@@ -27,22 +31,52 @@ export const MemoDetailModal = ({ memo, onClose, onUpdate, onDelete, onToggleImp
     memo: normalizedContent,
   });
 
-  const closeAndSave = () => {
+  const closeAndSave = async () => {
+    if (isSaving) return;
     const normalizedContent = contentRef.current?.value.trim() ?? content.trim();
     if (!normalizedContent) {
       setContentError(true);
       contentRef.current?.focus();
       return;
     }
-    onUpdate(updatedMemo(normalizedContent));
-    onClose();
+    setIsSaving(true);
+    setSubmitError('');
+    try {
+      await onUpdate(updatedMemo(normalizedContent));
+      onClose();
+    } catch (error) {
+      setSubmitError(error instanceof Error ? error.message : '메모를 수정하지 못했습니다.');
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const deleteAndSave = () => {
     onDelete();
   };
 
-  useEscapeKey(closeAndSave);
+  const toggleImportant = async () => {
+    setSubmitError('');
+    try {
+      await onToggleImportant();
+    } catch (error) {
+      setSubmitError(error instanceof Error ? error.message : '중요 메모 설정을 변경하지 못했습니다.');
+    }
+  };
+
+  const removeImage = async (imageId: string) => {
+    setDeletingImageId(imageId);
+    setSubmitError('');
+    try {
+      await onDeleteImage(imageId);
+    } catch (error) {
+      setSubmitError(error instanceof Error ? error.message : '이미지를 삭제하지 못했습니다.');
+    } finally {
+      setDeletingImageId(undefined);
+    }
+  };
+
+  useEscapeKey(() => { void closeAndSave(); });
 
   useEffect(() => {
     const textarea = contentRef.current;
@@ -52,7 +86,7 @@ export const MemoDetailModal = ({ memo, onClose, onUpdate, onDelete, onToggleImp
   }, [content]);
 
   return (
-    <div className="fixed inset-0 z-40 flex items-center justify-center bg-grey-950/55 px-5" onMouseDown={closeAndSave}>
+    <div className="fixed inset-0 z-40 flex items-center justify-center bg-grey-950/55 px-5" onMouseDown={() => void closeAndSave()}>
       <section
         ref={dialogRef}
         tabIndex={-1}
@@ -73,7 +107,7 @@ export const MemoDetailModal = ({ memo, onClose, onUpdate, onDelete, onToggleImp
           <div className="ml-auto">
             <MemoMoreMenu
               isImportant={!!memo.isImportant}
-              onToggleImportant={onToggleImportant}
+              onToggleImportant={() => void toggleImportant()}
               onDelete={deleteAndSave}
               onMove={onMove}
               align="right"
@@ -125,13 +159,26 @@ export const MemoDetailModal = ({ memo, onClose, onUpdate, onDelete, onToggleImp
               </p>
             )}
 
-            {memo.attachmentUrl && (
-              <img
-                src={memo.attachmentUrl}
-                alt="메모 활동 첨부 이미지"
-                className="w-full rounded-sm object-cover"
-              />
-            )}
+            {memo.images.map((image, index) => (
+              <div key={image.id} className="relative overflow-hidden rounded-sm">
+                <img
+                  src={image.imageUrl}
+                  alt={`메모 활동 첨부 이미지 ${index + 1}`}
+                  className="w-full object-cover"
+                />
+                <button
+                  type="button"
+                  disabled={deletingImageId === image.id}
+                  onClick={() => void removeImage(image.id)}
+                  className="absolute right-3 top-3 rounded-full bg-grey-950/70 px-3 py-1.5 text-caption1 text-white disabled:cursor-wait disabled:opacity-60"
+                >
+                  {deletingImageId === image.id ? '삭제 중...' : '사진 삭제'}
+                </button>
+              </div>
+            ))}
+
+            {submitError && <p role="alert" className="text-body3-r text-error-text">{submitError}</p>}
+            {isSaving && <p className="text-right text-caption1 text-grey-500">저장 중...</p>}
           </div>
         </div>
       </section>

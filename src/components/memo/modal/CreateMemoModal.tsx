@@ -1,11 +1,12 @@
 import { useRef, useState } from 'react';
-import type { MemoData } from '../types';
+import type { MemoActivityOption, MemoCreateInput } from '../types';
 import { useEscapeKey } from '../hooks/useEscapeKey';
 import { useModalFocus } from '../hooks/useModalFocus';
 
 interface CreateMemoModalProps {
   onClose: () => void;
-  onCreate: (memo: Omit<MemoData, 'id'>) => void;
+  onCreate: (memo: MemoCreateInput) => Promise<void>;
+  activities: MemoActivityOption[];
 }
 
 const UploadIcon = () => (
@@ -15,15 +16,15 @@ const UploadIcon = () => (
   </svg>
 );
 
-export const CreateMemoModal = ({ onClose, onCreate }: CreateMemoModalProps) => {
+export const CreateMemoModal = ({ onClose, onCreate, activities }: CreateMemoModalProps) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const [title, setTitle] = useState('');
   const [memo, setMemo] = useState('');
   const [file, setFile] = useState<File | null>(null);
-  const [selectedTag, setSelectedTag] = useState<string>();
+  const [selectedActivityId, setSelectedActivityId] = useState<string>();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState('');
   const dialogRef = useModalFocus<HTMLElement>();
-
-  const tags = ['코테이토 13기 프로젝트', '경영 데이터분석 워크샵', '마케팅 공모전'];
 
   useEscapeKey(onClose);
 
@@ -33,20 +34,23 @@ export const CreateMemoModal = ({ onClose, onCreate }: CreateMemoModalProps) => 
     if (inputRef.current) inputRef.current.value = '';
   };
 
-  const handleCreate = () => {
-    const today = new Intl.DateTimeFormat('ko-KR', {
-      year: 'numeric', month: '2-digit', day: '2-digit',
-    }).format(new Date()).replaceAll(' ', '').replaceAll('.', '.').replace(/\.$/, '');
+  const handleCreate = async () => {
+    if (!memo.trim() || isSubmitting) return;
 
-    onCreate({
-      createdAt: today,
-      dDay: 'D-30',
-      memo: memo.trim(),
-      title: title.trim() || undefined,
-      tag: selectedTag,
-      attachmentCount: file ? 1 : undefined,
-      attachmentUrl: file ? URL.createObjectURL(file) : undefined,
-    });
+    setIsSubmitting(true);
+    setSubmitError('');
+    try {
+      await onCreate({
+        memo: memo.trim(),
+        title: title.trim() || undefined,
+        activityId: selectedActivityId,
+        file: file ?? undefined,
+      });
+    } catch (error) {
+      setSubmitError(error instanceof Error ? error.message : '메모를 생성하지 못했습니다.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -69,6 +73,7 @@ export const CreateMemoModal = ({ onClose, onCreate }: CreateMemoModalProps) => 
           <label className="flex flex-col gap-2">
             <span className="text-label1-md text-grey-900">제목</span>
             <input
+              maxLength={255}
               value={title}
               onChange={(event) => setTitle(event.target.value)}
               placeholder="메모를 한눈에 알아볼 수 있는 제목을 작성해보세요."
@@ -114,7 +119,7 @@ export const CreateMemoModal = ({ onClose, onCreate }: CreateMemoModalProps) => 
                   <button type="button" onClick={() => setFile(null)} className="text-grey-500">삭제 ×</button>
                 </div>
                 <div className="mt-2 h-1 overflow-hidden rounded-full bg-grey-100"><div className="h-full w-full bg-primary-500" /></div>
-                <p className="mt-2 text-caption1 text-primary-500">업로드 완료</p>
+                <p className="mt-2 text-caption1 text-primary-500">업로드 준비 완료</p>
               </div>
             )}
           </div>
@@ -122,32 +127,34 @@ export const CreateMemoModal = ({ onClose, onCreate }: CreateMemoModalProps) => 
           <fieldset className="flex flex-col gap-3">
             <legend className="mb-2 text-label1-md text-grey-900">활동 태그</legend>
             <div className="flex flex-wrap gap-2">
-              {tags.map((tag) => (
+              {activities.map((activity) => (
                 <button
-                  key={tag}
+                  key={activity.id}
                   type="button"
-                  aria-pressed={selectedTag === tag}
-                  onClick={() => setSelectedTag((current) => current === tag ? undefined : tag)}
+                  aria-pressed={selectedActivityId === activity.id}
+                  onClick={() => setSelectedActivityId((current) => current === activity.id ? undefined : activity.id)}
                   className={`rounded-xl border px-3 py-2 text-label2-md ${
-                    selectedTag === tag
+                    selectedActivityId === activity.id
                       ? 'border-primary-400 bg-primary-50 text-primary-500'
                       : 'border-grey-100 text-grey-700'
                   }`}
                 >
-                  # {tag}
+                  # {activity.title}
                 </button>
               ))}
             </div>
           </fieldset>
         </div>
 
+        {submitError && <p role="alert" className="mt-4 text-center text-body3-r text-error-text">{submitError}</p>}
+
         <button
           type="button"
-          disabled={!memo.trim()}
-          onClick={handleCreate}
+          disabled={!memo.trim() || isSubmitting}
+          onClick={() => void handleCreate()}
           className="bg-primary-gradient mt-8 h-[52px] w-full rounded-[14px] text-sub2-sb text-white disabled:cursor-not-allowed disabled:bg-none disabled:bg-grey-300"
         >
-          메모 생성
+          {isSubmitting ? '생성 중...' : '메모 생성'}
         </button>
       </section>
     </div>

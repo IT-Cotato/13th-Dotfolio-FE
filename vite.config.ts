@@ -14,4 +14,12 @@ export default defineConfig({
   optimizeDeps: {
     include: ['lottie-react'],
   },
+  server: {
+    proxy: {
+      '/api': {
+        target: 'https://54.180.186.216.nip.io',
+        changeOrigin: true,
+      },
+    },
+  },
 })

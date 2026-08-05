@@ -3,6 +3,7 @@ import Home from "./home";
 import Memo from "./memo";
 import Login from "./login";
 import PasswordReset from "./password-reset";
+import PasswordResetConfirm from "./password-reset-confirm";
 import Record from "./record";
 import RecordAll from "./record-all";
 import RecordWrite from "./record-write";
@@ -24,6 +25,7 @@ export default function Layout() {
     <Routes>
       <Route path="/login" element={<Login />} />
       <Route path="/password-reset" element={<PasswordReset />} />
+      <Route path="/password-reset/confirm" element={<PasswordResetConfirm />} />
       <Route path="*" element={<HomeLayout />} />
     </Routes>
   );

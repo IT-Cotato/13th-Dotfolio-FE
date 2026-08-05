@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Button } from "@/components/common/button";
+import { AuthForm } from "@/components/login/AuthForm";
 import { AuthFormIntro } from "@/components/login/AuthFormIntro";
 import { EmailInput } from "@/components/login/EmailInput";
 
@@ -39,8 +40,7 @@ export function PasswordResetForm({ onComplete }: PasswordResetFormProps) {
   };
 
   return (
-    <form
-      className="flex w-full max-w-[463px] flex-col gap-8 p-6"
+    <AuthForm
       onSubmit={(event) => {
         event.preventDefault();
         handleResetMailRequest();
@@ -63,6 +63,6 @@ export function PasswordResetForm({ onComplete }: PasswordResetFormProps) {
         label="재설정 메일 보내기"
         onClick={handleResetMailRequest}
       />
-    </form>
+    </AuthForm>
   );
 }

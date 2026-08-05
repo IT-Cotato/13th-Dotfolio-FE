@@ -193,6 +193,7 @@ export default function MyStoryInsights() {
               type="button"
               key={skill.name}
               onClick={() => setSelectedSkill(current => current === skill.name ? null : skill.name)}
+              aria-pressed={selectedSkill === skill.name}
               className={`flex h-12 cursor-pointer items-center justify-center gap-2 rounded-[14px] px-5 text-body2-md transition-colors ${
                 selectedSkill === skill.name
                   ? 'border border-primary-500 bg-primary-500 text-white'

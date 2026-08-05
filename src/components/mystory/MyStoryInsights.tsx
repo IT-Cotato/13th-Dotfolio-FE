@@ -305,7 +305,7 @@ function StrengthDetail({ strength }: { strength: typeof STRENGTHS[number] }) {
       </div>
       <div className="rounded-2xl bg-grey-50 p-6">
         <div className="rounded-xl bg-primary-50 p-4 text-label1-md text-grey-900"><span className="mb-2 flex items-center gap-2 text-label2-md text-primary-500"><AiStarBadge /> AI 요약</span><strong>“{strength.summary}”</strong></div>
-        <h3 className="mt-5 text-body2-md text-grey-600">연결된 기록 ({strength.count})</h3>
+        <h3 className="mt-5 text-body2-md text-grey-600">연결된 기록 ({strength.records.length})</h3>
         {strength.records.map(record => <button type="button" key={record} onClick={() => navigate('/record')} className="flex w-full cursor-pointer items-center justify-between border-b border-grey-100 py-4 text-left text-body2-md text-grey-900"><span>{record}</span><AiRecordIcon className="size-4 shrink-0" /></button>)}
       </div>
     </div>

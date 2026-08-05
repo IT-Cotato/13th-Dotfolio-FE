@@ -16,14 +16,100 @@ const TEMPLATE_STATS = [
 ] as const;
 
 const STRENGTHS = [
-  { rank: 1, name: '문제해결', count: 8, color: '#4F72F8', core: 100, halo: 138, top: 14, left: '35%' },
-  { rank: 2, name: '커뮤니케이션', count: 7, color: '#7C5CF6', core: 82, halo: 120, top: 40, left: '65%' },
-  { rank: 3, name: '데이터 분석', count: 6, color: '#0EA5E9', core: 72, halo: 110, top: 116, left: '83%' },
-  { rank: 4, name: '창의성', count: 4, color: '#EC4899', core: 52, halo: 90, top: 142, left: '50%' },
-  { rank: 5, name: '리더십', count: 5, color: '#A855F7', core: 62, halo: 100, top: 105, left: '17%' },
+  {
+    rank: 1,
+    name: '문제해결',
+    count: 8,
+    color: '#4F72F8',
+    core: 100,
+    halo: 138,
+    top: 14,
+    left: '35%',
+    summary: '복잡한 문제를 분석하고 해결한 경험이 반복적으로 나타났습니다.',
+    records: ['데이터 시각화 대시보드 개선', '서비스 이탈 원인 분석', '사용자 동선 개선안 도출', '운영 병목 프로세스 개선'],
+  },
+  {
+    rank: 2,
+    name: '커뮤니케이션',
+    count: 7,
+    color: '#7C5CF6',
+    core: 82,
+    halo: 120,
+    top: 40,
+    left: '65%',
+    summary: '다양한 이해관계자의 의견을 조율하고 공동 목표를 만든 경험이 돋보입니다.',
+    records: ['스타트업 팀 간 갈등 조율 및 협업 설계', '첫 팀 미팅 및 아이디어 브레인스토밍', '직군 간 일정 합의', '사용자 인터뷰 결과 공유'],
+  },
+  {
+    rank: 3,
+    name: '데이터 분석',
+    count: 6,
+    color: '#0EA5E9',
+    core: 72,
+    halo: 110,
+    top: 116,
+    left: '83%',
+    summary: '데이터에서 핵심 지표를 찾아 의사결정 근거로 활용한 경험이 강점입니다.',
+    records: ['핵심 지표 재정의', '설문 데이터 분석 및 결과 공유', '유입 경로별 전환율 분석', '실험 결과 리포트 작성'],
+  },
+  {
+    rank: 4,
+    name: '창의성',
+    count: 4,
+    color: '#EC4899',
+    core: 52,
+    halo: 90,
+    top: 142,
+    left: '50%',
+    summary: '익숙한 문제를 새로운 관점으로 바꾸어 해결안을 제안한 경험이 나타납니다.',
+    records: ['신규 온보딩 아이디어 제안', '콘텐츠 포맷 실험', '사용자 참여 캠페인 기획', '서비스 네이밍 워크숍'],
+  },
+  {
+    rank: 5,
+    name: '리더십',
+    count: 5,
+    color: '#A855F7',
+    core: 62,
+    halo: 100,
+    top: 105,
+    left: '17%',
+    summary: '목표와 역할을 명확히 정리해 팀이 실행에 집중하도록 이끈 경험이 확인됩니다.',
+    records: ['프로젝트 역할 분담 및 일정 수립', '회고 방식 개선', '신규 팀원 온보딩', '팀 목표 및 우선순위 합의'],
+  },
 ] as const;
 
-const ROLE_SKILLS = ['문제 정의', '커뮤니케이션', '데이터 분석', '우선순위 설정', '실행력'];
+const ROLE_SKILLS = [
+  {
+    name: '문제 정의',
+    title: '데이터 시각화 대시보드 개선',
+    description: '사용자가 원하는 지표를 빠르게 찾지 못하는 원인을 분석하고 핵심 문제를 정보 구조로 구체화했습니다.',
+    reason: '모호한 불편을 관찰 가능한 문제로 정의하고 개선 목표를 명확히 한 역량이 잘 드러납니다.',
+  },
+  {
+    name: '커뮤니케이션',
+    title: '스타트업 팀 간 갈등 조율 및 협업 설계',
+    description: '개발·디자인·마케팅 팀의 의견 충돌을 워크숍으로 조율하고 분기 공통 목표를 수립하여 팀 속도를 회복했습니다.',
+    reason: '다양한 이해관계자와 소통하며 갈등을 해결하고 팀 전체를 정렬한 커뮤니케이션 역량이 잘 드러납니다.',
+  },
+  {
+    name: '데이터 분석',
+    title: '사용자 행동 데이터 기반 이탈 개선',
+    description: '단계별 전환 데이터를 비교해 주요 이탈 구간을 찾고 개선 우선순위를 제안했습니다.',
+    reason: '데이터를 근거로 패턴을 발견하고 실행 가능한 결론으로 연결한 분석 역량이 잘 드러납니다.',
+  },
+  {
+    name: '우선순위 설정',
+    title: '제한된 일정 내 핵심 기능 범위 조정',
+    description: '사용자 영향도와 개발 비용을 함께 비교해 출시 전 반드시 필요한 기능을 선별했습니다.',
+    reason: '목표와 제약을 기준으로 선택지를 평가하고 팀의 실행 순서를 정한 경험이 잘 드러납니다.',
+  },
+  {
+    name: '실행력',
+    title: '반복 검증을 통한 프로토타입 완성',
+    description: '사용자 피드백을 짧은 주기로 반영하며 화면 구조와 핵심 흐름을 빠르게 개선했습니다.',
+    reason: '아이디어를 구체적인 결과물로 만들고 반복적으로 완성도를 높인 실행 역량이 잘 드러납니다.',
+  },
+] as const;
 
 export default function MyStoryInsights() {
   const navigate = useNavigate();
@@ -32,6 +118,7 @@ export default function MyStoryInsights() {
   const [selectedStrength, setSelectedStrength] = useState<number | null>(null);
   const [selectedSkill, setSelectedSkill] = useState<string | null>(null);
   const [cooldown, setCooldown] = useState(false);
+  const selectedRecommendation = ROLE_SKILLS.find(skill => skill.name === selectedSkill);
 
   if (ready) {
     return <InsightsReadyState />;
@@ -104,16 +191,16 @@ export default function MyStoryInsights() {
           {ROLE_SKILLS.map(skill => (
             <button
               type="button"
-              key={skill}
-              onClick={() => setSelectedSkill(current => current === skill ? null : skill)}
+              key={skill.name}
+              onClick={() => setSelectedSkill(current => current === skill.name ? null : skill.name)}
               className={`flex h-12 cursor-pointer items-center justify-center gap-2 rounded-[14px] px-5 text-body2-md transition-colors ${
-                selectedSkill === skill
+                selectedSkill === skill.name
                   ? 'border border-primary-500 bg-primary-500 text-white'
                   : 'border border-grey-100 bg-white text-grey-900'
               }`}
             >
-              {selectedSkill === skill && <span aria-hidden className="text-[22px] leading-none">✓</span>}
-              {skill}
+              {selectedSkill === skill.name && <span aria-hidden className="text-[22px] leading-none">✓</span>}
+              {skill.name}
             </button>
           ))}
         </div>
@@ -122,21 +209,21 @@ export default function MyStoryInsights() {
           <div className="mt-6 grid min-h-[220px] place-items-center rounded-2xl bg-grey-50 text-center text-body3-md leading-6 text-grey-600">
             5가지 역량 중 원하는 역량을 선택하면<br />AI가 추천하는 대표 경험을 보여줍니다.
           </div>
-        ) : (
+        ) : selectedRecommendation ? (
           <div className="mt-6 rounded-2xl bg-grey-50 p-6">
-            <h3 className="text-sub1-sb text-grey-900">스타트업 팀 간 갈등 조율 및 협업 설계</h3>
+            <h3 className="text-sub1-sb text-grey-900">{selectedRecommendation.title}</h3>
             <p className="mt-4 text-body3-md text-grey-500">
-              개발·디자인·마케팅 팀의 의견 충돌을 워크숍으로 조율하고 분기 공통 목표를 수립하여 팀 속도를 회복했습니다.
+              {selectedRecommendation.description}
             </p>
             <div className="mt-6 flex items-center gap-5 border-t border-grey-100 pt-6">
               <span className="flex shrink-0 items-center gap-2 text-body3-md text-grey-500"><AiStarBadge /> AI 추천 이유</span>
-              <p className="text-body2-md text-grey-700">다양한 이해관계자와 소통하며 갈등을 해결하고 팀 전체를 정렬한 커뮤니케이션 역량이 잘 드러납니다.</p>
+              <p className="text-body2-md text-grey-700">{selectedRecommendation.reason}</p>
               <button type="button" onClick={() => navigate('/record')} aria-label="추천 기록 보기" className="ml-auto shrink-0 cursor-pointer text-primary-500">
                 <AiRecordIcon className="size-5" />
               </button>
             </div>
           </div>
-        )}
+        ) : null}
       </section>
     </Card>
   );
@@ -216,9 +303,9 @@ function StrengthDetail({ strength }: { strength: typeof STRENGTHS[number] }) {
         </div>
       </div>
       <div className="rounded-2xl bg-grey-50 p-6">
-        <div className="rounded-xl bg-primary-50 p-4 text-label1-md text-grey-900"><span className="mb-2 flex items-center gap-2 text-label2-md text-primary-500"><AiStarBadge /> AI 요약</span><strong>“복잡한 문제를 분석하고 해결한 경험이 반복적으로 나타났습니다.”</strong></div>
+        <div className="rounded-xl bg-primary-50 p-4 text-label1-md text-grey-900"><span className="mb-2 flex items-center gap-2 text-label2-md text-primary-500"><AiStarBadge /> AI 요약</span><strong>“{strength.summary}”</strong></div>
         <h3 className="mt-5 text-body2-md text-grey-600">연결된 기록 ({strength.count})</h3>
-        {[1, 2, 3, 4].map(item => <button type="button" key={item} onClick={() => navigate('/record')} className="flex w-full cursor-pointer items-center justify-between border-b border-grey-100 py-4 text-left text-body2-md text-grey-900"><span>스타트업 팀 간 갈등 조율 및 협업 설계</span><AiRecordIcon className="size-4 shrink-0" /></button>)}
+        {strength.records.map(record => <button type="button" key={record} onClick={() => navigate('/record')} className="flex w-full cursor-pointer items-center justify-between border-b border-grey-100 py-4 text-left text-body2-md text-grey-900"><span>{record}</span><AiRecordIcon className="size-4 shrink-0" /></button>)}
       </div>
     </div>
   );

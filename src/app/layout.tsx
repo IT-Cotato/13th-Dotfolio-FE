@@ -9,6 +9,9 @@ import Record from "./record";
 import RecordAll from "./record-all";
 import RecordWrite from "./record-write";
 import TemplateAll from "./template-all";
+import MyStoryArchive from "./mystory";
+import MyStoryInsightsPage from "./mystory-insights";
+import MyStoryAiMatchingPage from "./mystory-ai-matching";
 import { ImmersionToggle } from "@/components/home/ImmersionToggle";
 import { Sidebar } from "@/components/common/sidebar";
 import { ActivitiesProvider } from "@/contexts/ActivitiesContext";
@@ -67,6 +70,15 @@ function HomeLayout() {
                     element={<RecordWrite />}
                   />
                   <Route path="/template-all" element={<TemplateAll />} />
+                  <Route path="/mystory/archive" element={<MyStoryArchive />} />
+                  <Route
+                    path="/mystory/insights"
+                    element={<MyStoryInsightsPage />}
+                  />
+                  <Route
+                    path="/mystory/ai-matching"
+                    element={<MyStoryAiMatchingPage />}
+                  />
                 </Routes>
               </main>
             </div>

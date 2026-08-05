@@ -171,7 +171,11 @@ export const Sidebar = () => {
           chevronOpen={myStoryOpen}
           isActive={isMyStoryActive}
           onClick={() => {
-            if (!isMyStoryActive) navigate('/mystory/archive');
+            if (!isMyStoryActive) {
+              navigate('/mystory/archive');
+              setMyStoryOpen(true);
+              return;
+            }
             setMyStoryOpen(current => !current);
           }}
         />

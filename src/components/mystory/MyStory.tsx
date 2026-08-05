@@ -17,6 +17,7 @@ export default function MyStory() {
   const [submittedQuery, setSubmittedQuery] = useState('');
   const [expandedId, setExpandedId] = useState<number | null>(null);
   const [activities, setActivities] = useState(ACTIVITIES);
+  const [records, setRecords] = useState(STORY_RECORDS);
   const [selectedRecord, setSelectedRecord] = useState(STORY_RECORDS[0]);
   const [openMenuId, setOpenMenuId] = useState<number | null>(null);
   const [editingActivity, setEditingActivity] = useState<Activity | null>(null);
@@ -25,18 +26,25 @@ export default function MyStory() {
   const [savedSectionValues, setSavedSectionValues] = useState(DETAIL_SECTIONS.map(section => section.text));
   const { toast, fireToast } = useToast();
 
-  const searchResults = useMemo(
-    () => STORY_RECORDS.filter(record => `${record.title} ${record.content}`.includes(submittedQuery)),
-    [submittedQuery],
-  );
+  const searchResults = useMemo(() => {
+    const normalizedQuery = submittedQuery.toLocaleLowerCase();
+
+    return records.filter(record => {
+      const activity = activities.find(item => item.id === record.activityId);
+      const searchableText = [
+        activity?.title,
+        activity?.category,
+        record.title,
+        ...record.sections,
+      ].filter(Boolean).join(' ').toLocaleLowerCase();
+
+      return searchableText.includes(normalizedQuery);
+    });
+  }, [activities, records, submittedQuery]);
 
   const openDetail = (record: StoryRecord) => {
     setSelectedRecord(record);
-    const nextValues = [
-      record.content,
-      DETAIL_SECTIONS[1].text,
-      DETAIL_SECTIONS[2].text,
-    ];
+    const nextValues = [...record.sections];
     setSectionValues(nextValues);
     setSavedSectionValues(nextValues);
     setView('detail');
@@ -57,7 +65,7 @@ export default function MyStory() {
     <Card className="story-shell relative items-stretch gap-0 rounded-t-[36px] p-6">
       {toast && (
         <div className="fixed z-[100] top-5 left-1/2 -translate-x-1/2 shadow-[0_8px_32px_rgba(34,62,120,.18)]">
-          <Toast message={toast.message} onUndo={toast.onUndo} />
+          <Toast message={toast.message} onUndo={toast.onUndo} variant={toast.variant} />
         </div>
       )}
 
@@ -73,7 +81,7 @@ export default function MyStory() {
       {view === 'timeline' && (
         <MyStoryTimeline
           activities={activities}
-          records={STORY_RECORDS}
+          records={records}
           expandedId={expandedId}
           openMenuId={openMenuId}
           onToggle={id => setExpandedId(current => current === id ? null : id)}
@@ -93,23 +101,40 @@ export default function MyStory() {
         <MyStorySearchResults
           query={submittedQuery}
           results={searchResults}
+          activities={activities}
           onOpenDetail={openDetail}
         />
       )}
       {view === 'detail' && (
         <MyStoryDetail
           record={selectedRecord}
+          activityTitle={activities.find(activity => activity.id === selectedRecord.activityId)?.title ?? ''}
           values={sectionValues}
           isSaveDisabled={sectionValues.every((value, index) => value === savedSectionValues[index])}
-          onBack={() => setView('timeline')}
+          onBack={() => {
+            setSectionValues(savedSectionValues);
+            setView('timeline');
+          }}
           onSave={() => {
-            setSavedSectionValues(sectionValues);
+            const updatedRecord = {
+              ...selectedRecord,
+              content: sectionValues[0],
+              sections: [...sectionValues],
+            };
+            setRecords(current => current.map(record => record.id === updatedRecord.id ? updatedRecord : record));
+            setSelectedRecord(updatedRecord);
+            setSavedSectionValues([...sectionValues]);
             fireToast('변경사항이 저장되었습니다.');
           }}
           onChange={(index, value) => setSectionValues(values => values.map((item, i) => i === index ? value : item))}
-          onCopy={text => {
-            void navigator.clipboard?.writeText(text);
-            fireToast('내용이 복사되었습니다.');
+          onCopy={async text => {
+            try {
+              if (!navigator.clipboard?.writeText) throw new Error('Clipboard API is unavailable');
+              await navigator.clipboard.writeText(text);
+              fireToast('내용이 복사되었습니다.');
+            } catch {
+              fireToast('내용을 복사하지 못했습니다.', undefined, 'error');
+            }
           }}
         />
       )}
@@ -124,8 +149,8 @@ export default function MyStory() {
           startDate: editingActivity.startDate,
           endDate: editingActivity.endDate,
           endDateUnknown: editingActivity.endDateUnknown,
-          recordCount: STORY_RECORDS.length,
-          completedCount: STORY_RECORDS.length,
+          recordCount: records.filter(record => record.activityId === editingActivity.id).length,
+          completedCount: records.filter(record => record.activityId === editingActivity.id).length,
         }}
         onSubmit={data => {
           if (!editingActivity) return;
@@ -150,12 +175,15 @@ export default function MyStory() {
             description="해당 활동과 관련된 모든 기록이 함께 삭제됩니다."
             confirmLabel="기록 삭제"
             onConfirm={() => {
+              const deletedRecords = records.filter(record => record.activityId === deletingActivity.id);
               setActivities(current => current.filter(activity => activity.id !== deletingActivity.id));
+              setRecords(current => current.filter(record => record.activityId !== deletingActivity.id));
               const deletedActivitySnapshot = deletingActivity;
               setDeletingActivity(null);
               setExpandedId(null);
               fireToast('활동이 삭제되었습니다.', () => {
                 setActivities(current => [...current, deletedActivitySnapshot].sort((a, b) => a.id - b.id));
+                setRecords(current => [...current, ...deletedRecords].sort((a, b) => a.id - b.id));
               });
             }}
             onCancel={() => setDeletingActivity(null)}

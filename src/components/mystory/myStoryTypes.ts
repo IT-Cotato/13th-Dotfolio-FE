@@ -11,9 +11,11 @@ export interface Activity {
 
 export interface StoryRecord {
   id: number;
+  activityId: number;
   title: string;
   date: string;
   content: string;
+  sections: string[];
 }
 
 export interface DetailSection {

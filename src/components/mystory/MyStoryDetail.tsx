@@ -8,21 +8,22 @@ import MyStoryCopyAsset from '@/assets/mystory_copy.svg';
 
 interface MyStoryDetailProps {
   record: StoryRecord;
+  activityTitle: string;
   values: string[];
   isSaveDisabled: boolean;
   onBack: () => void;
   onSave: () => void;
   onChange: (index: number, value: string) => void;
-  onCopy: (text: string) => void;
+  onCopy: (text: string) => Promise<void>;
 }
 
-export function MyStoryDetail({ record, values, isSaveDisabled, onBack, onSave, onChange, onCopy }: MyStoryDetailProps) {
+export function MyStoryDetail({ record, activityTitle, values, isSaveDisabled, onBack, onSave, onChange, onCopy }: MyStoryDetailProps) {
   return (
     <div>
       <div className="mb-10">
         <Breadcrumb items={[
           { label: '활동 보관함', onClick: onBack },
-          { label: '경영 데이터분석 워크샵' },
+          { label: activityTitle },
           { label: record.title },
         ]} />
       </div>
@@ -62,7 +63,7 @@ export function MyStoryDetail({ record, values, isSaveDisabled, onBack, onSave, 
               />
               <button
                 type="button"
-                onClick={() => onCopy(values[index])}
+                onClick={() => void onCopy(values[index])}
                 aria-label={`${section.label} 내용 복사`}
                 className="absolute right-4 top-1/2 size-6 -translate-y-1/2 overflow-hidden cursor-pointer"
               >

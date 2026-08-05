@@ -43,6 +43,7 @@ export function MyStoryTimeline({
         <span className="absolute left-[4px] top-3 bottom-7 w-0.5 bg-[linear-gradient(180deg,#DEE6EF_0%,rgba(222,230,239,0.2)_100%)]" />
         {activities.map(activity => {
           const open = expandedId === activity.id;
+          const activityRecords = records.filter(record => record.activityId === activity.id);
           const period = `${activity.startDate.slice(0, 7)} ~ ${activity.endDateUnknown ? '현재' : activity.endDate.slice(0, 7)}`;
           return (
             <article key={activity.id} className="relative pb-4 last:pb-0">
@@ -95,14 +96,14 @@ export function MyStoryTimeline({
               {open && (
                 <div className="mt-5 border-t border-grey-100 pt-4">
                   <p className="mb-3 text-body3-md text-grey-700">
-                    <strong className="text-sub3-sb text-grey-900">{records.length}</strong>개의 기록
+                    <strong className="text-sub3-sb text-grey-900">{activityRecords.length}</strong>개의 기록
                   </p>
-                  {records.length ? (
+                  {activityRecords.length ? (
                     <div className="flex flex-col gap-2">
-                    {records.map(record => (
+                    {activityRecords.map(record => (
                       <button
                         type="button"
-                        key={record.title}
+                        key={record.id}
                         onClick={() => onOpenDetail(record)}
                         className="flex items-center justify-between rounded-xl bg-grey-50 px-5 py-4 text-left cursor-pointer hover:bg-primary-50 transition-colors"
                       >

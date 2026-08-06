@@ -75,7 +75,7 @@ export function SignupEmailField({ onValidityChange }: SignupEmailFieldProps) {
         <div className="flex items-center gap-2 self-stretch">
           <input
             aria-label="이메일 아이디"
-            autoComplete="username"
+            autoComplete="off"
             className={inputClassName}
             id="signup-email-local"
             onBlur={validateEmail}
@@ -89,7 +89,7 @@ export function SignupEmailField({ onValidityChange }: SignupEmailFieldProps) {
           </span>
           <input
             aria-label="이메일 도메인"
-            autoComplete="email"
+            autoComplete="off"
             className={inputClassName}
             onBlur={validateEmail}
             onChange={(event) => handleDomainChange(event.target.value)}

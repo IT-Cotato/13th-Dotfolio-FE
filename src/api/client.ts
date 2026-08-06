@@ -1,0 +1,99 @@
+export interface ApiResponse<T> {
+  success: boolean;
+  message: string;
+  data: T;
+}
+
+interface ApiRequestOptions extends Omit<RequestInit, "body"> {
+  body?: unknown;
+}
+
+export class ApiError extends Error {
+  status: number;
+  payload: unknown;
+
+  constructor(message: string, status: number, payload: unknown = null) {
+    super(message);
+    this.name = "ApiError";
+    this.status = status;
+    this.payload = payload;
+  }
+}
+
+function getApiUrl(path: string) {
+  const baseUrl = import.meta.env.VITE_API_BASE_URL;
+
+  if (!baseUrl) {
+    throw new ApiError("API 기본 주소가 설정되지 않았습니다.", 0);
+  }
+
+  return `${baseUrl.replace(/\/$/, "")}/${path.replace(/^\//, "")}`;
+}
+
+async function parseResponseBody(response: Response): Promise<unknown> {
+  const text = await response.text();
+
+  if (!text) {
+    return null;
+  }
+
+  try {
+    return JSON.parse(text) as unknown;
+  } catch {
+    return text;
+  }
+}
+
+function getErrorMessage(payload: unknown) {
+  if (
+    typeof payload === "object" &&
+    payload !== null &&
+    "message" in payload &&
+    typeof payload.message === "string"
+  ) {
+    return payload.message;
+  }
+
+  return "요청 처리 중 오류가 발생했습니다.";
+}
+
+function isFailedApiResponse(payload: unknown) {
+  return (
+    typeof payload === "object" &&
+    payload !== null &&
+    "success" in payload &&
+    payload.success === false
+  );
+}
+
+export async function requestApi<T>(
+  path: string,
+  { body, headers, ...options }: ApiRequestOptions = {},
+): Promise<ApiResponse<T>> {
+  const requestHeaders = new Headers(headers);
+  requestHeaders.set("Accept", "application/json");
+
+  if (body !== undefined) {
+    requestHeaders.set("Content-Type", "application/json");
+  }
+
+  let response: Response;
+
+  try {
+    response = await fetch(getApiUrl(path), {
+      ...options,
+      body: body === undefined ? undefined : JSON.stringify(body),
+      headers: requestHeaders,
+    });
+  } catch {
+    throw new ApiError("네트워크 연결을 확인해주세요.", 0);
+  }
+
+  const payload = await parseResponseBody(response);
+
+  if (!response.ok || isFailedApiResponse(payload)) {
+    throw new ApiError(getErrorMessage(payload), response.status, payload);
+  }
+
+  return payload as ApiResponse<T>;
+}

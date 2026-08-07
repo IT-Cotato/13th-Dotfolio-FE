@@ -77,10 +77,11 @@ export async function requestApi<T>(
     requestHeaders.set("Content-Type", "application/json");
   }
 
+  const apiUrl = getApiUrl(path);
   let response: Response;
 
   try {
-    response = await fetch(getApiUrl(path), {
+    response = await fetch(apiUrl, {
       ...options,
       body: body === undefined ? undefined : JSON.stringify(body),
       headers: requestHeaders,

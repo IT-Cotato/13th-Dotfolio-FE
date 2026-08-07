@@ -8,6 +8,7 @@ interface LoginFieldsProps {
   password: string;
   keepSignedIn: boolean;
   hasError: boolean;
+  errorMessage?: string;
   onEmailChange: (email: string) => void;
   onPasswordChange: (password: string) => void;
   onKeepSignedInChange: (checked: boolean) => void;
@@ -18,6 +19,7 @@ export function LoginFields({
   password,
   keepSignedIn,
   hasError,
+  errorMessage,
   onEmailChange,
   onPasswordChange,
   onKeepSignedInChange,
@@ -25,14 +27,8 @@ export function LoginFields({
   return (
     <div className="flex w-full flex-col gap-4">
       <div className="flex w-full flex-col gap-3">
-        {/* 이메일 입력 */}
-        <EmailInput
-          hasError={hasError}
-          onChange={onEmailChange}
-          value={email}
-        />
+        <EmailInput hasError={hasError} onChange={onEmailChange} value={email} />
 
-        {/* 비밀번호 입력 */}
         <div className="flex flex-col items-start gap-1.5 self-stretch">
           <PasswordInput
             ariaLabel="비밀번호"
@@ -44,13 +40,12 @@ export function LoginFields({
           />
           {hasError && (
             <p role="alert" className="flex-1 text-body3-r text-error-text">
-              아이디 또는 비밀번호가 올바르지 않습니다.
+              {errorMessage ?? "아이디 또는 비밀번호가 올바르지 않습니다."}
             </p>
           )}
         </div>
       </div>
 
-      {/* 로그인 상태 유지 및 비밀번호 찾기 */}
       <div className="flex items-center justify-between text-body3-md text-grey-600">
         <label className="flex items-center gap-2 cursor-pointer">
           <Checkbox

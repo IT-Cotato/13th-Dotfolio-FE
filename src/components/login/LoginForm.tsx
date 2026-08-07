@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { AuthForm } from "@/components/login/AuthForm";
 import { AuthFormIntro } from "@/components/login/AuthFormIntro";
 import { GoogleLoginButton } from "@/components/login/GoogleLoginButton";
@@ -61,9 +62,9 @@ export function LoginForm() {
 
       <div className="flex items-center gap-3">
         <p className="text-body3-md text-grey-600">계정이 없으신가요?</p>
-        <button className="text-sub3-sb text-primary-500" type="button">
+        <Link className="text-sub3-sb text-primary-500" to="/signup">
           회원가입하기
-        </button>
+        </Link>
       </div>
     </AuthForm>
   );

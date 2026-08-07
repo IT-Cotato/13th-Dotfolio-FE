@@ -2,6 +2,7 @@ import { Routes, Route } from "react-router-dom";
 import Home from "./home";
 import Memo from "./memo";
 import Login from "./login";
+import Signup from "./signup";
 import PasswordReset from "./password-reset";
 import PasswordResetConfirm from "./password-reset-confirm";
 import Record from "./record";
@@ -24,6 +25,7 @@ export default function Layout() {
   return (
     <Routes>
       <Route path="/login" element={<Login />} />
+      <Route path="/signup" element={<Signup />} />
       <Route path="/password-reset" element={<PasswordReset />} />
       <Route path="/password-reset/confirm" element={<PasswordResetConfirm />} />
       <Route path="*" element={<HomeLayout />} />

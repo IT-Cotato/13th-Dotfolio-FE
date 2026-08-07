@@ -4,6 +4,8 @@ export interface ApiResponse<T> {
   data: T;
 }
 
+const REQUEST_TIMEOUT_MS = 10_000;
+
 interface ApiRequestOptions extends Omit<RequestInit, "body"> {
   body?: unknown;
 }
@@ -78,6 +80,11 @@ export async function requestApi<T>(
   }
 
   const apiUrl = getApiUrl(path);
+  const abortController = new AbortController();
+  const timeoutId = window.setTimeout(
+    () => abortController.abort(),
+    REQUEST_TIMEOUT_MS,
+  );
   let response: Response;
 
   try {
@@ -85,9 +92,16 @@ export async function requestApi<T>(
       ...options,
       body: body === undefined ? undefined : JSON.stringify(body),
       headers: requestHeaders,
+      signal: abortController.signal,
     });
-  } catch {
+  } catch (error) {
+    if (error instanceof DOMException && error.name === "AbortError") {
+      throw new ApiError("요청 시간이 초과되었습니다. 다시 시도해주세요.", 0);
+    }
+
     throw new ApiError("네트워크 연결을 확인해주세요.", 0);
+  } finally {
+    window.clearTimeout(timeoutId);
   }
 
   const payload = await parseResponseBody(response);

@@ -86,6 +86,7 @@ export async function requestApi<T>(
     REQUEST_TIMEOUT_MS,
   );
   let response: Response;
+  let payload: unknown;
 
   try {
     response = await fetch(apiUrl, {
@@ -94,6 +95,7 @@ export async function requestApi<T>(
       headers: requestHeaders,
       signal: abortController.signal,
     });
+    payload = await parseResponseBody(response);
   } catch (error) {
     if (error instanceof DOMException && error.name === "AbortError") {
       throw new ApiError("요청 시간이 초과되었습니다. 다시 시도해주세요.", 0);
@@ -103,8 +105,6 @@ export async function requestApi<T>(
   } finally {
     window.clearTimeout(timeoutId);
   }
-
-  const payload = await parseResponseBody(response);
 
   if (!response.ok || isFailedApiResponse(payload)) {
     throw new ApiError(getErrorMessage(payload), response.status, payload);

@@ -28,7 +28,7 @@ export function LoginForm() {
     setLoginError(null);
 
     try {
-      const { data } = await login({ email, password });
+      const { data } = await login({ email: email.trim(), password });
       saveAuthTokens(data);
       navigate("/");
     } catch (error) {

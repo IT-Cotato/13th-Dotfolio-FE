@@ -145,7 +145,9 @@ export default function MyStory() {
         activity={{
           id: String(editingActivity.id),
           title: editingActivity.title,
-          tags: [editingActivity.category],
+          activityTypeId: editingActivity.category,
+          activityTypeName: editingActivity.category,
+          description: '',
           startDate: editingActivity.startDate,
           endDate: editingActivity.endDate,
           endDateUnknown: editingActivity.endDateUnknown,
@@ -157,7 +159,7 @@ export default function MyStory() {
           setActivities(current => current.map(activity => activity.id === editingActivity.id ? {
             ...activity,
             title: data.title,
-            category: data.tags[0],
+            category: data.activityTypeId,
             startDate: data.startDate,
             endDate: data.endDate,
             endDateUnknown: data.endDateUnknown,

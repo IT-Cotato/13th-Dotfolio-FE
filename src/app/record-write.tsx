@@ -51,7 +51,10 @@ export default function RecordWrite() {
   };
 
   const handleTempSave = () => {
-    if (!selectedActivity) return;
+    if (!selectedActivity) {
+      console.error('[record-write] 선택된 활동이 없어 임시저장을 진행할 수 없습니다.');
+      return;
+    }
     saveDraft({
       id: recordId,
       activityId: selectedActivity.id,
@@ -68,7 +71,10 @@ export default function RecordWrite() {
       fireToast('필수 항목을 입력해주세요.', undefined, 'error');
       return;
     }
-    if (!selectedActivity) return;
+    if (!selectedActivity) {
+      console.error('[record-write] 선택된 활동이 없어 기록완료를 진행할 수 없습니다.');
+      return;
+    }
     completeRecord({
       id: recordId,
       activityId: selectedActivity.id,

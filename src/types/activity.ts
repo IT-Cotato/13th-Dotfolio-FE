@@ -2,8 +2,10 @@ export type ActivityType = 'none' | 'memo' | 'both';
 
 export interface Activity {
   id: string;
+  activityTypeId: string;
+  activityTypeName: string;
   title: string;
-  tags: string[];
+  description: string;
   startDate: string;
   endDate: string;
   endDateUnknown: boolean;

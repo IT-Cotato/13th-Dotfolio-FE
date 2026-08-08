@@ -1,6 +1,10 @@
 export const formatDate = (d: Date): string =>
   `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, '0')}.${String(d.getDate()).padStart(2, '0')}`;
 
+export const toIsoDate = (displayDate: string): string => displayDate.replace(/\./g, '-');
+
+export const toDisplayDate = (isoDate: string): string => isoDate.replace(/-/g, '.');
+
 export const toDateStr = (year: number, month: number, day: number): string =>
   `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
 

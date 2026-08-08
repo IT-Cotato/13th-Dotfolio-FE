@@ -2,7 +2,7 @@ import { useRef, useState, useEffect } from 'react';
 import { ActivityTag } from '@/components/common/ActivityTag';
 import { Button } from '@/components/common/button';
 import { DatePicker } from '@/components/common/DatePicker';
-import CalendarIcon from '@/assets/calendar.svg';
+import CalendarIcon from '@/assets/calendar_today.svg';
 import CloseIcon from '@/assets/close.svg';
 import { ACTIVITY_TYPES } from '@/constants/activity';
 import type { Activity } from '@/types/activity';
@@ -37,21 +37,6 @@ export const ActivityModal = ({ isOpen, onClose, onSubmit, activity }: ActivityM
   const tagInputRef = useRef<HTMLInputElement>(null);
   const startPickerRef = useRef<HTMLDivElement>(null);
   const endPickerRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!isOpen) return;
-    setTitle(activity?.title ?? '');
-    setSelectedTags(activity?.tags ?? []);
-    setExtraTags(
-      activity?.tags.filter(t => !ACTIVITY_TYPES.includes(t as (typeof ACTIVITY_TYPES)[number])) ?? []
-    );
-    setIsAddingTag(false);
-    setNewTagValue('');
-    setStartDate(activity?.startDate ?? '');
-    setEndDate(activity?.endDate ?? '');
-    setEndDateUnknown(activity?.endDateUnknown ?? false);
-    setOpenPicker(null);
-  }, [isOpen, activity]);
 
   useEffect(() => {
     if (!openPicker) return;

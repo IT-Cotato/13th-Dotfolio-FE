@@ -2,6 +2,7 @@ import { useLayoutEffect, useRef, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import AddIcon from '@/assets/add.svg';
 import { ActivityModal } from '@/components/home/ActivityModal';
+import { MyStorySidebar } from '@/components/mystory';
 import { useActivities } from '@/contexts/ActivitiesContext';
 
 const DotOneIcon = () => (
@@ -78,7 +79,9 @@ export const Sidebar = () => {
   const location = useLocation();
   const { activities, addActivity, selectedActivityId, setSelectedActivityId } = useActivities();
   const isRecordActive = isRecordPath(location.pathname);
+  const isMyStoryActive = location.pathname.startsWith('/mystory');
   const [recordOpen, setRecordOpen] = useState(isRecordActive);
+  const [myStoryOpen, setMyStoryOpen] = useState(isMyStoryActive);
   const listRef = useRef<HTMLDivElement>(null);
   const itemRefs = useRef<Record<string, HTMLButtonElement | null>>({});
   const [activeBar, setActiveBar] = useState<{ top: number; height: number } | null>(null);
@@ -160,7 +163,24 @@ export const Sidebar = () => {
         )}
       </div>
 
-      <NavItem icon={<DotGridIcon />} label="나의 스토리" hasChevron />
+      <div className="w-full flex flex-col gap-3">
+        <NavItem
+          icon={<DotGridIcon />}
+          label="나의 스토리"
+          hasChevron
+          chevronOpen={myStoryOpen}
+          isActive={isMyStoryActive}
+          onClick={() => {
+            if (!isMyStoryActive) {
+              navigate('/mystory/archive');
+              setMyStoryOpen(true);
+              return;
+            }
+            setMyStoryOpen(current => !current);
+          }}
+        />
+        {myStoryOpen && <MyStorySidebar />}
+      </div>
 
       <ActivityModal
         isOpen={isActivityModalOpen}

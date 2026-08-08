@@ -6,15 +6,16 @@ interface CategoryHeaderProps {
   moreLabel?: string;
   onMoreClick?: () => void;
   onBack?: () => void;
+  backIcon?: React.ReactNode;
   extra?: React.ReactNode;
 }
 
-export const CategoryHeader = ({ title, moreLabel, onMoreClick, onBack, extra }: CategoryHeaderProps) => (
+export const CategoryHeader = ({ title, moreLabel, onMoreClick, onBack, backIcon, extra }: CategoryHeaderProps) => (
   <div className="w-full flex items-center justify-between">
     <div className="flex items-center gap-2">
       {onBack && (
         <button type="button" onClick={onBack} className="cursor-pointer">
-          <ArrowForwardIcon className="w-5 h-5 text-grey-900 rotate-180" />
+          {backIcon ?? <ArrowForwardIcon className="w-5 h-5 text-grey-900 rotate-180" />}
         </button>
       )}
       <span className="text-grey-900 text-title1">{title}</span>

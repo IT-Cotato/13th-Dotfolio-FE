@@ -1,26 +1,33 @@
-import { Routes, Route, useNavigate } from 'react-router-dom'
-import Home from './home'
-import Memo from './memo'
-import Login from './login'
-import PasswordReset from './password-reset'
-import Record from './record'
-import RecordAll from './record-all'
-import RecordWrite from './record-write'
-import TemplateAll from './template-all'
-import { ImmersionToggle } from '@/components/home/ImmersionToggle'
-import { Sidebar } from '@/components/common/sidebar'
-import { ActivitiesProvider } from '@/contexts/ActivitiesContext'
-import { TemplatesProvider } from '@/contexts/TemplatesContext'
-import { RecordsProvider } from '@/contexts/RecordsContext'
-import AlarmIcon from '@/assets/alarm.svg'
-import ProfileIcon from '@/assets/profile.svg'
-import MenuIcon from '@/assets/menu.svg'
+import { Routes, Route, useNavigate } from "react-router-dom";
+import Home from "./home";
+import Memo from "./memo";
+import Login from "./login";
+import Signup from "./signup";
+import PasswordReset from "./password-reset";
+import PasswordResetConfirm from "./password-reset-confirm";
+import Record from "./record";
+import RecordAll from "./record-all";
+import RecordWrite from "./record-write";
+import TemplateAll from "./template-all";
+import MyStoryArchive from "./mystory";
+import MyStoryInsightsPage from "./mystory-insights";
+import MyStoryAiMatchingPage from "./mystory-ai-matching";
+import { ImmersionToggle } from "@/components/home/ImmersionToggle";
+import { Sidebar } from "@/components/common/sidebar";
+import { ActivitiesProvider } from "@/contexts/ActivitiesContext";
+import { TemplatesProvider } from "@/contexts/TemplatesContext";
+import { RecordsProvider } from "@/contexts/RecordsContext";
+import AlarmIcon from "@/assets/alarm.svg";
+import ProfileIcon from "@/assets/profile.svg";
+import MenuIcon from "@/assets/menu.svg";
 
 export default function Layout() {
   return (
     <Routes>
       <Route path="/login" element={<Login />} />
+      <Route path="/signup" element={<Signup />} />
       <Route path="/password-reset" element={<PasswordReset />} />
+      <Route path="/password-reset/confirm" element={<PasswordResetConfirm />} />
       <Route path="*" element={<HomeLayout />} />
     </Routes>
   );
@@ -68,6 +75,15 @@ function HomeLayout() {
                     element={<RecordWrite />}
                   />
                   <Route path="/template-all" element={<TemplateAll />} />
+                  <Route path="/mystory/archive" element={<MyStoryArchive />} />
+                  <Route
+                    path="/mystory/insights"
+                    element={<MyStoryInsightsPage />}
+                  />
+                  <Route
+                    path="/mystory/ai-matching"
+                    element={<MyStoryAiMatchingPage />}
+                  />
                 </Routes>
               </main>
             </div>

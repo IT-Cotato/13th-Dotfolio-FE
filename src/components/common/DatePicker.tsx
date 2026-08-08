@@ -36,6 +36,7 @@ export const DatePicker = ({ value, onChange, onClose }: DatePickerProps) => {
 
   return (
     <div
+      data-testid="date-picker"
       className="bg-white rounded-2xl p-4 w-[296px] shadow-[0_4px_24px_rgba(0,0,0,0.10)]"
       onClick={e => e.stopPropagation()}
     >
@@ -123,6 +124,7 @@ export const DatePicker = ({ value, onChange, onClose }: DatePickerProps) => {
                 <div key={di} className="flex items-center justify-center h-9">
                   <button
                     type="button"
+                    aria-label={`${dateStr} 선택`}
                     onClick={() => { onChange(dateStr); onClose(); }}
                     className={`w-9 h-9 flex items-center justify-center rounded-xl text-body3-r transition-colors cursor-pointer ${
                       isSelected

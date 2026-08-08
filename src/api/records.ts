@@ -83,6 +83,10 @@ export function restoreRecord(recordId: string) {
   return requestApi<string>(`/api/records/${recordId}/restore`, { method: "PATCH" });
 }
 
+export function getRecentRecords() {
+  return requestApi<RecordListItem[]>("/api/records/recent");
+}
+
 export function getRecords(params: GetRecordsParams = {}) {
   const query = new URLSearchParams();
   if (params.activityId) query.set("activityId", params.activityId);

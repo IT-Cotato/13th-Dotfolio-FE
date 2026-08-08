@@ -1,16 +1,15 @@
 import MyStoryDocsIcon from '@/assets/mystory_docs.svg';
 import ArrowIcon from '@/assets/arrow.svg';
 import { MyStorySearchEmptyState } from './MyStoryEmptyState';
-import type { Activity, StoryRecord } from './myStoryTypes';
+import type { StoryRecord } from './myStoryTypes';
 
 interface MyStorySearchResultsProps {
   query: string;
   results: StoryRecord[];
-  activities: Activity[];
   onOpenDetail: (record: StoryRecord) => void;
 }
 
-export function MyStorySearchResults({ query, results, activities, onOpenDetail }: MyStorySearchResultsProps) {
+export function MyStorySearchResults({ query, results, onOpenDetail }: MyStorySearchResultsProps) {
   if (!results.length) {
     return <MyStorySearchEmptyState query={query} />;
   }
@@ -22,9 +21,7 @@ export function MyStorySearchResults({ query, results, activities, onOpenDetail 
         ‘{query}’ 검색 결과 <span className="text-body3-r text-grey-500">({results.length}개)</span>
       </h1>
       <div className="flex flex-col gap-4">
-        {results.map(record => {
-          const activity = activities.find(item => item.id === record.activityId);
-          return (
+        {results.map(record => (
           <button
             type="button"
             onClick={() => onOpenDetail(record)}
@@ -33,19 +30,18 @@ export function MyStorySearchResults({ query, results, activities, onOpenDetail 
           >
             <div className="flex items-start justify-between gap-6">
               <div className="min-w-0">
-                <span className="inline-block rounded-full bg-grey-600 px-3 py-1 text-label3-md text-white"># {activity?.title ?? '알 수 없는 활동'}</span>
+                <span className="inline-block rounded-full bg-grey-600 px-3 py-1 text-label3-md text-white"># {record.activityTitle}</span>
                 <p className="mt-3 text-body2-md text-grey-800">
                   {highlight(record.title, query)}
                   <span className="ml-4 text-body3-r text-grey-500">{record.date}</span>
                 </p>
                 <p className="mt-2 truncate text-body3-r text-grey-500">{highlight(record.content, query)}</p>
-                <span className="mt-4 inline-block rounded-lg border border-primary-100 bg-category-purple-bg px-3 py-1 text-label3-md text-category-purple-text">{activity?.category ?? '기타'}</span>
+                <span className="mt-4 inline-block rounded-lg border border-primary-100 bg-category-purple-bg px-3 py-1 text-label3-md text-category-purple-text">{record.activityTypeName || '기타'}</span>
               </div>
               <ArrowIcon className="mt-2 size-4 shrink-0 text-grey-400" />
             </div>
           </button>
-          );
-        })}
+        ))}
       </div>
     </div>
   );

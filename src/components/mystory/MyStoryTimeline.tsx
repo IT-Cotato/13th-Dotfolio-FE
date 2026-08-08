@@ -7,11 +7,11 @@ import ArrowIcon from '@/assets/arrow.svg';
 interface MyStoryTimelineProps {
   activities: Activity[];
   records: StoryRecord[];
-  expandedId: number | null;
-  onToggle: (id: number) => void;
-  openMenuId: number | null;
+  expandedId: string | null;
+  onToggle: (id: string) => void;
+  openMenuId: string | null;
   onOpenDetail: (record: StoryRecord) => void;
-  onToggleMenu: (id: number) => void;
+  onToggleMenu: (id: string) => void;
   onEditActivity: (activity: Activity) => void;
   onDeleteActivity: (activity: Activity) => void;
 }

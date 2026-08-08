@@ -20,13 +20,15 @@ interface ActivityModalProps {
   onClose: () => void;
   onSubmit: (data: ActivityFormData) => void;
   activity?: Activity;
+  activityTypes?: string[];
 }
 
-export const ActivityModal = ({ isOpen, onClose, onSubmit, activity }: ActivityModalProps) => {
+export const ActivityModal = ({ isOpen, onClose, onSubmit, activity, activityTypes }: ActivityModalProps) => {
+  const availableTypes = activityTypes ?? [...ACTIVITY_TYPES];
   const [title, setTitle] = useState(activity?.title ?? '');
   const [selectedTags, setSelectedTags] = useState<string[]>(activity?.tags ?? []);
   const [extraTags, setExtraTags] = useState<string[]>(
-    activity?.tags.filter(t => !ACTIVITY_TYPES.includes(t as (typeof ACTIVITY_TYPES)[number])) ?? []
+    activity?.tags.filter(tag => !availableTypes.includes(tag)) ?? []
   );
   const [isAddingTag, setIsAddingTag] = useState(false);
   const [newTagValue, setNewTagValue] = useState('');
@@ -58,7 +60,7 @@ export const ActivityModal = ({ isOpen, onClose, onSubmit, activity }: ActivityM
 
   const commitNewTag = () => {
     const trimmed = newTagValue.trim();
-    if (trimmed && !extraTags.includes(trimmed) && !ACTIVITY_TYPES.includes(trimmed as (typeof ACTIVITY_TYPES)[number])) {
+    if (trimmed && !extraTags.includes(trimmed) && !availableTypes.includes(trimmed)) {
       setExtraTags(prev => [...prev, trimmed]);
       setSelectedTags([trimmed]);
     }
@@ -107,7 +109,7 @@ export const ActivityModal = ({ isOpen, onClose, onSubmit, activity }: ActivityM
         <div className="flex flex-col gap-2">
           <p className="text-sub2-sb text-grey-900">활동 종류</p>
           <div className="flex gap-2 py-2 overflow-x-auto scrollbar-hide">
-            {ACTIVITY_TYPES.map(tag => (
+            {availableTypes.map(tag => (
               <ActivityTag
                 key={tag}
                 label={tag}

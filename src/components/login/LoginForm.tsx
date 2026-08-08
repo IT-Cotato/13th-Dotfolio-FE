@@ -1,25 +1,44 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useState, type FormEvent } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { login } from "@/api/auth";
+import { ApiError } from "@/api/client";
 import { AuthForm } from "@/components/login/AuthForm";
 import { AuthFormIntro } from "@/components/login/AuthFormIntro";
 import { GoogleLoginButton } from "@/components/login/GoogleLoginButton";
 import { LoginFields } from "@/components/login/LoginFields";
+import { saveAuthTokens } from "@/utils/authTokens";
 
 export function LoginForm() {
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [keepSignedIn, setKeepSignedIn] = useState(false);
-  const [hasLoginError, setHasLoginError] = useState(false);
+  const [loginError, setLoginError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const isLoginEnabled = email.trim().length > 0 && password.length > 0;
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    {
-      /* 임시 동작 확인 용*/
+    if (!isLoginEnabled || isSubmitting) {
+      return;
     }
-    if (isLoginEnabled) {
-      setHasLoginError(true);
+
+    setIsSubmitting(true);
+    setLoginError(null);
+
+    try {
+      const { data } = await login({ email: email.trim(), password });
+      saveAuthTokens(data);
+      navigate("/");
+    } catch (error) {
+      setLoginError(
+        error instanceof ApiError
+          ? error.message
+          : "로그인 중 오류가 발생했습니다. 다시 시도해주세요.",
+      );
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -31,16 +50,17 @@ export function LoginForm() {
 
       <LoginFields
         email={email}
-        hasError={hasLoginError}
+        errorMessage={loginError ?? undefined}
+        hasError={loginError !== null}
         keepSignedIn={keepSignedIn}
         onEmailChange={(value) => {
           setEmail(value);
-          setHasLoginError(false);
+          setLoginError(null);
         }}
         onKeepSignedInChange={setKeepSignedIn}
         onPasswordChange={(value) => {
           setPassword(value);
-          setHasLoginError(false);
+          setLoginError(null);
         }}
         password={password}
       />
@@ -48,11 +68,11 @@ export function LoginForm() {
       <div className="flex w-full flex-col gap-3">
         <button
           className={`w-full px-5 py-3.5 rounded-[14px] text-title2 text-grey-0 ${
-            isLoginEnabled
+            isLoginEnabled && !isSubmitting
               ? "flex items-center justify-center gap-2 bg-primary-gradient cursor-pointer"
               : "bg-grey-300 "
           }`}
-          disabled={!isLoginEnabled}
+          disabled={!isLoginEnabled || isSubmitting}
           type="submit"
         >
           로그인

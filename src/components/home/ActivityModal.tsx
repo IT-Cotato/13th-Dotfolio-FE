@@ -4,7 +4,8 @@ import { Button } from '@/components/common/button';
 import { DatePicker } from '@/components/common/DatePicker';
 import CalendarIcon from '@/assets/calendar_today.svg';
 import CloseIcon from '@/assets/close.svg';
-import { useActivities, type ActivityFormData } from '@/contexts/ActivitiesContext';
+import { ACTIVITY_TYPES } from '@/constants/activity';
+import type { ActivityFormData } from '@/contexts/ActivitiesContext';
 import type { Activity } from '@/types/activity';
 
 interface ActivityModalProps {
@@ -15,19 +16,20 @@ interface ActivityModalProps {
 }
 
 export const ActivityModal = ({ isOpen, onClose, onSubmit, activity }: ActivityModalProps) => {
-  const { activities } = useActivities();
   const [title, setTitle] = useState(activity?.title ?? '');
-  const [description, setDescription] = useState(activity?.description ?? '');
-  const [selectedTypeId, setSelectedTypeId] = useState(activity?.activityTypeId ?? '');
-  const [selectedCustomLabel, setSelectedCustomLabel] = useState<string | null>(null);
-  const [extraLabels, setExtraLabels] = useState<string[]>([]);
-  const [isAddingType, setIsAddingType] = useState(false);
-  const [newTypeValue, setNewTypeValue] = useState('');
+  const [selectedTags, setSelectedTags] = useState<string[]>(activity ? [activity.activityTypeName] : []);
+  const [extraTags, setExtraTags] = useState<string[]>(
+    activity && !ACTIVITY_TYPES.includes(activity.activityTypeName as (typeof ACTIVITY_TYPES)[number])
+      ? [activity.activityTypeName]
+      : []
+  );
+  const [isAddingTag, setIsAddingTag] = useState(false);
+  const [newTagValue, setNewTagValue] = useState('');
   const [startDate, setStartDate] = useState(activity?.startDate ?? '');
   const [endDate, setEndDate] = useState(activity?.endDate ?? '');
   const [endDateUnknown, setEndDateUnknown] = useState(activity?.endDateUnknown ?? false);
   const [openPicker, setOpenPicker] = useState<'start' | 'end' | null>(null);
-  const typeInputRef = useRef<HTMLInputElement>(null);
+  const tagInputRef = useRef<HTMLInputElement>(null);
   const startPickerRef = useRef<HTMLDivElement>(null);
   const endPickerRef = useRef<HTMLDivElement>(null);
 
@@ -45,46 +47,28 @@ export const ActivityModal = ({ isOpen, onClose, onSubmit, activity }: ActivityM
 
   if (!isOpen) return null;
 
-  // 활동 종류 목록 조회 API가 없어서, 지금까지 만들어진 활동들에서 종류를 추려서 보여줌.
-  // 활동이 하나도 없으면 고를 수 있는 종류도 없음 (백엔드에 목록 API가 생기면 교체 필요).
-  const typeOptions = Array.from(
-    new Map(activities.map(a => [a.activityTypeId, a.activityTypeName])).entries()
-  ).map(([id, name]) => ({ id, name }));
-
-  if (activity && !typeOptions.some(t => t.id === activity.activityTypeId)) {
-    typeOptions.unshift({ id: activity.activityTypeId, name: activity.activityTypeName });
-  }
-
-  const selectType = (id: string, name: string) => {
-    setSelectedTypeId(id);
-    setSelectedCustomLabel(null);
-    void name;
+  const toggleTag = (tag: string) => {
+    setSelectedTags(prev => prev.includes(tag) ? [] : [tag]);
   };
 
-  const selectCustomLabel = (label: string) => {
-    setSelectedCustomLabel(prev => (prev === label ? null : label));
-    setSelectedTypeId('');
-  };
-
-  const commitNewType = () => {
-    const trimmed = newTypeValue.trim();
-    if (trimmed && !extraLabels.includes(trimmed) && !typeOptions.some(t => t.name === trimmed)) {
-      setExtraLabels(prev => [...prev, trimmed]);
-      setSelectedCustomLabel(trimmed);
-      setSelectedTypeId('');
+  const commitNewTag = () => {
+    const trimmed = newTagValue.trim();
+    if (trimmed && !extraTags.includes(trimmed) && !ACTIVITY_TYPES.includes(trimmed as (typeof ACTIVITY_TYPES)[number])) {
+      setExtraTags(prev => [...prev, trimmed]);
+      setSelectedTags([trimmed]);
     }
-    setNewTypeValue('');
-    setIsAddingType(false);
+    setNewTagValue('');
+    setIsAddingTag(false);
   };
 
-  const handleTypeInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') { e.preventDefault(); commitNewType(); }
-    else if (e.key === 'Escape') { setNewTypeValue(''); setIsAddingType(false); }
+  const handleTagInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') { e.preventDefault(); commitNewTag(); }
+    else if (e.key === 'Escape') { setNewTagValue(''); setIsAddingTag(false); }
   };
 
   const isDisabled =
     !title.trim() ||
-    !selectedTypeId ||
+    selectedTags.length === 0 ||
     !startDate ||
     (!endDate && !endDateUnknown);
 
@@ -114,68 +98,48 @@ export const ActivityModal = ({ isOpen, onClose, onSubmit, activity }: ActivityM
           />
         </div>
 
-        {/* 활동 설명 */}
-        <div className="flex flex-col gap-2">
-          <p className="text-sub2-sb text-grey-900">활동 설명</p>
-          <textarea
-            value={description}
-            onChange={e => setDescription(e.target.value)}
-            placeholder="활동에 대해 간단히 설명해주세요."
-            rows={2}
-            className="py-3 border-b border-grey-100 text-body2-md text-grey-900 placeholder:text-grey-400 outline-none resize-none transition-colors"
-          />
-        </div>
-
         {/* 활동 종류 */}
         <div className="flex flex-col gap-2">
           <p className="text-sub2-sb text-grey-900">활동 종류</p>
           <div className="flex gap-2 py-2 overflow-x-auto scrollbar-hide">
-            {typeOptions.map(option => (
+            {ACTIVITY_TYPES.map(tag => (
               <ActivityTag
-                key={option.id}
-                label={option.name}
-                selected={selectedTypeId === option.id}
-                onClick={() => selectType(option.id, option.name)}
+                key={tag}
+                label={tag}
+                selected={selectedTags.includes(tag)}
+                onClick={() => toggleTag(tag)}
               />
             ))}
-            {extraLabels.map(label => (
+            {extraTags.map(tag => (
               <ActivityTag
-                key={label}
-                label={label}
-                selected={selectedCustomLabel === label}
-                onClick={() => selectCustomLabel(label)}
+                key={tag}
+                label={tag}
+                selected={selectedTags.includes(tag)}
+                onClick={() => toggleTag(tag)}
               />
             ))}
-            {isAddingType ? (
+            {isAddingTag ? (
               <input
-                ref={typeInputRef}
+                ref={tagInputRef}
                 autoFocus
                 type="text"
-                value={newTypeValue}
-                onChange={e => setNewTypeValue(e.target.value)}
-                onKeyDown={handleTypeInputKeyDown}
-                onBlur={commitNewType}
-                size={Math.max(4, newTypeValue.length)}
+                value={newTagValue}
+                onChange={e => setNewTagValue(e.target.value)}
+                onKeyDown={handleTagInputKeyDown}
+                onBlur={commitNewTag}
+                size={Math.max(4, newTagValue.length)}
                 className="px-3 py-2 rounded-xl border border-dashed border-grey-100 text-body2-md text-grey-900 outline-none bg-transparent shrink-0"
               />
             ) : (
               <button
                 type="button"
-                onClick={() => setIsAddingType(true)}
+                onClick={() => setIsAddingTag(true)}
                 className="flex shrink-0 items-center justify-center px-3 py-2 rounded-xl border border-dashed border-grey-100 text-body2-md text-grey-700 cursor-pointer"
               >
                 +
               </button>
             )}
           </div>
-          {selectedCustomLabel && (
-            <p className="text-caption1 text-error-text">
-              새로운 활동 종류는 아직 생성할 수 없어요. 기존 종류 중에서 선택해주세요.
-            </p>
-          )}
-          {typeOptions.length === 0 && (
-            <p className="text-caption1 text-grey-400">선택 가능한 활동 종류가 없어요.</p>
-          )}
         </div>
 
         {/* 날짜 */}
@@ -255,7 +219,14 @@ export const ActivityModal = ({ isOpen, onClose, onSubmit, activity }: ActivityM
         <Button
           label={activity ? '수정하기' : '활동 생성'}
           disabled={isDisabled}
-          onClick={() => onSubmit({ title, activityTypeId: selectedTypeId, description, startDate, endDate, endDateUnknown })}
+          onClick={() => onSubmit({
+            title,
+            activityTypeId: selectedTags[0] ?? '',
+            description: activity?.description ?? '',
+            startDate,
+            endDate,
+            endDateUnknown,
+          })}
         />
       </div>
     </div>

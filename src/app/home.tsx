@@ -154,8 +154,7 @@ export default function Home() {
       <ConfirmModal
         isOpen={confirmModal === 'delete'}
         title="활동을 삭제하시겠어요?"
-        description="활동을 삭제하면 작성한 모든 기록이 함께 삭제됩니다.
-기록을 보관하려면 기록 종료 및 보관을 이용해 주세요."
+        description="활동을 삭제하면 작성한 모든 기록이 함께 삭제됩니다.기록을 보관하려면 기록 종료 및 보관을 이용해 주세요."
         confirmLabel="활동 삭제"
         onConfirm={handleDelete}
         onCancel={closeConfirm}

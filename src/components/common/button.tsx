@@ -5,11 +5,12 @@ interface ButtonProps {
   disabled?: boolean;
   variant?: 'primary' | 'outline';
   className?: string;
+  type?: 'button' | 'submit' | 'reset';
 }
 
-export const Button = ({ label, icon, onClick, disabled = false, variant = 'primary', className = '' }: ButtonProps) => (
+export const Button = ({ label, icon, onClick, disabled = false, variant = 'primary', className = '', type = 'button' }: ButtonProps) => (
   <button
-    type="button"
+    type={type}
     onClick={onClick}
     disabled={disabled}
     className={`w-full h-13 flex px-5 py-2.5 items-center justify-center rounded-[14px] text-sub2-sb transition-all ${

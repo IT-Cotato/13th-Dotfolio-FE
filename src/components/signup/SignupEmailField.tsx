@@ -3,11 +3,11 @@ import ArrowDropDownIcon from "@/assets/arrow_drop_down.svg";
 import { AuthFormField } from "@/components/login/AuthFormField";
 
 const DOMAIN_OPTIONS = ["naver.com", "gmail.com", "kakao.com", "daum.com"];
-const MOCK_REGISTERED_EMAIL = "cotato@gmail.com";
 
-type EmailError = "format" | "duplicate" | null;
+type EmailError = "format" | null;
 
 interface SignupEmailFieldProps {
+  onEmailChange: (email: string) => void;
   onValidityChange: (isValid: boolean) => void;
 }
 
@@ -22,10 +22,13 @@ function getEmailError(localPart: string, domain: string): EmailError {
     return "format";
   }
 
-  return email.toLowerCase() === MOCK_REGISTERED_EMAIL ? "duplicate" : null;
+  return null;
 }
 
-export function SignupEmailField({ onValidityChange }: SignupEmailFieldProps) {
+export function SignupEmailField({
+  onEmailChange,
+  onValidityChange,
+}: SignupEmailFieldProps) {
   const [localPart, setLocalPart] = useState("");
   const [domain, setDomain] = useState("");
   const [emailError, setEmailError] = useState<EmailError>(null);
@@ -40,6 +43,14 @@ export function SignupEmailField({ onValidityChange }: SignupEmailFieldProps) {
   useEffect(() => {
     onValidityChange(isEmailValid);
   }, [isEmailValid, onValidityChange]);
+
+  useEffect(() => {
+    onEmailChange(
+      localPart.trim() && domain.trim()
+        ? `${localPart.trim()}@${domain.trim()}`
+        : "",
+    );
+  }, [domain, localPart, onEmailChange]);
 
   const validateEmail = () => {
     setEmailError(getEmailError(localPart, domain));
@@ -146,9 +157,7 @@ export function SignupEmailField({ onValidityChange }: SignupEmailFieldProps) {
 
         {emailError && (
           <p role="alert" className="flex-1 text-body3-r text-error-text">
-            {emailError === "format"
-              ? "올바른 이메일 형식으로 입력해주세요. 예: cotato@gmail.com"
-              : "이미 가입된 이메일 주소입니다. 다른 이메일을 입력해주세요."}
+            올바른 이메일 형식으로 입력해주세요. 예: cotato@gmail.com
           </p>
         )}
       </div>

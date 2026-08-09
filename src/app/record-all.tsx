@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card } from '@/components/common/card';
 import { CategoryHeader } from '@/components/common/CategoryHeader';
@@ -9,31 +9,14 @@ import { RecordDetailModal } from '@/components/record/RecordDetailModal';
 import { StatusTag } from '@/components/record/StatusTag';
 import { CategoryDropdown } from '@/components/record/CategoryDropdown';
 import { useToast } from '@/hooks/useToast';
+import { useRecordDeletion } from '@/hooks/useRecordDeletion';
 import { useTemplates } from '@/contexts/TemplatesContext';
-import {
-  getRecords,
-  deleteRecord,
-  restoreRecord,
-  toStatusLabel,
-  toStatusValue,
-  type RecordListItem,
-} from '@/api/records';
+import { getRecords, toRecordEntry, toStatusValue } from '@/api/records';
 import { ApiError } from '@/api/client';
 import type { RecordEntry } from '@/types/record';
 
 const STATUS_FILTERS = ['전체', '기록 중', '기록 완료'];
 const PAGE_SIZE = 7;
-
-const toRecordEntry = (item: RecordListItem): RecordEntry => ({
-  id: item.id,
-  activityId: item.activityId,
-  title: item.title,
-  date: item.createdAt.slice(0, 10).replace(/-/g, '.'),
-  status: toStatusLabel(item.status),
-  templateId: item.templateId,
-  answers: {},
-  memoIds: [],
-});
 
 export default function RecordAll() {
   const navigate = useNavigate();
@@ -44,9 +27,9 @@ export default function RecordAll() {
   const [page, setPage] = useState(0);
   const [pageInfo, setPageInfo] = useState({ totalPages: 0, first: true, last: true });
   const [isLoading, setIsLoading] = useState(false);
-  const [deleteTarget, setDeleteTarget] = useState<RecordEntry | null>(null);
   const [selectedRecordId, setSelectedRecordId] = useState<string | null>(null);
-  const { toast, fireToast, dismissToast } = useToast();
+  const toastState = useToast();
+  const { toast, fireToast } = toastState;
 
   const categoryOptions = [
     { id: 'all', label: '전체' },
@@ -63,64 +46,37 @@ export default function RecordAll() {
     setPage(0);
   };
 
-  useEffect(() => {
-    let cancelled = false;
-
-    const fetchRecords = async () => {
-      setIsLoading(true);
-      try {
-        const response = await getRecords({
-          status: statusFilter === '전체' ? undefined : toStatusValue(statusFilter),
-          templateId: categoryFilter === 'all' ? undefined : categoryFilter,
-          page,
-          size: PAGE_SIZE,
-        });
-        if (cancelled) return;
-        setRecords(response.data.content.map(toRecordEntry));
-        setPageInfo({
-          totalPages: response.data.totalPages,
-          first: response.data.first,
-          last: response.data.last,
-        });
-      } catch (error) {
-        if (cancelled) return;
-        const message = error instanceof ApiError ? error.message : '기록을 불러오지 못했습니다.';
-        fireToast(message, undefined, 'error');
-      } finally {
-        if (!cancelled) setIsLoading(false);
-      }
-    };
-
-    fetchRecords();
-    return () => {
-      cancelled = true;
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [statusFilter, categoryFilter, page]);
-
-  const handleConfirmDelete = async () => {
-    if (!deleteTarget) return;
-    const removed = deleteTarget;
-    setDeleteTarget(null);
+  const fetchRecords = useCallback(async () => {
+    setIsLoading(true);
     try {
-      await deleteRecord(removed.id);
-      setRecords(prev => prev.filter(r => r.id !== removed.id));
-      fireToast('기록이 삭제되었습니다.', () => {
-        restoreRecord(removed.id)
-          .then(() => {
-            setRecords(prev => [...prev, removed]);
-            dismissToast();
-          })
-          .catch((error: unknown) => {
-            const message = error instanceof ApiError ? error.message : '기록 복구에 실패했습니다.';
-            fireToast(message, undefined, 'error');
-          });
+      const response = await getRecords({
+        status: statusFilter === '전체' ? undefined : toStatusValue(statusFilter),
+        templateId: categoryFilter === 'all' ? undefined : categoryFilter,
+        page,
+        size: PAGE_SIZE,
+      });
+      setRecords(response.data.content.map(toRecordEntry));
+      setPageInfo({
+        totalPages: response.data.totalPages,
+        first: response.data.first,
+        last: response.data.last,
       });
     } catch (error) {
-      const message = error instanceof ApiError ? error.message : '기록 삭제에 실패했습니다.';
+      const message = error instanceof ApiError ? error.message : '기록을 불러오지 못했습니다.';
       fireToast(message, undefined, 'error');
+    } finally {
+      setIsLoading(false);
     }
-  };
+  }, [statusFilter, categoryFilter, page, fireToast]);
+
+  useEffect(() => {
+    const run = async () => {
+      await fetchRecords();
+    };
+    run();
+  }, [fetchRecords]);
+
+  const { deleteTarget, setDeleteTarget, handleConfirmDelete } = useRecordDeletion(fetchRecords, toastState);
 
   return (
     <Card>

@@ -1,4 +1,5 @@
 import { requestApi } from "@/api/client";
+import type { RecordEntry } from "@/types/record";
 
 const STATUS_LABELS: Record<string, string> = {
   DRAFT: "기록 중",
@@ -70,6 +71,17 @@ export interface RecordDetail extends RecordListItem {
   answers: RecordAnswer[];
   memos: RecordMemo[];
 }
+
+export const toRecordEntry = (item: RecordListItem): RecordEntry => ({
+  id: item.id,
+  activityId: item.activityId,
+  title: item.title,
+  date: item.createdAt.slice(0, 10).replace(/-/g, "."),
+  status: toStatusLabel(item.status),
+  templateId: item.templateId,
+  answers: {},
+  memoIds: [],
+});
 
 export function getRecordDetail(recordId: string) {
   return requestApi<RecordDetail>(`/api/records/${recordId}`);

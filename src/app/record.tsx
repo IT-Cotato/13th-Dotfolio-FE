@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card } from '@/components/common/card';
 import { Breadcrumb } from '@/components/common/Breadcrumb';
@@ -9,28 +9,12 @@ import { ConfirmModal } from '@/components/common/ConfirmModal';
 import { Toast } from '@/components/common/Toast';
 import { RecordList } from '@/components/record/RecordList';
 import { useToast } from '@/hooks/useToast';
+import { useRecordDeletion } from '@/hooks/useRecordDeletion';
 import { useActivities } from '@/contexts/ActivitiesContext';
 import { useTemplates } from '@/contexts/TemplatesContext';
-import {
-  getRecentRecords,
-  deleteRecord,
-  restoreRecord,
-  toStatusLabel,
-  type RecordListItem,
-} from '@/api/records';
+import { getRecentRecords, toRecordEntry } from '@/api/records';
 import { ApiError } from '@/api/client';
 import type { RecordEntry } from '@/types/record';
-
-const toRecordEntry = (item: RecordListItem): RecordEntry => ({
-  id: item.id,
-  activityId: item.activityId,
-  title: item.title,
-  date: item.createdAt.slice(0, 10).replace(/-/g, '.'),
-  status: toStatusLabel(item.status),
-  templateId: item.templateId,
-  answers: {},
-  memoIds: [],
-});
 
 export default function Record() {
   const navigate = useNavigate();
@@ -38,57 +22,30 @@ export default function Record() {
   const { templates } = useTemplates();
   const [records, setRecords] = useState<RecordEntry[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [deleteTarget, setDeleteTarget] = useState<RecordEntry | null>(null);
-  const { toast, fireToast, dismissToast } = useToast();
+  const toastState = useToast();
+  const { toast, fireToast } = toastState;
+
+  const fetchRecent = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const response = await getRecentRecords();
+      setRecords(response.data.slice(0, 4).map(toRecordEntry));
+    } catch (error) {
+      const message = error instanceof ApiError ? error.message : '기록을 불러오지 못했습니다.';
+      fireToast(message, undefined, 'error');
+    } finally {
+      setIsLoading(false);
+    }
+  }, [fireToast]);
 
   useEffect(() => {
-    let cancelled = false;
-
-    const fetchRecent = async () => {
-      setIsLoading(true);
-      try {
-        const response = await getRecentRecords();
-        if (cancelled) return;
-        setRecords(response.data.slice(0, 4).map(toRecordEntry));
-      } catch (error) {
-        if (cancelled) return;
-        const message = error instanceof ApiError ? error.message : '기록을 불러오지 못했습니다.';
-        fireToast(message, undefined, 'error');
-      } finally {
-        if (!cancelled) setIsLoading(false);
-      }
+    const run = async () => {
+      await fetchRecent();
     };
+    run();
+  }, [fetchRecent]);
 
-    fetchRecent();
-    return () => {
-      cancelled = true;
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const handleConfirmDelete = async () => {
-    if (!deleteTarget) return;
-    const removed = deleteTarget;
-    setDeleteTarget(null);
-    try {
-      await deleteRecord(removed.id);
-      setRecords(prev => prev.filter(r => r.id !== removed.id));
-      fireToast('기록이 삭제되었습니다.', () => {
-        restoreRecord(removed.id)
-          .then(() => {
-            setRecords(prev => [...prev, removed]);
-            dismissToast();
-          })
-          .catch((error: unknown) => {
-            const message = error instanceof ApiError ? error.message : '기록 복구에 실패했습니다.';
-            fireToast(message, undefined, 'error');
-          });
-      });
-    } catch (error) {
-      const message = error instanceof ApiError ? error.message : '기록 삭제에 실패했습니다.';
-      fireToast(message, undefined, 'error');
-    }
-  };
+  const { deleteTarget, setDeleteTarget, handleConfirmDelete } = useRecordDeletion(fetchRecent, toastState);
 
   return (
     <Card>

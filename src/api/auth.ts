@@ -19,6 +19,10 @@ export interface LoginResponse {
   refreshToken: string;
 }
 
+export interface PasswordResetRequest {
+  email: string;
+}
+
 export function signup(request: SignupRequest) {
   return requestApi<string>("/api/auth/signup", {
     method: "POST",
@@ -28,6 +32,13 @@ export function signup(request: SignupRequest) {
 
 export function login(request: LoginRequest) {
   return requestApi<LoginResponse>("/api/auth/login", {
+    method: "POST",
+    body: request,
+  });
+}
+
+export function requestPasswordReset(request: PasswordResetRequest) {
+  return requestApi<void>("/api/auth/reset-request", {
     method: "POST",
     body: request,
   });

@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useNavigate } from "react-router-dom";
 import Home from "./home";
 import Memo from "./memo";
 import Login from "./login";
@@ -34,6 +34,8 @@ export default function Layout() {
 }
 
 function HomeLayout() {
+  const navigate = useNavigate();
+
   return (
     <ActivitiesProvider>
       <TemplatesProvider>
@@ -42,7 +44,10 @@ function HomeLayout() {
             <header className="w-full h-20 relative flex items-center justify-between pl-8 pr-6">
               <div className="flex items-center gap-4">
                 <MenuIcon className="w-6 h-6 text-grey-700 cursor-pointer" />
-                <span className="font-nexon text-logo text-grey-600">
+                <span
+                  className="font-nexon text-logo text-grey-600 cursor-pointer"
+                  onClick={() => navigate('/')}
+                >
                   Dotfolio
                 </span>
               </div>

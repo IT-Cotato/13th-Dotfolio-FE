@@ -12,9 +12,10 @@ const STATUS_STYLES: Record<string, { bgClassName: string; borderClassName: stri
 interface RecordListProps {
   records: RecordEntry[];
   onDeleteClick?: (record: RecordEntry) => void;
+  onRecordClick?: (record: RecordEntry) => void;
 }
 
-export const RecordList = ({ records, onDeleteClick }: RecordListProps) => {
+export const RecordList = ({ records, onDeleteClick, onRecordClick }: RecordListProps) => {
   const { templates } = useTemplates();
   return (
   <div className="w-full grid grid-cols-[1fr_auto_auto_auto] items-center gap-x-6">
@@ -24,7 +25,10 @@ export const RecordList = ({ records, onDeleteClick }: RecordListProps) => {
       return (
         <Fragment key={record.id}>
           {i > 0 && <div className="col-span-4 border-t border-grey-100" />}
-          <div className="flex flex-col gap-2 py-4">
+          <div
+            className={`flex flex-col gap-2 py-4 ${onRecordClick ? 'cursor-pointer' : ''}`}
+            onClick={() => onRecordClick?.(record)}
+          >
             <p className="text-grey-900 text-sub2-sb">제목 : {record.title}</p>
             <p className="text-grey-700 text-body3-r">{record.date}</p>
           </div>

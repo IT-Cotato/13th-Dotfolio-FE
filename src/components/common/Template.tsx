@@ -23,16 +23,16 @@ export const Template = ({
     style={{ aspectRatio: '266/201' }}
     onClick={onClick}
   >
-    <div className={`w-full flex-1 flex flex-col items-start gap-4 px-4 pt-4 pb-13 border-b ${borderClassName} ${bgClassName}`}>
-      <p className="text-grey-950 text-sub1-sb">{title}</p>
-      <p className="text-grey-700 text-body3-r">{description}</p>
+    <div className={`w-full flex-1 min-h-0 flex flex-col items-start gap-1 px-4 pt-4 border-b ${borderClassName} ${bgClassName}`}>
+      <p className="text-grey-950 text-sub1-sb line-clamp-1">{title}</p>
+      <p className="text-grey-700 text-body3-r line-clamp-2">{description}</p>
     </div>
-    <div className="w-full shrink-0 flex items-center justify-between p-4 bg-grey-0">
-      <span className="flex items-center gap-1 text-grey-600 text-caption1">
-        <DocumentIcon className="w-4 h-4 text-grey-600" />
-        {footerLabel}
+    <div className="w-full shrink-0 flex items-center justify-between gap-2 p-4 bg-grey-0">
+      <span className="flex items-center gap-1 min-w-0 text-grey-600 text-caption1">
+        <DocumentIcon className="w-4 h-4 text-grey-600 shrink-0" />
+        <span className="truncate">{footerLabel}</span>
       </span>
-      <span className="w-8 h-8 flex items-center justify-center rounded-full bg-grey-700 text-grey-0">
+      <span className="w-8 h-8 shrink-0 flex items-center justify-center rounded-full bg-grey-700 text-grey-0">
         <ArrowForwardIcon className="w-4 h-4" />
       </span>
     </div>

@@ -1,3 +1,5 @@
+import { getAuthorizationHeader } from "@/utils/authTokens";
+
 export interface ApiResponse<T> {
   success: boolean;
   message: string;
@@ -26,6 +28,7 @@ function getApiUrl(path: string) {
   const baseUrl = import.meta.env.VITE_API_BASE_URL;
 
   if (!baseUrl) {
+    console.error("[api] VITE_API_BASE_URL이 설정되지 않았습니다. .env 파일을 확인해주세요.");
     throw new ApiError("API 기본 주소가 설정되지 않았습니다.", 0);
   }
 
@@ -77,6 +80,11 @@ export async function requestApi<T>(
 
   if (body !== undefined) {
     requestHeaders.set("Content-Type", "application/json");
+  }
+
+  const authorizationHeader = getAuthorizationHeader();
+  if (authorizationHeader && !requestHeaders.has("Authorization")) {
+    requestHeaders.set("Authorization", authorizationHeader);
   }
 
   const apiUrl = getApiUrl(path);

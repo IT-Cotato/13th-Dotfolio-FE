@@ -10,15 +10,16 @@ import { ActivityCard } from '@/components/home/ActivityCard';
 import { Toast } from '@/components/common/Toast';
 import { ConfirmModal } from '@/components/common/ConfirmModal';
 import type { Activity } from '@/types/activity';
-import { useActivities } from '@/contexts/ActivitiesContext';
+import { useActivities, type ActivityFormData } from '@/contexts/ActivitiesContext';
 import { useRecords } from '@/contexts/RecordsContext';
+import { ApiError } from '@/api/client';
 
 export default function Home() {
-  const { activities, addActivity, updateActivity, removeActivity, restoreActivity } = useActivities();
-  const { records, removeRecordsByActivity, restoreRecord } = useRecords();
+  const { activities, isLoading, addActivity, updateActivity, removeActivity, archiveActivity } = useActivities();
+  const { removeRecordsByActivity } = useRecords();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedActivity, setSelectedActivity] = useState<Activity | null>(null);
-  const [toast, setToast] = useState<{ message: string; onUndo?: () => void } | null>(null);
+  const [toast, setToast] = useState<{ message: string; variant?: 'success' | 'error' } | null>(null);
   const toastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [confirmModal, setConfirmModal] = useState<'delete' | 'end' | null>(null);
   const [targetActivity, setTargetActivity] = useState<Activity | null>(null);
@@ -38,31 +39,38 @@ export default function Home() {
     setTargetActivity(null);
   };
 
-  const fireToast = (message: string, onUndo?: () => void) => {
+  const fireToast = (message: string, variant: 'success' | 'error' = 'success') => {
     if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
-    setToast({ message, onUndo });
+    setToast({ message, variant });
     toastTimerRef.current = setTimeout(() => setToast(null), 2000);
   };
 
-  const handleDelete = () => {
+  const getErrorMessage = (error: unknown, fallback: string) =>
+    error instanceof ApiError ? error.message : fallback;
+
+  const handleDelete = async () => {
     if (!targetActivity) return;
     const removed = targetActivity;
-    const removedRecords = records.filter(record => record.activityId === removed.id);
-    removeActivity(removed.id);
-    removeRecordsByActivity(removed.id);
     closeConfirm();
-    fireToast('활동이 삭제되었습니다.', () => {
-      restoreActivity(removed);
-      removedRecords.forEach(record => restoreRecord(record));
-      if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
-      setToast(null);
-    });
+    try {
+      await removeActivity(removed.id);
+      removeRecordsByActivity(removed.id);
+      fireToast('활동이 삭제되었습니다.');
+    } catch (error) {
+      fireToast(getErrorMessage(error, '활동 삭제에 실패했습니다.'), 'error');
+    }
   };
 
-  const handleEnd = () => {
-    // TODO: 보관 처리 로직
+  const handleEnd = async () => {
+    if (!targetActivity) return;
+    const target = targetActivity;
     closeConfirm();
-    fireToast('활동 기록이 활동 보관함에 보관되었습니다.');
+    try {
+      await archiveActivity(target.id);
+      fireToast('활동 기록이 활동 보관함에 보관되었습니다.');
+    } catch (error) {
+      fireToast(getErrorMessage(error, '활동 보관에 실패했습니다.'), 'error');
+    }
   };
 
   const handleClose = () => {
@@ -70,15 +78,19 @@ export default function Home() {
     setSelectedActivity(null);
   };
 
-  const handleSubmit = (data: Omit<Activity, 'id' | 'recordCount' | 'completedCount'>) => {
-    if (selectedActivity) {
-      updateActivity(selectedActivity.id, data);
-      handleClose();
-      fireToast('변경사항이 저장되었습니다.');
-    } else {
-      addActivity(data);
-      handleClose();
-      fireToast('활동이 성공적으로 생성되었습니다.');
+  const handleSubmit = async (data: ActivityFormData) => {
+    try {
+      if (selectedActivity) {
+        await updateActivity(selectedActivity.id, data);
+        handleClose();
+        fireToast('변경사항이 저장되었습니다.');
+      } else {
+        await addActivity(data);
+        handleClose();
+        fireToast('활동이 성공적으로 생성되었습니다.');
+      }
+    } catch (error) {
+      fireToast(getErrorMessage(error, '요청 처리 중 오류가 발생했습니다.'), 'error');
     }
   };
 
@@ -86,7 +98,7 @@ export default function Home() {
     <>
       {toast && (
         <div className="fixed top-4 left-1/2 -translate-x-1/2 z-[100]">
-          <Toast message={toast.message} onUndo={toast.onUndo} />
+          <Toast message={toast.message} variant={toast.variant} />
         </div>
       )}
       <Card>
@@ -100,8 +112,12 @@ export default function Home() {
             <PrimaryButton label="활동 추가" onClick={() => setIsModalOpen(true)} />
           )}
         </section>
-        {activities.length === 0 ? (
-          <section className="w-full flex flex-col items-center text-center gap-8">
+        {isLoading ? (
+          <section className="w-full flex-1 flex items-center justify-center">
+            <p className="text-body2-r text-grey-500">불러오는 중...</p>
+          </section>
+        ) : activities.length === 0 ? (
+          <section className="w-full flex-1 flex flex-col items-center justify-center gap-8">
             <div className="flex flex-col items-center gap-2.5">
               <Lottie animationData={readABook} loop autoplay style={{ width: 160, height: 160 }} />
               <div className="flex flex-col gap-3">
@@ -138,8 +154,7 @@ export default function Home() {
       <ConfirmModal
         isOpen={confirmModal === 'delete'}
         title="활동을 삭제하시겠어요?"
-        description="활동을 삭제하면 작성한 모든 기록이 함께 삭제됩니다.
-기록을 보관하려면 기록 종료 및 보관을 이용해 주세요."
+        description="활동을 삭제하면 작성한 모든 기록이 함께 삭제됩니다.기록을 보관하려면 기록 종료 및 보관을 이용해 주세요."
         confirmLabel="활동 삭제"
         onConfirm={handleDelete}
         onCancel={closeConfirm}

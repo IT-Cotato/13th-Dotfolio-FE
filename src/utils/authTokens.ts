@@ -13,3 +13,13 @@ export function saveAuthTokens({
   sessionStorage.setItem(REFRESH_TOKEN_KEY, refreshToken);
   sessionStorage.setItem(GRANT_TYPE_KEY, grantType);
 }
+
+export function getAccessToken() {
+  return sessionStorage.getItem(ACCESS_TOKEN_KEY);
+}
+
+export function getAuthorizationHeader() {
+  const grantType = sessionStorage.getItem(GRANT_TYPE_KEY) ?? "Bearer";
+  const accessToken = getAccessToken();
+  return accessToken ? `${grantType} ${accessToken}` : null;
+}

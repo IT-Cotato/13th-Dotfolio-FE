@@ -1,3 +1,5 @@
+import { getAuthorizationHeader } from '@/utils/authTokens';
+
 const DEFAULT_API_BASE_URL = 'https://54.180.186.216.nip.io';
 const REQUEST_TIMEOUT_MS = 10_000;
 
@@ -5,7 +7,6 @@ export const API_BASE_URL = (
   import.meta.env.VITE_API_BASE_URL
   || (import.meta.env.DEV ? '' : DEFAULT_API_BASE_URL)
 ).replace(/\/$/, '');
-
 export interface ApiResponse<T> {
   success: boolean;
   message: string;
@@ -31,19 +32,6 @@ export class ApiError extends Error {
 const getApiUrl = (path: string) => (
   `${API_BASE_URL}/${path.replace(/^\//, '')}`
 );
-
-const getAccessToken = () => {
-  if (typeof window === 'undefined') return null;
-
-  return window.sessionStorage.getItem('dotfolio.accessToken')
-    ?? window.localStorage.getItem('dotfolio.accessToken')
-    ?? window.localStorage.getItem('accessToken')
-    ?? window.sessionStorage.getItem('accessToken')
-    ?? window.localStorage.getItem('access_token')
-    ?? window.sessionStorage.getItem('access_token')
-    ?? window.localStorage.getItem('token')
-    ?? window.sessionStorage.getItem('token');
-};
 
 async function parseResponseBody(response: Response): Promise<unknown> {
   const text = await response.text();
@@ -81,13 +69,15 @@ function isFailedApiResponse(payload: unknown) {
 
 export async function apiRequest<T>(path: string, init: RequestInit = {}): Promise<T> {
   const headers = new Headers(init.headers);
-  const accessToken = getAccessToken();
+  const authorizationHeader = getAuthorizationHeader();
 
   headers.set('Accept', 'application/json');
   if (init.body && !(init.body instanceof FormData)) {
     headers.set('Content-Type', 'application/json');
   }
-  if (accessToken) headers.set('Authorization', `Bearer ${accessToken}`);
+  if (authorizationHeader && !headers.has('Authorization')) {
+    headers.set('Authorization', authorizationHeader);
+  }
 
   const response = await fetch(getApiUrl(path), {
     ...init,
@@ -113,6 +103,12 @@ export async function requestApi<T>(
     requestHeaders.set('Content-Type', 'application/json');
   }
 
+  const authorizationHeader = getAuthorizationHeader();
+  if (authorizationHeader && !requestHeaders.has('Authorization')) {
+    requestHeaders.set('Authorization', authorizationHeader);
+  }
+
+  const apiUrl = getApiUrl(path);
   const abortController = new AbortController();
   const timeoutId = window.setTimeout(
     () => abortController.abort(),
@@ -122,7 +118,7 @@ export async function requestApi<T>(
   let payload: unknown;
 
   try {
-    response = await fetch(getApiUrl(path), {
+    response = await fetch(apiUrl, {
       ...options,
       body: body === undefined ? undefined : JSON.stringify(body),
       headers: requestHeaders,

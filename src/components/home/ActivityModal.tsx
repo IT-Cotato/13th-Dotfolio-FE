@@ -5,15 +5,8 @@ import { DatePicker } from '@/components/common/DatePicker';
 import CalendarIcon from '@/assets/calendar_today.svg';
 import CloseIcon from '@/assets/close.svg';
 import { ACTIVITY_TYPES } from '@/constants/activity';
+import type { ActivityFormData } from '@/contexts/ActivitiesContext';
 import type { Activity } from '@/types/activity';
-
-interface ActivityFormData {
-  title: string;
-  tags: string[];
-  startDate: string;
-  endDate: string;
-  endDateUnknown: boolean;
-}
 
 interface ActivityModalProps {
   isOpen: boolean;
@@ -24,9 +17,11 @@ interface ActivityModalProps {
 
 export const ActivityModal = ({ isOpen, onClose, onSubmit, activity }: ActivityModalProps) => {
   const [title, setTitle] = useState(activity?.title ?? '');
-  const [selectedTags, setSelectedTags] = useState<string[]>(activity?.tags ?? []);
+  const [selectedTags, setSelectedTags] = useState<string[]>(activity ? [activity.activityTypeName] : []);
   const [extraTags, setExtraTags] = useState<string[]>(
-    activity?.tags.filter(t => !ACTIVITY_TYPES.includes(t as (typeof ACTIVITY_TYPES)[number])) ?? []
+    activity && !ACTIVITY_TYPES.includes(activity.activityTypeName as (typeof ACTIVITY_TYPES)[number])
+      ? [activity.activityTypeName]
+      : []
   );
   const [isAddingTag, setIsAddingTag] = useState(false);
   const [newTagValue, setNewTagValue] = useState('');
@@ -84,7 +79,7 @@ export const ActivityModal = ({ isOpen, onClose, onSubmit, activity }: ActivityM
       onClick={() => { setOpenPicker(null); onClose(); }}
     >
       <div
-        className="relative w-full max-w-[464px] mx-4 bg-white rounded-3xl px-8 pt-6 pb-8 flex flex-col gap-8"
+        className="relative w-full max-w-116 mx-4 bg-white rounded-3xl px-8 pt-6 pb-8 flex flex-col gap-8"
         onClick={e => e.stopPropagation()}
       >
         <button type="button" onClick={onClose} className="absolute top-5 right-6 cursor-pointer">
@@ -207,7 +202,7 @@ export const ActivityModal = ({ isOpen, onClose, onSubmit, activity }: ActivityM
             <button
               type="button"
               onClick={() => { setEndDateUnknown(prev => !prev); setOpenPicker(null); }}
-              className={`w-4 h-4 rounded-[4px] border flex items-center justify-center transition-colors cursor-pointer ${
+              className={`w-4 h-4 rounded-sm border flex items-center justify-center transition-colors cursor-pointer ${
                 endDateUnknown ? 'bg-primary-500 border-primary-500' : 'bg-white border-grey-200'
               }`}
             >
@@ -224,7 +219,14 @@ export const ActivityModal = ({ isOpen, onClose, onSubmit, activity }: ActivityM
         <Button
           label={activity ? '수정하기' : '활동 생성'}
           disabled={isDisabled}
-          onClick={() => onSubmit({ title, tags: selectedTags, startDate, endDate, endDateUnknown })}
+          onClick={() => onSubmit({
+            title,
+            activityTypeId: selectedTags[0] ?? '',
+            description: activity?.description ?? '',
+            startDate,
+            endDate,
+            endDateUnknown,
+          })}
         />
       </div>
     </div>

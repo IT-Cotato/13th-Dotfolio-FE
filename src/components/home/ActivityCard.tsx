@@ -19,7 +19,7 @@ export const ActivityCard = ({ activity, onClick, onEdit, onEnd, onDelete }: Act
   const [menuPos, setMenuPos] = useState<{ top: number; left: number } | null>(null);
   const triggerRef = useRef<HTMLDivElement>(null);
   const menuPanelRef = useRef<HTMLDivElement>(null);
-  const firstTag = activity.tags[0] ?? '';
+  const firstTag = activity.activityTypeName;
   const endLabel = activity.endDateUnknown ? '현재 진행 중' : activity.endDate;
   const inProgress = activity.recordCount - activity.completedCount;
 

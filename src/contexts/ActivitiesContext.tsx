@@ -10,12 +10,15 @@ import {
   type ActivityListItem,
 } from '@/api/activities';
 import { toDisplayDate, toIsoDate } from '@/utils/date';
+import { ApiError } from '@/api/client';
 
 export type ActivityFormData = Omit<Activity, 'id' | 'activityTypeName' | 'recordCount' | 'completedCount'>;
 
 interface ActivitiesContextValue {
   activities: Activity[];
   isLoading: boolean;
+  error: string | null;
+  refetch: () => Promise<void>;
   addActivity: (data: ActivityFormData) => Promise<void>;
   updateActivity: (id: string, data: ActivityFormData) => Promise<void>;
   removeActivity: (id: string) => Promise<void>;
@@ -53,13 +56,19 @@ const toPayload = (data: ActivityFormData): ActivityFormPayload => ({
 export const ActivitiesProvider = ({ children }: { children: ReactNode }) => {
   const [activities, setActivities] = useState<Activity[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [selectedActivityId, setSelectedActivityId] = useState<string | null>(null);
 
+  // 목록 새로고침은 절대 예외를 던지지 않음 — 실패는 error 상태로만 반영되고,
+  // 생성/수정/삭제/보관 자체의 성공 여부와는 분리됨 (재조회만 실패해도 방금 한 요청이 실패 처리되지 않도록).
   const refetch = useCallback(async () => {
     setIsLoading(true);
     try {
       const response = await getActivities();
       setActivities(response.data.map(toActivity));
+      setError(null);
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : '활동 목록을 불러오지 못했습니다.');
     } finally {
       setIsLoading(false);
     }
@@ -105,6 +114,8 @@ export const ActivitiesProvider = ({ children }: { children: ReactNode }) => {
       value={{
         activities,
         isLoading,
+        error,
+        refetch,
         addActivity,
         updateActivity,
         removeActivity,

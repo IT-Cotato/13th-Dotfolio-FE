@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card } from '@/components/common/card';
 import { Breadcrumb } from '@/components/common/Breadcrumb';
@@ -9,43 +9,29 @@ import { ConfirmModal } from '@/components/common/ConfirmModal';
 import { Toast } from '@/components/common/Toast';
 import { RecordList } from '@/components/record/RecordList';
 import { useToast } from '@/hooks/useToast';
-import { useRecordDeletion } from '@/hooks/useRecordDeletion';
 import { useActivities } from '@/contexts/ActivitiesContext';
 import { useTemplates } from '@/contexts/TemplatesContext';
-import { getRecentRecords, toRecordEntry } from '@/api/records';
-import { ApiError } from '@/api/client';
+import { useRecords } from '@/contexts/RecordsContext';
 import type { RecordEntry } from '@/types/record';
 
 export default function Record() {
   const navigate = useNavigate();
   const { selectedActivity } = useActivities();
   const { templates } = useTemplates();
-  const [records, setRecords] = useState<RecordEntry[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const toastState = useToast();
-  const { toast, fireToast } = toastState;
+  const { records, removeRecord, restoreRecord } = useRecords();
+  const [deleteTarget, setDeleteTarget] = useState<RecordEntry | null>(null);
+  const { toast, fireToast, dismissToast } = useToast();
 
-  const fetchRecent = useCallback(async () => {
-    setIsLoading(true);
-    try {
-      const response = await getRecentRecords();
-      setRecords(response.data.slice(0, 4).map(toRecordEntry));
-    } catch (error) {
-      const message = error instanceof ApiError ? error.message : '기록을 불러오지 못했습니다.';
-      fireToast(message, undefined, 'error');
-    } finally {
-      setIsLoading(false);
-    }
-  }, [fireToast]);
-
-  useEffect(() => {
-    const run = async () => {
-      await fetchRecent();
-    };
-    run();
-  }, [fetchRecent]);
-
-  const { deleteTarget, setDeleteTarget, handleConfirmDelete } = useRecordDeletion(fetchRecent, toastState);
+  const handleConfirmDelete = () => {
+    if (!deleteTarget) return;
+    const removed = deleteTarget;
+    removeRecord(removed.id);
+    setDeleteTarget(null);
+    fireToast('기록이 삭제되었습니다.', () => {
+      restoreRecord(removed);
+      dismissToast();
+    });
+  };
 
   return (
     <Card>
@@ -61,7 +47,7 @@ export default function Record() {
             moreLabel="더 많은 템플릿 보기"
             onMoreClick={() => navigate('/template-all')}
             />
-        <div className="w-full grid grid-cols-[repeat(auto-fit,minmax(240px,1fr))] gap-6">
+        <div className="w-full grid grid-cols-[repeat(auto-fill,266px)] gap-6">
           {templates.filter(template => !template.isCustom).map(template => (
             <Template
               key={template.id}
@@ -75,7 +61,7 @@ export default function Record() {
         </div>
       </div>
 
-      {!isLoading && records.length === 0 ? (
+      {records.length === 0 ? (
         <div className="w-full flex-1 flex flex-col items-center justify-center gap-8">
           <div className="max-w-[260px] flex flex-col items-center gap-2 text-center">
             <p className="text-sub1-sb text-grey-950">원하는 기록 양식이 없나요?</p>
@@ -92,7 +78,7 @@ export default function Record() {
             moreLabel="전체 기록 보기"
             onMoreClick={() => navigate('/record-all')}
           />
-          <RecordList records={records} onDeleteClick={setDeleteTarget} />
+          <RecordList records={records.slice(0, 4)} onDeleteClick={setDeleteTarget} />
         </div>
       )}
 
@@ -107,7 +93,7 @@ export default function Record() {
 
       {toast && (
         <div className="fixed top-4 left-1/2 -translate-x-1/2 z-[100]">
-          <Toast message={toast.message} onUndo={toast.onUndo} variant={toast.variant} />
+          <Toast message={toast.message} onUndo={toast.onUndo} />
         </div>
       )}
     </Card>

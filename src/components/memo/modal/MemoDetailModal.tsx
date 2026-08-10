@@ -25,6 +25,8 @@ export const MemoDetailModal = ({ memo, onClose, onUpdate, onDelete, onToggleImp
   const [isSaving, setIsSaving] = useState(false);
   const [deletingImageId, setDeletingImageId] = useState<string>();
   const contentRef = useRef<HTMLTextAreaElement>(null);
+  const savedMemoRef = useRef({ title: memo.title ?? '', content: memo.memo });
+  const savingPromiseRef = useRef<Promise<void> | null>(null);
   const dialogRef = useModalFocus<HTMLElement>();
 
   const updatedMemo = (normalizedContent: string) => ({
@@ -33,24 +35,49 @@ export const MemoDetailModal = ({ memo, onClose, onUpdate, onDelete, onToggleImp
     memo: normalizedContent,
   });
 
-  const closeAndSave = async () => {
-    if (isSaving) return;
+  const saveChanges = async () => {
+    if (savingPromiseRef.current) {
+      try {
+        await savingPromiseRef.current;
+      } catch {
+        return false;
+      }
+    }
+
+    const normalizedTitle = title.trim();
     const normalizedContent = contentRef.current?.value.trim() ?? content.trim();
     if (!normalizedContent) {
       setContentError(true);
       contentRef.current?.focus();
-      return;
+      return false;
     }
+    if (
+      savedMemoRef.current.title === normalizedTitle
+      && savedMemoRef.current.content === normalizedContent
+    ) {
+      return true;
+    }
+
     setIsSaving(true);
     setSubmitError('');
+    const nextMemo = updatedMemo(normalizedContent);
+    const request = onUpdate(nextMemo);
+    savingPromiseRef.current = request;
     try {
-      await onUpdate(updatedMemo(normalizedContent));
-      onClose();
+      await request;
+      savedMemoRef.current = { title: normalizedTitle, content: normalizedContent };
+      return true;
     } catch (error) {
       setSubmitError(error instanceof Error ? error.message : '메모를 수정하지 못했습니다.');
+      return false;
     } finally {
+      if (savingPromiseRef.current === request) savingPromiseRef.current = null;
       setIsSaving(false);
     }
+  };
+
+  const closeAndSave = async () => {
+    if (await saveChanges()) onClose();
   };
 
   const deleteAndSave = () => {
@@ -119,7 +146,7 @@ export const MemoDetailModal = ({ memo, onClose, onUpdate, onDelete, onToggleImp
 
         <div className="relative z-0 min-h-0 flex-1 overflow-y-auto px-4 pb-4 pt-4 scrollbar-hide">
           <div className="flex flex-col gap-4">
-            <div className="flex items-center gap-1">
+            <div className="flex min-w-0 flex-nowrap items-center gap-1">
               {memo.isImportant && (
                 <StarIcon
                   aria-hidden="true"
@@ -130,8 +157,8 @@ export const MemoDetailModal = ({ memo, onClose, onUpdate, onDelete, onToggleImp
                 aria-label="메모 제목"
                 value={title}
                 onChange={(event) => setTitle(event.target.value)}
-                placeholder="제목을 추가해보세요."
-                className="min-w-0 flex-1 bg-transparent text-sub1-sb text-grey-950 outline-none placeholder:text-grey-400"
+                onBlur={() => void saveChanges()}
+                className="min-w-0 flex-1 truncate whitespace-nowrap bg-transparent text-sub1-sb text-grey-950 outline-none"
               />
             </div>
 
@@ -152,6 +179,7 @@ export const MemoDetailModal = ({ memo, onClose, onUpdate, onDelete, onToggleImp
                 setContent(event.target.value);
                 if (event.target.value.trim()) setContentError(false);
               }}
+              onBlur={() => void saveChanges()}
               className={`min-h-[208px] w-full resize-none overflow-hidden rounded-lg bg-transparent text-body-reading2-md text-grey-900 outline-none ${
                 contentError ? 'ring-1 ring-error-text' : ''
               }`}

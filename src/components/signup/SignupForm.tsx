@@ -1,4 +1,4 @@
-import { useCallback, useState, type FormEvent } from "react";
+import { useCallback, useRef, useState, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { signup } from "@/api/auth";
 import { ApiError } from "@/api/client";
@@ -25,6 +25,7 @@ const DUPLICATE_EMAIL_ERROR_MESSAGE =
 export function SignupForm() {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
+  const emailRef = useRef("");
   const [password, setPassword] = useState("");
   const [passwordConfirmation, setPasswordConfirmation] = useState("");
   const [name, setName] = useState("");
@@ -49,6 +50,7 @@ export function SignupForm() {
     isRequiredAgreed;
 
   const handleEmailChange = useCallback((value: string) => {
+    emailRef.current = value;
     setEmail(value);
     setSubmitError(null);
     setEmailErrorMessage(null);
@@ -64,10 +66,11 @@ export function SignupForm() {
     setIsSubmitting(true);
     setSubmitError(null);
     setEmailErrorMessage(null);
+    const requestedEmail = email;
 
     try {
       await signup({
-        email,
+        email: requestedEmail,
         password,
         nickname: name.trim(),
         isPrivacyAgreed: isRequiredAgreed,
@@ -75,11 +78,14 @@ export function SignupForm() {
       });
       navigate("/login");
     } catch (error) {
-      if (
+      const isDuplicateEmailError =
         error instanceof ApiError &&
-        (error.status === 409 || error.message.includes("이미 가입된 이메일"))
-      ) {
-        setEmailErrorMessage(DUPLICATE_EMAIL_ERROR_MESSAGE);
+        (error.status === 409 || error.message.includes("이미 가입된 이메일"));
+
+      if (isDuplicateEmailError) {
+        if (emailRef.current === requestedEmail) {
+          setEmailErrorMessage(DUPLICATE_EMAIL_ERROR_MESSAGE);
+        }
       } else {
         setSubmitError(
           error instanceof ApiError
@@ -120,7 +126,10 @@ export function SignupForm() {
         />
       </AuthFormField>
 
-      <AuthFormField htmlFor="signup-password-confirmation" label="비밀번호 확인">
+      <AuthFormField
+        htmlFor="signup-password-confirmation"
+        label="비밀번호 확인"
+      >
         <PasswordInput
           ariaLabel="비밀번호 확인"
           autoComplete="new-password"

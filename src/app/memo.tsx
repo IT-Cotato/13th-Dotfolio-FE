@@ -73,6 +73,7 @@ export default function Memo() {
   const [openingMemoId, setOpeningMemoId] = useState<string>();
   const [isMoveOpen, setIsMoveOpen] = useState(false);
   const [deleteMemoId, setDeleteMemoId] = useState<string>();
+  const [isBulkDeleting, setIsBulkDeleting] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [loadError, setLoadError] = useState('');
   const { toast, fireToast, dismissToast } = useToast();
@@ -236,6 +237,24 @@ export default function Memo() {
     });
   };
 
+  const deleteSelectedMemos = async () => {
+    if (selectedIds.size === 0 || isBulkDeleting) return;
+
+    const memoIds = [...selectedIds];
+    const selectedMemoIds = new Set(memoIds);
+    setIsBulkDeleting(true);
+    try {
+      await deleteMemosRequest(memoIds);
+      setMemos((current) => current.filter((memo) => !selectedMemoIds.has(memo.id)));
+      setSelectedIds(new Set());
+      fireToast(`${memoIds.length}개의 메모가 삭제되었습니다.`);
+    } catch (error) {
+      fireToast(getErrorMessage(error, '메모를 삭제하지 못했습니다.'), undefined, 'error');
+    } finally {
+      setIsBulkDeleting(false);
+    }
+  };
+
   const deleteImage = async (imageId: string) => {
     await deleteMemoImageRequest(imageId);
     setMemos((current) => current.map((memo) => {
@@ -259,7 +278,13 @@ export default function Memo() {
         onCreate={() => setIsCreateOpen(true)}
       />
       {selectedIds.size > 0 && (
-        <MemoBar count={selectedIds.size} onCancel={() => setSelectedIds(new Set())} onMove={() => setIsMoveOpen(true)} />
+        <MemoBar
+          count={selectedIds.size}
+          isDeleting={isBulkDeleting}
+          onCancel={() => setSelectedIds(new Set())}
+          onMove={() => setIsMoveOpen(true)}
+          onDelete={() => void deleteSelectedMemos()}
+        />
       )}
       {isLoading && (
         <section className="flex min-h-[calc(100vh-260px)] items-center justify-center text-body2-r text-grey-600" aria-live="polite">

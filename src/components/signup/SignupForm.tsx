@@ -19,6 +19,9 @@ const isPasswordCompositionValid = (password: string) =>
   /\d/.test(password) &&
   /[^A-Za-z0-9]/.test(password);
 
+const DUPLICATE_EMAIL_ERROR_MESSAGE =
+  "이미 가입된 이메일 주소입니다. 다른 이메일을 입력해주세요.";
+
 export function SignupForm() {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
@@ -30,6 +33,9 @@ export function SignupForm() {
   const [isOptionalAgreed, setIsOptionalAgreed] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [emailErrorMessage, setEmailErrorMessage] = useState<string | null>(
+    null,
+  );
   const hasValidLength = password.length >= 8 && password.length <= 16;
   const hasValidComposition = isPasswordCompositionValid(password);
   const isPasswordMatched =
@@ -45,6 +51,7 @@ export function SignupForm() {
   const handleEmailChange = useCallback((value: string) => {
     setEmail(value);
     setSubmitError(null);
+    setEmailErrorMessage(null);
   }, []);
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
@@ -56,6 +63,7 @@ export function SignupForm() {
 
     setIsSubmitting(true);
     setSubmitError(null);
+    setEmailErrorMessage(null);
 
     try {
       await signup({
@@ -67,11 +75,18 @@ export function SignupForm() {
       });
       navigate("/login");
     } catch (error) {
-      setSubmitError(
-        error instanceof ApiError
-          ? error.message
-          : "회원가입 중 오류가 발생했습니다. 다시 시도해주세요.",
-      );
+      if (
+        error instanceof ApiError &&
+        (error.status === 409 || error.message.includes("이미 가입된 이메일"))
+      ) {
+        setEmailErrorMessage(DUPLICATE_EMAIL_ERROR_MESSAGE);
+      } else {
+        setSubmitError(
+          error instanceof ApiError
+            ? error.message
+            : "회원가입 중 오류가 발생했습니다. 다시 시도해주세요.",
+        );
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -82,6 +97,7 @@ export function SignupForm() {
       <h1 className="self-stretch text-header text-grey-900">회원가입</h1>
 
       <SignupEmailField
+        errorMessage={emailErrorMessage ?? undefined}
         onEmailChange={handleEmailChange}
         onValidityChange={setIsEmailValid}
       />

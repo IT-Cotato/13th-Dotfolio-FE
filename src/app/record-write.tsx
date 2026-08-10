@@ -10,7 +10,7 @@ import { MemoLoadedCard } from '@/components/record/MemoLoadedCard';
 import { MemoDetailModal } from '@/components/record/MemoDetailModal';
 import { useActivities } from '@/contexts/ActivitiesContext';
 import { useTemplates } from '@/contexts/TemplatesContext';
-import { createRecord } from '@/api/records';
+import { createRecord, updateRecord } from '@/api/records';
 import { ApiError } from '@/api/client';
 import { useToast } from '@/hooks/useToast';
 import MEMOS from '@/mock/memos.json';
@@ -29,6 +29,7 @@ export default function RecordWrite() {
     [templates, templateId]
   );
 
+  const [savedRecordId, setSavedRecordId] = useState<string | null>(null);
   const [title, setTitle] = useState('');
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [selectedMemos, setSelectedMemos] = useState<Memo[]>([]);
@@ -49,9 +50,7 @@ export default function RecordWrite() {
     setAnswers(prev => ({ ...prev, [id]: value }));
   };
 
-  const buildRecordPayload = (status: 'DRAFT' | 'COMPLETED') => ({
-    activityId: selectedActivity!.id,
-    templateId: template.id,
+  const buildCommonPayload = (status: 'DRAFT' | 'COMPLETED') => ({
     title,
     answers: (template.questions ?? []).map(q => ({
       templateQuestionId: q.id,
@@ -61,13 +60,26 @@ export default function RecordWrite() {
     status,
   });
 
+  const saveRecord = async (status: 'DRAFT' | 'COMPLETED') => {
+    if (savedRecordId) {
+      await updateRecord(savedRecordId, buildCommonPayload(status));
+      return;
+    }
+    const response = await createRecord({
+      activityId: selectedActivity!.id,
+      templateId: template.id,
+      ...buildCommonPayload(status),
+    });
+    setSavedRecordId(response.data.id);
+  };
+
   const handleTempSave = async () => {
     if (!selectedActivity) {
       console.error('[record-write] 선택된 활동이 없어 임시저장을 진행할 수 없습니다.');
       return;
     }
     try {
-      await createRecord(buildRecordPayload('DRAFT'));
+      await saveRecord('DRAFT');
       fireToast('임시저장되었습니다.');
     } catch (error) {
       const message = error instanceof ApiError ? error.message : '임시저장에 실패했습니다.';
@@ -85,7 +97,7 @@ export default function RecordWrite() {
       return;
     }
     try {
-      await createRecord(buildRecordPayload('COMPLETED'));
+      await saveRecord('COMPLETED');
       fireToast('기록을 성공적으로 저장하였습니다.');
       setTimeout(() => navigate('/record'), 2000);
     } catch (error) {

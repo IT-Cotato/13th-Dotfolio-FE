@@ -109,6 +109,20 @@ export function createRecord(payload: CreateRecordPayload) {
   });
 }
 
+export interface UpdateRecordPayload {
+  title: string;
+  answers: CreateRecordAnswerInput[];
+  memos: CreateRecordMemoInput[];
+  status: string;
+}
+
+export function updateRecord(recordId: string, payload: UpdateRecordPayload) {
+  return requestApi<RecordDetail>(`/api/records/${recordId}`, {
+    method: "PATCH",
+    body: payload,
+  });
+}
+
 export function getRecordDetail(recordId: string) {
   return requestApi<RecordDetail>(`/api/records/${recordId}`);
 }

@@ -6,5 +6,4 @@ export { CreateMemoModal } from './modal/CreateMemoModal';
 export { MemoDetailModal } from './modal/MemoDetailModal';
 export { MoveToRecordModal } from './modal/MoveToRecordModal';
 export { DeleteMemoModal } from './modal/DeleteMemoModal';
-export { MemoDeleteToast } from './MemoDeleteToast';
 export type { MemoActivityOption, MemoCreateInput, MemoData, MemoImageData } from './types';

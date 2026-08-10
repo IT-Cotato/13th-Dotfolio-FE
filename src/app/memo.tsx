@@ -142,7 +142,7 @@ export default function Memo() {
     const createdMemo = await getMemo(memoId);
     setMemos((current) => [toMemoData(createdMemo), ...current]);
     setIsCreateOpen(false);
-    fireToast('메모를 생성했어요.');
+    fireToast('새로운 메모가 추가되었습니다.');
   };
 
   const selectMemo = (id: string, selected: boolean) => {
@@ -191,11 +191,19 @@ export default function Memo() {
     setMemos((current) => current.map((item) => (
       item.id === memoId ? { ...item, isImportant: important } : item
     )));
+    fireToast(
+      important ? '중요한 메모로 등록되었습니다.' : '중요한 메모에서 해제되었습니다.',
+    );
   };
 
   const deleteMemo = async () => {
     if (!deleteMemoId) return;
-    await deleteMemosRequest([deleteMemoId]);
+    const deletedMemoIndex = memos.findIndex((memo) => memo.id === deleteMemoId);
+    if (deletedMemoIndex === -1) return;
+
+    const deletedMemo = memos[deletedMemoIndex];
+    const deletedMemoId = deletedMemo.id;
+
     setMemos((current) => current.filter((memo) => memo.id !== deleteMemoId));
     setSelectedIds((current) => {
       const next = new Set(current);
@@ -204,7 +212,28 @@ export default function Memo() {
     });
     if (openMemoId === deleteMemoId) setOpenMemoId(undefined);
     setDeleteMemoId(undefined);
-    fireToast('메모를 삭제했어요.');
+
+    const restoreDeletedMemo = () => {
+      setMemos((current) => {
+        if (current.some((memo) => memo.id === deletedMemo.id)) return current;
+        const next = [...current];
+        next.splice(Math.min(deletedMemoIndex, next.length), 0, deletedMemo);
+        return next;
+      });
+    };
+
+    const deleteTimer = window.setTimeout(() => {
+      void deleteMemosRequest([deletedMemoId]).catch((error) => {
+        restoreDeletedMemo();
+        fireToast(getErrorMessage(error, '메모를 삭제하지 못했습니다.'), undefined, 'error');
+      });
+    }, 2000);
+
+    fireToast('메모가 삭제되었습니다.', () => {
+      window.clearTimeout(deleteTimer);
+      restoreDeletedMemo();
+      dismissToast();
+    });
   };
 
   const deleteImage = async (imageId: string) => {
@@ -219,7 +248,6 @@ export default function Memo() {
         attachmentUrl: images[0]?.imageUrl,
       };
     }));
-    fireToast('사진을 삭제했어요.');
   };
 
   return (
@@ -289,7 +317,7 @@ export default function Memo() {
         <DeleteMemoModal onClose={() => setDeleteMemoId(undefined)} onConfirm={deleteMemo} />
       )}
       {toast && (
-        <div className="fixed bottom-8 left-1/2 z-[100] -translate-x-1/2" onClick={dismissToast}>
+        <div className="fixed top-4 left-1/2 -translate-x-1/2 z-[100]">
           <Toast message={toast.message} variant={toast.variant} onUndo={toast.onUndo} />
         </div>
       )}

@@ -66,7 +66,12 @@ export const MemoCard = ({ memo, onDelete, onToggleImportant, onMove, selected, 
           # {memo.tag}
         </span>
       )}
-      <p className={`memo-card-text min-h-0 overflow-hidden text-body-reading2-md ${memo.isImportant ? 'text-primary-500' : 'text-grey-900'}`}>{memo.memo}</p>
+      <p className={`memo-card-text min-h-0 overflow-hidden text-body-reading2-md ${memo.isImportant ? 'text-primary-500' : 'text-grey-900'}`}>
+        {memo.isImportant && !memo.title && (
+          <StarIcon className="mr-1 inline-block h-4 w-4 align-[-2px] [&_path]:fill-[#FFB516] [&_path]:stroke-[#FFB516]" />
+        )}
+        {memo.memo}
+      </p>
       {!!memo.attachmentCount && (
         <span className={`mt-auto flex items-center justify-end gap-2 text-label3-md ${memo.isImportant ? 'text-primary-400' : 'text-grey-600'}`}>
           <FileIcon /> 첨부파일 {memo.attachmentCount}개

@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import DdayIcon from '@/assets/memo_dday.svg';
+import StarIcon from '@/assets/memo_star.svg';
+import CloseIcon from '@/assets/close.svg';
 import type { MemoData } from '../types';
 import { MemoMoreMenu } from '../card/MemoMoreMenu';
 import { useEscapeKey } from '../hooks/useEscapeKey';
@@ -119,9 +121,10 @@ export const MemoDetailModal = ({ memo, onClose, onUpdate, onDelete, onToggleImp
           <div className="flex flex-col gap-4">
             <div className="flex items-center gap-1">
               {memo.isImportant && (
-                <svg aria-hidden="true" width="20" height="20" viewBox="0 0 20 20" fill="none" className="shrink-0">
-                  <path d="m10 1.8 2.45 4.97 5.49.8-3.97 3.87.94 5.47L10 14.33l-4.91 2.58.94-5.47-3.97-3.87 5.49-.8L10 1.8Z" fill="#FFB516" />
-                </svg>
+                <StarIcon
+                  aria-hidden="true"
+                  className="h-5 w-5 shrink-0 [&_path]:fill-[#FFB516] [&_path]:stroke-[#FFB516]"
+                />
               )}
               <input
                 aria-label="메모 제목"
@@ -168,11 +171,12 @@ export const MemoDetailModal = ({ memo, onClose, onUpdate, onDelete, onToggleImp
                 />
                 <button
                   type="button"
+                  aria-label={`첨부 이미지 ${index + 1} 삭제`}
                   disabled={deletingImageId === image.id}
                   onClick={() => void removeImage(image.id)}
-                  className="absolute right-3 top-3 rounded-full bg-grey-950/70 px-3 py-1.5 text-caption1 text-white disabled:cursor-wait disabled:opacity-60"
+                  className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center text-grey-700 disabled:cursor-wait disabled:opacity-60"
                 >
-                  {deletingImageId === image.id ? '삭제 중...' : '사진 삭제'}
+                  <CloseIcon aria-hidden="true" className="h-3.5 w-3.5" />
                 </button>
               </div>
             ))}

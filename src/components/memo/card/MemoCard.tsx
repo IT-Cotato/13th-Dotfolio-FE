@@ -18,7 +18,7 @@ interface MemoCardProps {
 
 export const MemoCard = ({ memo, onDelete, onToggleImportant, onMove, selected, selectionMode, onSelect, onOpen }: MemoCardProps) => (
   <article
-    className={`group relative flex min-h-[266px] w-[266px] max-h-[454px] shrink-0 cursor-pointer overflow-visible rounded-[20px] ${selected ? 'bg-primary-gradient p-0.5 shadow-[0_0_30px_rgba(22,53,164,0.08)]' : `border ${memo.isImportant ? 'border-primary-100' : 'border-grey-100'}`}`}
+    className={`group relative mb-5 flex min-h-[266px] w-[266px] max-h-[454px] break-inside-avoid cursor-pointer overflow-visible rounded-[20px] focus-within:z-40 ${selected ? 'bg-primary-gradient p-0.5 shadow-[0_0_30px_rgba(22,53,164,0.08)]' : `border ${memo.isImportant ? 'border-primary-100' : 'border-grey-100'}`}`}
   >
     <button
       type="button"
@@ -47,18 +47,20 @@ export const MemoCard = ({ memo, onDelete, onToggleImportant, onMove, selected, 
         </span>
         <span className="whitespace-nowrap">{memo.dDay}</span>
       </span>
-      <div className="pointer-events-auto ml-auto">
-        <MemoMoreMenu isImportant={!!memo.isImportant} emphasized={selected} onToggleImportant={onToggleImportant} onDelete={onDelete} onMove={onMove} align="right" />
-      </div>
+      {!selected && (
+        <div className="pointer-events-auto ml-auto">
+          <MemoMoreMenu isImportant={!!memo.isImportant} emphasized={selected} onToggleImportant={onToggleImportant} onDelete={onDelete} onMove={onMove} />
+        </div>
+      )}
     </header>
 
     <div className="flex min-h-0 flex-1 flex-col gap-3 p-4">
       {memo.title && (
-        <h2 className={`flex items-center gap-1 text-sub1-sb ${memo.isImportant ? 'text-primary-500' : 'text-grey-950'}`}>
+        <h2 className={`flex min-w-0 items-center gap-1 whitespace-nowrap text-sub1-sb ${memo.isImportant ? 'text-primary-500' : 'text-grey-950'}`}>
           {memo.isImportant && (
             <StarIcon className="h-4 w-4 shrink-0 [&_path]:fill-[#FFB516] [&_path]:stroke-[#FFB516]" />
           )}
-          {memo.title}
+          <span className="min-w-0 truncate">{memo.title}</span>
         </h2>
       )}
       {memo.tag && (
@@ -66,7 +68,12 @@ export const MemoCard = ({ memo, onDelete, onToggleImportant, onMove, selected, 
           # {memo.tag}
         </span>
       )}
-      <p className={`memo-card-text min-h-0 overflow-hidden text-body-reading2-md ${memo.isImportant ? 'text-primary-500' : 'text-grey-900'}`}>{memo.memo}</p>
+      <p className={`memo-card-text min-h-0 overflow-hidden text-body-reading2-md ${memo.isImportant ? 'text-primary-500' : 'text-grey-900'}`}>
+        {memo.isImportant && !memo.title && (
+          <StarIcon className="mr-1 inline-block h-4 w-4 align-[-2px] [&_path]:fill-[#FFB516] [&_path]:stroke-[#FFB516]" />
+        )}
+        {memo.memo}
+      </p>
       {!!memo.attachmentCount && (
         <span className={`mt-auto flex items-center justify-end gap-2 text-label3-md ${memo.isImportant ? 'text-primary-400' : 'text-grey-600'}`}>
           <FileIcon /> 첨부파일 {memo.attachmentCount}개

@@ -3,6 +3,7 @@ import type { Activity, StoryRecord } from './myStoryTypes';
 import MyStoryEditIcon from '@/assets/mystory_edit.svg';
 import MyStoryDeleteIcon from '@/assets/mystory_delete.svg';
 import ArrowIcon from '@/assets/arrow.svg';
+import MoreIcon from '@/assets/more.svg';
 
 interface MyStoryTimelineProps {
   activities: Activity[];
@@ -70,11 +71,7 @@ export function MyStoryTimeline({
                         onClick={() => onToggleMenu(activity.id)}
                         className={`flex size-6 items-center justify-center rounded-lg text-grey-400 cursor-pointer hover:bg-grey-50 ${openMenuId === activity.id ? 'bg-grey-50' : ''}`}
                       >
-                        <svg width="14" height="4" viewBox="0 0 14 4" fill="none" aria-hidden="true">
-                          <circle cx="2" cy="2" r="2" fill="currentColor" />
-                          <circle cx="7" cy="2" r="2" fill="currentColor" />
-                          <circle cx="12" cy="2" r="2" fill="currentColor" />
-                        </svg>
+                        <MoreIcon aria-hidden="true" className="size-4" />
                       </button>
                       {openMenuId === activity.id && (
                         <div className="absolute right-0 top-8 z-20 flex w-44 flex-col gap-1 rounded-2xl border border-grey-100 bg-white py-2 shadow-[0_0_30px_rgba(22,53,164,.08)]">

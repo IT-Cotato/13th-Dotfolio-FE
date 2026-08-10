@@ -64,7 +64,7 @@ export default function MyStory() {
   return (
     <Card className="story-shell relative items-stretch gap-0 rounded-t-[36px] p-6">
       {toast && (
-        <div className="fixed z-[100] top-5 left-1/2 -translate-x-1/2 shadow-[0_8px_32px_rgba(34,62,120,.18)]">
+        <div className="fixed top-4 left-1/2 -translate-x-1/2 z-[100]">
           <Toast message={toast.message} onUndo={toast.onUndo} variant={toast.variant} />
         </div>
       )}

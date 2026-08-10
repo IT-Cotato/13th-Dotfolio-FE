@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import DdayIcon from '@/assets/memo_dday.svg';
+import StarIcon from '@/assets/memo_star.svg';
+import CloseIcon from '@/assets/close.svg';
 import type { MemoData } from '../types';
 import { MemoMoreMenu } from '../card/MemoMoreMenu';
 import { useEscapeKey } from '../hooks/useEscapeKey';
@@ -8,17 +10,23 @@ import { useModalFocus } from '../hooks/useModalFocus';
 interface MemoDetailModalProps {
   memo: MemoData;
   onClose: () => void;
-  onUpdate: (memo: MemoData) => void;
+  onUpdate: (memo: MemoData) => Promise<void>;
   onDelete: () => void;
-  onToggleImportant: () => void;
+  onToggleImportant: () => Promise<void>;
+  onDeleteImage: (imageId: string) => Promise<void>;
   onMove: () => void;
 }
 
-export const MemoDetailModal = ({ memo, onClose, onUpdate, onDelete, onToggleImportant, onMove }: MemoDetailModalProps) => {
+export const MemoDetailModal = ({ memo, onClose, onUpdate, onDelete, onToggleImportant, onDeleteImage, onMove }: MemoDetailModalProps) => {
   const [title, setTitle] = useState(memo.title ?? '');
   const [content, setContent] = useState(memo.memo);
   const [contentError, setContentError] = useState(false);
+  const [submitError, setSubmitError] = useState('');
+  const [isSaving, setIsSaving] = useState(false);
+  const [deletingImageId, setDeletingImageId] = useState<string>();
   const contentRef = useRef<HTMLTextAreaElement>(null);
+  const savedMemoRef = useRef({ title: memo.title ?? '', content: memo.memo });
+  const savingPromiseRef = useRef<Promise<void> | null>(null);
   const dialogRef = useModalFocus<HTMLElement>();
 
   const updatedMemo = (normalizedContent: string) => ({
@@ -27,22 +35,81 @@ export const MemoDetailModal = ({ memo, onClose, onUpdate, onDelete, onToggleImp
     memo: normalizedContent,
   });
 
-  const closeAndSave = () => {
+  const saveChanges = async () => {
+    if (savingPromiseRef.current) {
+      try {
+        await savingPromiseRef.current;
+      } catch {
+        return false;
+      }
+    }
+
+    const normalizedTitle = title.trim();
     const normalizedContent = contentRef.current?.value.trim() ?? content.trim();
     if (!normalizedContent) {
       setContentError(true);
       contentRef.current?.focus();
+      return false;
+    }
+    if (
+      savedMemoRef.current.title === normalizedTitle
+      && savedMemoRef.current.content === normalizedContent
+    ) {
+      return true;
+    }
+
+    setIsSaving(true);
+    setSubmitError('');
+    const nextMemo = updatedMemo(normalizedContent);
+    const request = onUpdate(nextMemo);
+    savingPromiseRef.current = request;
+    try {
+      await request;
+      savedMemoRef.current = { title: normalizedTitle, content: normalizedContent };
+      return true;
+    } catch (error) {
+      setSubmitError(error instanceof Error ? error.message : '메모를 수정하지 못했습니다.');
+      return false;
+    } finally {
+      if (savingPromiseRef.current === request) savingPromiseRef.current = null;
+      setIsSaving(false);
+    }
+  };
+
+  const closeAndSave = async () => {
+    if (!content.trim()) {
+      onClose();
       return;
     }
-    onUpdate(updatedMemo(normalizedContent));
-    onClose();
+    if (await saveChanges()) onClose();
   };
 
   const deleteAndSave = () => {
     onDelete();
   };
 
-  useEscapeKey(closeAndSave);
+  const toggleImportant = async () => {
+    setSubmitError('');
+    try {
+      await onToggleImportant();
+    } catch (error) {
+      setSubmitError(error instanceof Error ? error.message : '중요 메모 설정을 변경하지 못했습니다.');
+    }
+  };
+
+  const removeImage = async (imageId: string) => {
+    setDeletingImageId(imageId);
+    setSubmitError('');
+    try {
+      await onDeleteImage(imageId);
+    } catch (error) {
+      setSubmitError(error instanceof Error ? error.message : '이미지를 삭제하지 못했습니다.');
+    } finally {
+      setDeletingImageId(undefined);
+    }
+  };
+
+  useEscapeKey(() => { void closeAndSave(); });
 
   useEffect(() => {
     const textarea = contentRef.current;
@@ -52,7 +119,7 @@ export const MemoDetailModal = ({ memo, onClose, onUpdate, onDelete, onToggleImp
   }, [content]);
 
   return (
-    <div className="fixed inset-0 z-40 flex items-center justify-center bg-grey-950/55 px-5" onMouseDown={closeAndSave}>
+    <div className="fixed inset-0 z-40 flex items-center justify-center bg-grey-950/55 px-5" onMouseDown={() => void closeAndSave()}>
       <section
         ref={dialogRef}
         tabIndex={-1}
@@ -73,7 +140,7 @@ export const MemoDetailModal = ({ memo, onClose, onUpdate, onDelete, onToggleImp
           <div className="ml-auto">
             <MemoMoreMenu
               isImportant={!!memo.isImportant}
-              onToggleImportant={onToggleImportant}
+              onToggleImportant={() => void toggleImportant()}
               onDelete={deleteAndSave}
               onMove={onMove}
               align="right"
@@ -83,18 +150,19 @@ export const MemoDetailModal = ({ memo, onClose, onUpdate, onDelete, onToggleImp
 
         <div className="relative z-0 min-h-0 flex-1 overflow-y-auto px-4 pb-4 pt-4 scrollbar-hide">
           <div className="flex flex-col gap-4">
-            <div className="flex items-center gap-1">
+            <div className="flex min-w-0 flex-nowrap items-center gap-1">
               {memo.isImportant && (
-                <svg aria-hidden="true" width="20" height="20" viewBox="0 0 20 20" fill="none" className="shrink-0">
-                  <path d="m10 1.8 2.45 4.97 5.49.8-3.97 3.87.94 5.47L10 14.33l-4.91 2.58.94-5.47-3.97-3.87 5.49-.8L10 1.8Z" fill="#FFB516" />
-                </svg>
+                <StarIcon
+                  aria-hidden="true"
+                  className="h-5 w-5 shrink-0 [&_path]:fill-[#FFB516] [&_path]:stroke-[#FFB516]"
+                />
               )}
               <input
                 aria-label="메모 제목"
                 value={title}
                 onChange={(event) => setTitle(event.target.value)}
-                placeholder="제목을 추가해보세요."
-                className="min-w-0 flex-1 bg-transparent text-sub1-sb text-grey-950 outline-none placeholder:text-grey-400"
+                onBlur={() => void saveChanges()}
+                className="min-w-0 flex-1 truncate whitespace-nowrap bg-transparent text-sub1-sb text-grey-950 outline-none"
               />
             </div>
 
@@ -115,6 +183,7 @@ export const MemoDetailModal = ({ memo, onClose, onUpdate, onDelete, onToggleImp
                 setContent(event.target.value);
                 if (event.target.value.trim()) setContentError(false);
               }}
+              onBlur={() => void saveChanges()}
               className={`min-h-[208px] w-full resize-none overflow-hidden rounded-lg bg-transparent text-body-reading2-md text-grey-900 outline-none ${
                 contentError ? 'ring-1 ring-error-text' : ''
               }`}
@@ -125,13 +194,27 @@ export const MemoDetailModal = ({ memo, onClose, onUpdate, onDelete, onToggleImp
               </p>
             )}
 
-            {memo.attachmentUrl && (
-              <img
-                src={memo.attachmentUrl}
-                alt="메모 활동 첨부 이미지"
-                className="w-full rounded-sm object-cover"
-              />
-            )}
+            {memo.images.map((image, index) => (
+              <div key={image.id} className="relative overflow-hidden rounded-sm">
+                <img
+                  src={image.imageUrl}
+                  alt={`메모 활동 첨부 이미지 ${index + 1}`}
+                  className="w-full object-cover"
+                />
+                <button
+                  type="button"
+                  aria-label={`첨부 이미지 ${index + 1} 삭제`}
+                  disabled={deletingImageId === image.id}
+                  onClick={() => void removeImage(image.id)}
+                  className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center text-grey-700 disabled:cursor-wait disabled:opacity-60"
+                >
+                  <CloseIcon aria-hidden="true" className="h-3.5 w-3.5" />
+                </button>
+              </div>
+            ))}
+
+            {submitError && <p role="alert" className="text-body3-r text-error-text">{submitError}</p>}
+            {isSaving && <p className="text-right text-caption1 text-grey-500">저장 중...</p>}
           </div>
         </div>
       </section>

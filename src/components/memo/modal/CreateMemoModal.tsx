@@ -2,19 +2,13 @@ import { useRef, useState } from 'react';
 import type { MemoActivityOption, MemoCreateInput } from '../types';
 import { useEscapeKey } from '../hooks/useEscapeKey';
 import { useModalFocus } from '../hooks/useModalFocus';
+import CloudUploadIcon from '@/assets/cloud_upload.svg';
 
 interface CreateMemoModalProps {
   onClose: () => void;
   onCreate: (memo: MemoCreateInput) => Promise<void>;
   activities: MemoActivityOption[];
 }
-
-const UploadIcon = () => (
-  <svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none">
-    <path d="M12 16V8m0 0L9 11m3-3 3 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-    <path d="M7.5 17.5H6a3 3 0 0 1-.35-5.98A6.5 6.5 0 0 1 18.3 10a3.75 3.75 0 0 1-.05 7.5H16.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-  </svg>
-);
 
 export const CreateMemoModal = ({ onClose, onCreate, activities }: CreateMemoModalProps) => {
   const inputRef = useRef<HTMLInputElement>(null);
@@ -107,7 +101,7 @@ export const CreateMemoModal = ({ onClose, onCreate, activities }: CreateMemoMod
               }}
               className="flex h-20 flex-col items-center justify-center rounded-2xl border border-dashed border-grey-200 text-grey-400 hover:border-primary-300 hover:text-primary-400"
             >
-              <UploadIcon />
+              <CloudUploadIcon aria-hidden="true" className="h-6 w-[23px]" />
               <span className="mt-1 text-caption1">이미지를 드래그하거나 클릭해서 업로드하세요. (허용 확장자 : JPG, PNG)</span>
             </button>
             <input ref={inputRef} type="file" accept="image/jpeg,image/png" className="hidden" onChange={(event) => selectFile(event.target.files)} />

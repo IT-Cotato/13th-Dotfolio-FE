@@ -12,7 +12,6 @@ export interface MemoResponse {
   activityTitle: string | null;
   title: string | null;
   content: string;
-  color: string | null;
   isImportant: boolean;
   remainingDaysUntilExpiration: number;
   images: MemoImageResponse[];
@@ -29,14 +28,12 @@ export interface MemoCreateRequest {
   activityId?: string;
   title?: string;
   content: string;
-  color?: string;
   images?: MemoImageRequest[];
 }
 
 export interface MemoUpdateRequest {
   title?: string;
   content: string;
-  color?: string;
 }
 
 export interface MemoImagePresignedUrlResponse {

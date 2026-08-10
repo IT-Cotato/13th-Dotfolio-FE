@@ -52,7 +52,6 @@ const toMemoData = (memo: MemoResponse): MemoData => {
     title: memo.title || undefined,
     tag: memo.activityTitle || undefined,
     activityId: memo.activityId || undefined,
-    color: memo.color || undefined,
     attachmentCount: (memo.imageCount ?? images.length) || undefined,
     attachmentUrl: images[0]?.imageUrl,
     isImportant: memo.isImportant,
@@ -176,7 +175,6 @@ export default function Memo() {
     await updateMemoRequest(updatedMemo.id, {
       title: updatedMemo.title,
       content: updatedMemo.memo,
-      color: updatedMemo.color,
     });
     setMemos((current) => current.map((memo) => (
       memo.id === updatedMemo.id ? updatedMemo : memo

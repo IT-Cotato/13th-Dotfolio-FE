@@ -10,11 +10,14 @@ interface MemoMoreMenuProps {
   onToggleImportant: () => void;
   onDelete: () => void;
   onMove: () => void;
-  align?: 'left' | 'right';
+  align?: 'auto' | 'left' | 'right';
 }
 
-export const MemoMoreMenu = ({ isImportant, emphasized = false, onToggleImportant, onDelete, onMove, align = 'left' }: MemoMoreMenuProps) => {
+const MENU_WIDTH = 184;
+
+export const MemoMoreMenu = ({ isImportant, emphasized = false, onToggleImportant, onDelete, onMove, align = 'auto' }: MemoMoreMenuProps) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [resolvedAlign, setResolvedAlign] = useState<'left' | 'right'>('left');
   const menuRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
 
@@ -32,6 +35,31 @@ export const MemoMoreMenu = ({ isImportant, emphasized = false, onToggleImportan
     action?.();
   };
 
+  const toggleMenu = () => {
+    if (isOpen) {
+      setIsOpen(false);
+      return;
+    }
+
+    if (align === 'auto') {
+      const triggerRect = triggerRef.current?.getBoundingClientRect();
+      const listRect = menuRef.current
+        ?.closest('[data-memo-list]')
+        ?.getBoundingClientRect();
+      const rightBoundary = listRect?.right ?? window.innerWidth;
+
+      setResolvedAlign(
+        triggerRect && triggerRect.left + MENU_WIDTH > rightBoundary
+          ? 'right'
+          : 'left',
+      );
+    } else {
+      setResolvedAlign(align);
+    }
+
+    setIsOpen(true);
+  };
+
   return (
     <div ref={menuRef} className="relative ml-auto" onClick={(event) => event.stopPropagation()}>
       <button
@@ -39,14 +67,14 @@ export const MemoMoreMenu = ({ isImportant, emphasized = false, onToggleImportan
         type="button"
         aria-label="메모 더보기"
         aria-expanded={isOpen}
-        onClick={() => setIsOpen((open) => !open)}
+        onClick={toggleMenu}
         className={`flex h-8 w-8 items-center justify-center rounded-xl ${isImportant || emphasized ? 'text-primary-300' : 'text-grey-400'} ${isOpen ? 'bg-primary-100' : ''}`}
       >
         <MoreIcon />
       </button>
 
       {isOpen && (
-        <div className={`absolute top-10 z-30 w-[184px] rounded-2xl border border-grey-100 bg-white p-4 shadow-[0_0_30px_rgba(22,53,164,0.08)] ${align === 'right' ? 'right-0' : 'left-0'}`}>
+        <div className={`absolute top-10 z-30 w-[184px] rounded-2xl border border-grey-100 bg-white p-4 shadow-[0_0_30px_rgba(22,53,164,0.08)] ${resolvedAlign === 'right' ? 'right-0' : 'left-0'}`}>
           <p className="mb-3 text-sub2-sb text-grey-400">메모 관리</p>
           <button type="button" onClick={() => run(onToggleImportant)} className="flex h-11 w-full items-center gap-4 text-body2-md text-grey-900">
             <StarIcon className="h-5 w-5" />

@@ -47,9 +47,11 @@ export const MemoCard = ({ memo, onDelete, onToggleImportant, onMove, selected, 
         </span>
         <span className="whitespace-nowrap">{memo.dDay}</span>
       </span>
-      <div className="pointer-events-auto ml-auto">
-        <MemoMoreMenu isImportant={!!memo.isImportant} emphasized={selected} onToggleImportant={onToggleImportant} onDelete={onDelete} onMove={onMove} align="right" />
-      </div>
+      {!selected && (
+        <div className="pointer-events-auto ml-auto">
+          <MemoMoreMenu isImportant={!!memo.isImportant} emphasized={selected} onToggleImportant={onToggleImportant} onDelete={onDelete} onMove={onMove} />
+        </div>
+      )}
     </header>
 
     <div className="flex min-h-0 flex-1 flex-col gap-3 p-4">

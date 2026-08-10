@@ -1,12 +1,19 @@
 import { getAuthorizationHeader } from '@/utils/authTokens';
 
-const DEFAULT_API_BASE_URL = 'https://54.180.186.216.nip.io';
 const REQUEST_TIMEOUT_MS = 10_000;
 
-export const API_BASE_URL = (
-  import.meta.env.VITE_API_BASE_URL
-  || (import.meta.env.DEV ? '' : DEFAULT_API_BASE_URL)
-).replace(/\/$/, '');
+const getApiBaseUrl = () => {
+  if (import.meta.env.DEV) return '';
+
+  const apiBaseUrl = import.meta.env.VITE_API_BASE_URL?.replace(/\/$/, '');
+  if (!apiBaseUrl) {
+    throw new Error('[api] VITE_API_BASE_URL이 설정되지 않았습니다.');
+  }
+
+  return apiBaseUrl;
+};
+
+export const API_BASE_URL = getApiBaseUrl();
 export interface ApiResponse<T> {
   success: boolean;
   message: string;
@@ -70,6 +77,17 @@ function isFailedApiResponse(payload: unknown) {
 export async function apiRequest<T>(path: string, init: RequestInit = {}): Promise<T> {
   const headers = new Headers(init.headers);
   const authorizationHeader = getAuthorizationHeader();
+  const abortController = new AbortController();
+  let didTimeout = false;
+
+  const abortFromCaller = () => abortController.abort(init.signal?.reason);
+  if (init.signal?.aborted) abortFromCaller();
+  else init.signal?.addEventListener('abort', abortFromCaller, { once: true });
+
+  const timeoutId = window.setTimeout(() => {
+    didTimeout = true;
+    abortController.abort();
+  }, REQUEST_TIMEOUT_MS);
 
   headers.set('Accept', 'application/json');
   if (init.body && !(init.body instanceof FormData)) {
@@ -79,17 +97,42 @@ export async function apiRequest<T>(path: string, init: RequestInit = {}): Promi
     headers.set('Authorization', authorizationHeader);
   }
 
-  const response = await fetch(getApiUrl(path), {
-    ...init,
-    headers,
-  });
-  const payload = await parseResponseBody(response);
+  let response: Response;
+  let payload: unknown;
+
+  try {
+    response = await fetch(getApiUrl(path), {
+      ...init,
+      headers,
+      signal: abortController.signal,
+    });
+    payload = await parseResponseBody(response);
+  } catch (error) {
+    if (!didTimeout && init.signal?.aborted) throw error;
+
+    if (error instanceof DOMException && error.name === 'AbortError') {
+      throw new ApiError('요청 시간이 초과되었습니다. 다시 시도해주세요.', 0);
+    }
+
+    throw new ApiError('네트워크 연결을 확인해주세요.', 0);
+  } finally {
+    window.clearTimeout(timeoutId);
+    init.signal?.removeEventListener('abort', abortFromCaller);
+  }
 
   if (!response.ok || isFailedApiResponse(payload)) {
     throw new ApiError(getErrorMessage(payload), response.status, payload);
   }
 
-  return (payload as ApiResponse<T> | null)?.data as T;
+  if (
+    typeof payload !== 'object'
+    || payload === null
+    || !('data' in payload)
+  ) {
+    throw new ApiError('서버 응답 형식이 올바르지 않습니다.', response.status, payload);
+  }
+
+  return (payload as ApiResponse<T>).data;
 }
 
 export async function requestApi<T>(

@@ -77,6 +77,10 @@ export const MemoDetailModal = ({ memo, onClose, onUpdate, onDelete, onToggleImp
   };
 
   const closeAndSave = async () => {
+    if (!content.trim()) {
+      onClose();
+      return;
+    }
     if (await saveChanges()) onClose();
   };
 

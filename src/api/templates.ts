@@ -31,8 +31,6 @@ export function saveActivityTemplates(activityId: string, templateIds: string[])
 }
 
 // ---- 전역 템플릿 API (/api/templates) — 활동에 종속되지 않는 템플릿 CRUD ----
-// TemplatesContext는 활동별 템플릿 API가 준비될 때까지 mock을 유지하기로 해서,
-// 아래 함수들은 아직 어디에서도 호출되지 않음 (연결은 추후 별도 작업).
 
 export interface TemplateQuestionDetail {
   id: string;

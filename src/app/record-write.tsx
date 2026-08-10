@@ -81,6 +81,7 @@ export default function RecordWrite() {
     try {
       await saveRecord('DRAFT');
       fireToast('임시저장되었습니다.');
+      setTimeout(() => navigate('/record'), 2000);
     } catch (error) {
       const message = error instanceof ApiError ? error.message : '임시저장에 실패했습니다.';
       fireToast(message, undefined, 'error');

@@ -13,8 +13,8 @@ export default function TemplateAll() {
   const { templates, addCustomTemplate } = useTemplates();
   const [isCustomModalOpen, setIsCustomModalOpen] = useState(false);
 
-  const handleCreateCustomTemplate = (data: CustomTemplateData) => {
-    addCustomTemplate(data);
+  const handleCreateCustomTemplate = async (data: CustomTemplateData) => {
+    await addCustomTemplate(data);
     setIsCustomModalOpen(false);
   };
 

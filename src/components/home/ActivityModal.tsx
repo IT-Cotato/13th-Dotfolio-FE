@@ -67,10 +67,11 @@ export const ActivityModal = ({ isOpen, onClose, onSubmit, activity }: ActivityM
 
   if (!isOpen) return null;
 
-  const typeOptions =
+  const typeOptions = (
     activity && !types.some(t => t.id === activity.activityTypeId)
       ? [{ id: activity.activityTypeId, name: activity.activityTypeName, isDefault: false }, ...types]
-      : types;
+      : types
+  ).slice().sort((a, b) => Number(b.isDefault) - Number(a.isDefault));
 
   const selectType = (id: string) => {
     setSelectedTypeId(prev => (prev === id ? '' : id));

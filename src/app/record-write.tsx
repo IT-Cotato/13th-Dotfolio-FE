@@ -10,7 +10,8 @@ import { MemoLoadedCard } from '@/components/record/MemoLoadedCard';
 import { MemoDetailModal } from '@/components/record/MemoDetailModal';
 import { useActivities } from '@/contexts/ActivitiesContext';
 import { useTemplates } from '@/contexts/TemplatesContext';
-import { useRecords } from '@/contexts/RecordsContext';
+import { createRecord } from '@/api/records';
+import { ApiError } from '@/api/client';
 import { useToast } from '@/hooks/useToast';
 import MEMOS from '@/mock/memos.json';
 import type { Memo } from '@/types/memo';
@@ -21,7 +22,6 @@ export default function RecordWrite() {
   const { templateId } = useParams<{ templateId: string }>();
   const { selectedActivity } = useActivities();
   const { templates } = useTemplates();
-  const { saveDraft, completeRecord } = useRecords();
   const { toast, fireToast } = useToast();
 
   const template = useMemo(
@@ -29,7 +29,6 @@ export default function RecordWrite() {
     [templates, templateId]
   );
 
-  const [recordId] = useState(() => crypto.randomUUID());
   const [title, setTitle] = useState('');
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [selectedMemos, setSelectedMemos] = useState<Memo[]>([]);
@@ -50,23 +49,33 @@ export default function RecordWrite() {
     setAnswers(prev => ({ ...prev, [id]: value }));
   };
 
-  const handleTempSave = () => {
+  const buildRecordPayload = (status: 'DRAFT' | 'COMPLETED') => ({
+    activityId: selectedActivity!.id,
+    templateId: template.id,
+    title,
+    answers: (template.questions ?? []).map(q => ({
+      templateQuestionId: q.id,
+      answerText: answers[q.id] ?? '',
+    })),
+    memos: selectedMemos.map(memo => ({ memoId: memo.id, collapsed: false })),
+    status,
+  });
+
+  const handleTempSave = async () => {
     if (!selectedActivity) {
       console.error('[record-write] 선택된 활동이 없어 임시저장을 진행할 수 없습니다.');
       return;
     }
-    saveDraft({
-      id: recordId,
-      activityId: selectedActivity.id,
-      templateId: template.id,
-      title,
-      answers,
-      memoIds: selectedMemos.map(memo => memo.id),
-    });
-    fireToast('임시저장되었습니다.');
+    try {
+      await createRecord(buildRecordPayload('DRAFT'));
+      fireToast('임시저장되었습니다.');
+    } catch (error) {
+      const message = error instanceof ApiError ? error.message : '임시저장에 실패했습니다.';
+      fireToast(message, undefined, 'error');
+    }
   };
 
-  const handleComplete = () => {
+  const handleComplete = async () => {
     if (!isValid) {
       fireToast('필수 항목을 입력해주세요.', undefined, 'error');
       return;
@@ -75,16 +84,14 @@ export default function RecordWrite() {
       console.error('[record-write] 선택된 활동이 없어 기록완료를 진행할 수 없습니다.');
       return;
     }
-    completeRecord({
-      id: recordId,
-      activityId: selectedActivity.id,
-      templateId: template.id,
-      title,
-      answers,
-      memoIds: selectedMemos.map(memo => memo.id),
-    });
-    fireToast('기록을 성공적으로 저장하였습니다.');
-    setTimeout(() => navigate('/record'), 2000);
+    try {
+      await createRecord(buildRecordPayload('COMPLETED'));
+      fireToast('기록을 성공적으로 저장하였습니다.');
+      setTimeout(() => navigate('/record'), 2000);
+    } catch (error) {
+      const message = error instanceof ApiError ? error.message : '기록 저장에 실패했습니다.';
+      fireToast(message, undefined, 'error');
+    }
   };
 
   return (

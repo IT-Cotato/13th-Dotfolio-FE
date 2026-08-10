@@ -71,7 +71,7 @@ export const CreateMemoModal = ({ onClose, onCreate, activities }: CreateMemoMod
 
         <div className="flex flex-col gap-8">
           <label className="flex flex-col gap-2">
-            <span className="text-label1-md text-grey-900">제목</span>
+            <span className="text-sub1-sb text-grey-900">제목</span>
             <input
               maxLength={255}
               value={title}
@@ -82,7 +82,7 @@ export const CreateMemoModal = ({ onClose, onCreate, activities }: CreateMemoMod
           </label>
 
           <label className="flex flex-col gap-2">
-            <span className="text-label1-md text-grey-900">메모 <span className="text-error-text">*</span></span>
+            <span className="text-sub1-sb text-grey-900">메모 <span className="text-error-text">*</span></span>
             <textarea
               maxLength={500}
               value={memo}
@@ -96,7 +96,7 @@ export const CreateMemoModal = ({ onClose, onCreate, activities }: CreateMemoMod
           </label>
 
           <div className="flex flex-col gap-2">
-            <span className="text-label1-md text-grey-900">활동 사진</span>
+            <span className="text-sub1-sb text-grey-900">활동 사진</span>
             <button
               type="button"
               onClick={() => inputRef.current?.click()}
@@ -125,7 +125,7 @@ export const CreateMemoModal = ({ onClose, onCreate, activities }: CreateMemoMod
           </div>
 
           <fieldset className="flex flex-col gap-3">
-            <legend className="mb-2 text-label1-md text-grey-900">활동 태그</legend>
+            <legend className="mb-2 text-sub1-sb text-grey-900">활동 태그</legend>
             <div className="flex flex-wrap gap-2">
               {activities.map((activity) => (
                 <button

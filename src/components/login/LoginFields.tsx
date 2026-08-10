@@ -55,7 +55,7 @@ export function LoginFields({
           />
           로그인 상태 유지
         </label>
-        <Link to="/password-reset">비밀번호 찾기</Link>
+        <Link to="/reset-password/request">비밀번호 찾기</Link>
       </div>
     </div>
   );

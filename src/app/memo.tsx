@@ -26,6 +26,7 @@ import {
   type MemoCreateInput,
   type MemoData,
 } from '@/components/memo';
+import { useActivities } from '@/contexts/ActivitiesContext';
 import { useToast } from '@/hooks/useToast';
 
 const formatCreatedAt = (createdAt: string) => {
@@ -64,6 +65,7 @@ const getErrorMessage = (error: unknown, fallback: string) => (
 );
 
 export default function Memo() {
+  const { activities: activityList } = useActivities();
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [memos, setMemos] = useState<MemoData[]>([]);
   const [selectedTag, setSelectedTag] = useState('');
@@ -108,12 +110,8 @@ export default function Memo() {
   }, []);
 
   const activities = useMemo<MemoActivityOption[]>(() => {
-    const uniqueActivities = new Map<string, string>();
-    memos.forEach((memo) => {
-      if (memo.activityId && memo.tag) uniqueActivities.set(memo.activityId, memo.tag);
-    });
-    return [...uniqueActivities].map(([id, title]) => ({ id, title }));
-  }, [memos]);
+    return activityList.map(({ id, title }) => ({ id, title }));
+  }, [activityList]);
 
   const tags = activities.map((activity) => activity.title);
   const activeTag = selectedTag && tags.includes(selectedTag) ? selectedTag : '';

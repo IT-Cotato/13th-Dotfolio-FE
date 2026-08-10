@@ -15,11 +15,11 @@ import { useRecords } from '@/contexts/RecordsContext';
 import { ApiError } from '@/api/client';
 
 export default function Home() {
-  const { activities, isLoading, addActivity, updateActivity, removeActivity, archiveActivity } = useActivities();
-  const { removeRecordsByActivity } = useRecords();
+  const { activities, isLoading, addActivity, updateActivity, removeActivity, restoreActivity, archiveActivity } = useActivities();
+  const { records, removeRecordsByActivity, restoreRecord } = useRecords();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedActivity, setSelectedActivity] = useState<Activity | null>(null);
-  const [toast, setToast] = useState<{ message: string; variant?: 'success' | 'error' } | null>(null);
+  const [toast, setToast] = useState<{ message: string; variant?: 'success' | 'error'; onUndo?: () => void } | null>(null);
   const toastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [confirmModal, setConfirmModal] = useState<'delete' | 'end' | null>(null);
   const [targetActivity, setTargetActivity] = useState<Activity | null>(null);
@@ -39,9 +39,9 @@ export default function Home() {
     setTargetActivity(null);
   };
 
-  const fireToast = (message: string, variant: 'success' | 'error' = 'success') => {
+  const fireToast = (message: string, variant: 'success' | 'error' = 'success', onUndo?: () => void) => {
     if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
-    setToast({ message, variant });
+    setToast({ message, variant, onUndo });
     toastTimerRef.current = setTimeout(() => setToast(null), 2000);
   };
 
@@ -51,11 +51,22 @@ export default function Home() {
   const handleDelete = async () => {
     if (!targetActivity) return;
     const removed = targetActivity;
+    const removedRecords = records.filter(record => record.activityId === removed.id);
     closeConfirm();
     try {
       await removeActivity(removed.id);
       removeRecordsByActivity(removed.id);
-      fireToast('활동이 삭제되었습니다.');
+      fireToast('활동이 삭제되었습니다.', 'success', () => {
+        restoreActivity(removed.id)
+          .then(() => {
+            removedRecords.forEach(record => restoreRecord(record));
+            if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
+            setToast(null);
+          })
+          .catch((error: unknown) => {
+            fireToast(getErrorMessage(error, '활동 복구에 실패했습니다.'), 'error');
+          });
+      });
     } catch (error) {
       fireToast(getErrorMessage(error, '활동 삭제에 실패했습니다.'), 'error');
     }
@@ -98,7 +109,7 @@ export default function Home() {
     <>
       {toast && (
         <div className="fixed top-4 left-1/2 -translate-x-1/2 z-[100]">
-          <Toast message={toast.message} variant={toast.variant} />
+          <Toast message={toast.message} variant={toast.variant} onUndo={toast.onUndo} />
         </div>
       )}
       <Card>

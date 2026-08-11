@@ -39,6 +39,17 @@ export function ImmersionRecord({ focusMinutes }: ImmersionRecordProps) {
               <Button label="저장하고 다음 기록" size="compact" />
             </div>
           </div>
+
+          <div className="flex h-[678px] w-full items-start gap-6">
+            <aside
+              aria-label="불러온 메모"
+              className="flex h-full w-[389px] shrink-0 flex-col items-end gap-4 rounded-[32px] bg-[rgba(0,17,78,0.35)] p-6"
+            />
+            <section
+              aria-label="기록 입력"
+              className="flex h-full min-w-0 flex-1 flex-col items-start gap-10 rounded-[32px] bg-[rgba(0,17,78,0.35)] p-6"
+            />
+          </div>
         </div>
 
         <div aria-label="기록 진행 상태" className="flex items-center gap-3" />

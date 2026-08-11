@@ -1,6 +1,7 @@
 import { useState } from "react";
 import AddIcon from "@/assets/add10.svg";
 import RemoveIcon from "@/assets/remove.svg";
+import { Button } from "@/components/common/button";
 import { CounterButton } from "@/components/common/CounterButton";
 
 const MIN_RECORD_COUNT = 1;
@@ -100,6 +101,11 @@ export function ImmersionGoal() {
             </p>
           )}
         </div>
+
+        <Button
+          label="기록 시작"
+          disabled={focusMinutes === "" || hasFocusMinutesError}
+        />
       </section>
     </main>
   );

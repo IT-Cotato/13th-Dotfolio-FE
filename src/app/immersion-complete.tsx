@@ -18,7 +18,7 @@ export default function ImmersionCompletePage() {
     <ImmersionComplete
       completedCount={completedCount}
       onClose={() => navigate("/")}
-      onReturnHome={() => navigate("/")}
+      onReturnHome={() => navigate("/immersion/returning")}
     />
   );
 }

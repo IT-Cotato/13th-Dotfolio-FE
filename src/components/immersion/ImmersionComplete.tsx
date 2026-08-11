@@ -1,5 +1,6 @@
 import CloseIcon from "@/assets/close.svg";
 import { Button } from "@/components/common/button";
+import { ImmersionPageLayout } from "@/components/immersion/ImmersionPageLayout";
 
 interface ImmersionCompleteProps {
   completedCount: number;
@@ -13,8 +14,7 @@ export function ImmersionComplete({
   onReturnHome,
 }: ImmersionCompleteProps) {
   return (
-    <main className="bg-home-image relative flex min-h-svh w-full items-center justify-center px-6 py-10">
-      <div className="absolute inset-0 bg-[rgba(26,26,28,0.70)] backdrop-blur-[1.5px]" />
+    <ImmersionPageLayout className="flex items-center justify-center px-6 py-10">
       <section className="relative flex w-full max-w-[455px] flex-col items-end gap-1.5 rounded-[32px] bg-[rgba(0,17,78,0.35)] p-8">
         <button
           type="button"
@@ -36,6 +36,6 @@ export function ImmersionComplete({
           <Button label="홈으로 돌아가기" onClick={onReturnHome} />
         </div>
       </section>
-    </main>
+    </ImmersionPageLayout>
   );
 }

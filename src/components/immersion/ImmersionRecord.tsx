@@ -2,6 +2,7 @@ import PolygonIcon from "@/assets/polygon.svg";
 import { Button } from "@/components/common/button";
 import { ImmersionToggle } from "@/components/home/ImmersionToggle";
 import { ImmersionProgress } from "@/components/immersion/ImmersionProgress";
+import { ImmersionPageLayout } from "@/components/immersion/ImmersionPageLayout";
 import { ImmersionTimer } from "@/components/immersion/ImmersionTimer";
 
 interface ImmersionRecordProps {
@@ -14,8 +15,7 @@ export function ImmersionRecord({
   recordCount,
 }: ImmersionRecordProps) {
   return (
-    <main className="bg-home-image relative min-h-svh w-full px-6 py-6">
-      <div className="absolute inset-0 bg-[rgba(26,26,28,0.70)] backdrop-blur-[1.5px]" />
+    <ImmersionPageLayout className="px-6 py-6">
       <header className="relative flex w-full items-center justify-between">
         <ImmersionToggle defaultOn />
         <ImmersionTimer initialMinutes={focusMinutes} />
@@ -59,6 +59,6 @@ export function ImmersionRecord({
 
         <ImmersionProgress currentIndex={0} totalCount={recordCount} />
       </div>
-    </main>
+    </ImmersionPageLayout>
   );
 }

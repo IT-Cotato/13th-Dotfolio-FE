@@ -1,4 +1,4 @@
-import { useCallback, useState, type FormEvent } from "react";
+import { useCallback, useRef, useState, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { signup } from "@/api/auth";
 import { ApiError } from "@/api/client";
@@ -19,9 +19,13 @@ const isPasswordCompositionValid = (password: string) =>
   /\d/.test(password) &&
   /[^A-Za-z0-9]/.test(password);
 
+const DUPLICATE_EMAIL_ERROR_MESSAGE =
+  "이미 가입된 이메일 주소입니다. 다른 이메일을 입력해주세요.";
+
 export function SignupForm() {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
+  const emailRef = useRef("");
   const [password, setPassword] = useState("");
   const [passwordConfirmation, setPasswordConfirmation] = useState("");
   const [name, setName] = useState("");
@@ -30,6 +34,9 @@ export function SignupForm() {
   const [isOptionalAgreed, setIsOptionalAgreed] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [emailErrorMessage, setEmailErrorMessage] = useState<string | null>(
+    null,
+  );
   const hasValidLength = password.length >= 8 && password.length <= 16;
   const hasValidComposition = isPasswordCompositionValid(password);
   const isPasswordMatched =
@@ -43,8 +50,10 @@ export function SignupForm() {
     isRequiredAgreed;
 
   const handleEmailChange = useCallback((value: string) => {
+    emailRef.current = value;
     setEmail(value);
     setSubmitError(null);
+    setEmailErrorMessage(null);
   }, []);
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
@@ -56,10 +65,12 @@ export function SignupForm() {
 
     setIsSubmitting(true);
     setSubmitError(null);
+    setEmailErrorMessage(null);
+    const requestedEmail = email;
 
     try {
       await signup({
-        email,
+        email: requestedEmail,
         password,
         nickname: name.trim(),
         isPrivacyAgreed: isRequiredAgreed,
@@ -67,11 +78,21 @@ export function SignupForm() {
       });
       navigate("/login");
     } catch (error) {
-      setSubmitError(
-        error instanceof ApiError
-          ? error.message
-          : "회원가입 중 오류가 발생했습니다. 다시 시도해주세요.",
-      );
+      const isDuplicateEmailError =
+        error instanceof ApiError &&
+        (error.status === 409 || error.message.includes("이미 가입된 이메일"));
+
+      if (isDuplicateEmailError) {
+        if (emailRef.current === requestedEmail) {
+          setEmailErrorMessage(DUPLICATE_EMAIL_ERROR_MESSAGE);
+        }
+      } else {
+        setSubmitError(
+          error instanceof ApiError
+            ? error.message
+            : "회원가입 중 오류가 발생했습니다. 다시 시도해주세요.",
+        );
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -82,6 +103,7 @@ export function SignupForm() {
       <h1 className="self-stretch text-header text-grey-900">회원가입</h1>
 
       <SignupEmailField
+        errorMessage={emailErrorMessage ?? undefined}
         onEmailChange={handleEmailChange}
         onValidityChange={setIsEmailValid}
       />
@@ -104,7 +126,10 @@ export function SignupForm() {
         />
       </AuthFormField>
 
-      <AuthFormField htmlFor="signup-password-confirmation" label="비밀번호 확인">
+      <AuthFormField
+        htmlFor="signup-password-confirmation"
+        label="비밀번호 확인"
+      >
         <PasswordInput
           ariaLabel="비밀번호 확인"
           autoComplete="new-password"

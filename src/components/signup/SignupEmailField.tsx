@@ -7,6 +7,7 @@ const DOMAIN_OPTIONS = ["naver.com", "gmail.com", "kakao.com", "daum.com"];
 type EmailError = "format" | null;
 
 interface SignupEmailFieldProps {
+  errorMessage?: string;
   onEmailChange: (email: string) => void;
   onValidityChange: (isValid: boolean) => void;
 }
@@ -26,6 +27,7 @@ function getEmailError(localPart: string, domain: string): EmailError {
 }
 
 export function SignupEmailField({
+  errorMessage,
   onEmailChange,
   onValidityChange,
 }: SignupEmailFieldProps) {
@@ -34,7 +36,7 @@ export function SignupEmailField({
   const [emailError, setEmailError] = useState<EmailError>(null);
   const [isDomainMenuOpen, setIsDomainMenuOpen] = useState(false);
   const domainInputRef = useRef<HTMLInputElement>(null);
-  const hasError = emailError !== null;
+  const hasError = emailError !== null || Boolean(errorMessage);
   const isEmailValid =
     localPart.trim().length > 0 &&
     domain.trim().length > 0 &&
@@ -155,10 +157,14 @@ export function SignupEmailField({
           </div>
         </div>
 
-        {emailError && (
-          <p role="alert" className="flex-1 text-body3-r text-error-text">
-            올바른 이메일 형식으로 입력해주세요. 예: cotato@gmail.com
-          </p>
+        {(emailError || errorMessage) && (
+          <div className="flex w-full items-center justify-center self-stretch px-1">
+            <p role="alert" className="flex-1 text-body3-r text-error-text">
+              {emailError
+                ? "올바른 이메일 형식으로 입력해주세요. 예: cotato@gmail.com"
+                : errorMessage}
+            </p>
+          </div>
         )}
       </div>
     </AuthFormField>

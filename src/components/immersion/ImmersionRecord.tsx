@@ -1,13 +1,18 @@
 import PolygonIcon from "@/assets/polygon.svg";
 import { Button } from "@/components/common/button";
 import { ImmersionToggle } from "@/components/home/ImmersionToggle";
+import { ImmersionProgress } from "@/components/immersion/ImmersionProgress";
 import { ImmersionTimer } from "@/components/immersion/ImmersionTimer";
 
 interface ImmersionRecordProps {
   focusMinutes: number;
+  recordCount: number;
 }
 
-export function ImmersionRecord({ focusMinutes }: ImmersionRecordProps) {
+export function ImmersionRecord({
+  focusMinutes,
+  recordCount,
+}: ImmersionRecordProps) {
   return (
     <main className="bg-home-image relative min-h-svh w-full px-6 py-6">
       <div className="absolute inset-0 bg-[rgba(26,26,28,0.70)] backdrop-blur-[1.5px]" />
@@ -42,7 +47,7 @@ export function ImmersionRecord({ focusMinutes }: ImmersionRecordProps) {
 
           <div className="flex h-[678px] w-full items-start gap-6">
             <aside
-              aria-label="불러온 메모"
+              aria-label="불러온 기록"
               className="flex h-full w-[389px] shrink-0 flex-col items-end gap-4 rounded-[32px] bg-[rgba(0,17,78,0.35)] p-6"
             />
             <section
@@ -52,7 +57,7 @@ export function ImmersionRecord({ focusMinutes }: ImmersionRecordProps) {
           </div>
         </div>
 
-        <div aria-label="기록 진행 상태" className="flex items-center gap-3" />
+        <ImmersionProgress currentIndex={0} totalCount={recordCount} />
       </div>
     </main>
   );

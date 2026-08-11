@@ -3,6 +3,7 @@ import AddIcon from "@/assets/add10.svg";
 import RemoveIcon from "@/assets/remove.svg";
 import { Button } from "@/components/common/button";
 import { CounterButton } from "@/components/common/CounterButton";
+import { ImmersionToggle } from "@/components/home/ImmersionToggle";
 
 const MIN_RECORD_COUNT = 1;
 const MAX_RECORD_COUNT = 5;
@@ -27,6 +28,9 @@ export function ImmersionGoal() {
   return (
     <main className="bg-home-image relative flex min-h-svh w-full flex-col items-center justify-center gap-2.5 px-6 py-10">
       <div className="absolute inset-0 bg-[rgba(26,26,28,0.70)] backdrop-blur-[1.5px]" />
+      <div className="absolute left-6 top-6 z-10">
+        <ImmersionToggle defaultOn />
+      </div>
       <section className="relative flex w-full max-w-[500px] flex-col items-start justify-center gap-8 rounded-[32px] bg-[rgba(0,17,78,0.35)] p-6">
         <header className="flex w-full flex-col items-center justify-center gap-2 text-center">
           <h1 className="w-full text-title1 text-grey-0">

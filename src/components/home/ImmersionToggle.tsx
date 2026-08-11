@@ -1,10 +1,16 @@
 import { useState } from 'react';
 
-export const ImmersionToggle = () => {
-  const [isOn, setIsOn] = useState(false);
+interface ImmersionToggleProps {
+  defaultOn?: boolean;
+}
+
+export const ImmersionToggle = ({ defaultOn = false }: ImmersionToggleProps) => {
+  const [isOn, setIsOn] = useState(defaultOn);
 
   return (
     <button
+      type="button"
+      aria-pressed={isOn}
       onClick={() => setIsOn(!isOn)}
       className={`flex items-center gap-1 rounded-full p-0.75 cursor-pointer transition-colors ${
         isOn

@@ -26,8 +26,8 @@ export default function Layout() {
     <Routes>
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
-      <Route path="/password-reset" element={<PasswordReset />} />
-      <Route path="/password-reset/confirm" element={<PasswordResetConfirm />} />
+      <Route path="/reset-password/request" element={<PasswordReset />} />
+      <Route path="/reset-password" element={<PasswordResetConfirm />} />
       <Route path="*" element={<HomeLayout />} />
     </Routes>
   );
@@ -46,7 +46,7 @@ function HomeLayout() {
                 <MenuIcon className="w-6 h-6 text-grey-700 cursor-pointer" />
                 <span
                   className="font-nexon text-logo text-grey-600 cursor-pointer"
-                  onClick={() => navigate('/')}
+                  onClick={() => navigate("/")}
                 >
                   Dotfolio
                 </span>

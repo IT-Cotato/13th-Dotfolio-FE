@@ -23,6 +23,12 @@ export interface PasswordResetRequest {
   email: string;
 }
 
+export interface PasswordResetConfirmRequest {
+  token: string;
+  email: string;
+  newPassword: string;
+}
+
 export function signup(request: SignupRequest) {
   return requestApi<string>("/api/auth/signup", {
     method: "POST",
@@ -40,6 +46,13 @@ export function login(request: LoginRequest) {
 export function requestPasswordReset(request: PasswordResetRequest) {
   return requestApi<void>("/api/auth/reset-request", {
     method: "POST",
+    body: request,
+  });
+}
+
+export function resetPassword(request: PasswordResetConfirmRequest) {
+  return requestApi<void>("/api/auth/reset", {
+    method: "PATCH",
     body: request,
   });
 }

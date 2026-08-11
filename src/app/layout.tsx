@@ -5,6 +5,7 @@ import Login from "./login";
 import Signup from "./signup";
 import PasswordReset from "./password-reset";
 import PasswordResetConfirm from "./password-reset-confirm";
+import ImmersionGoalPage from "./immersion-goal";
 import Record from "./record";
 import RecordAll from "./record-all";
 import RecordWrite from "./record-write";
@@ -28,6 +29,7 @@ export default function Layout() {
       <Route path="/signup" element={<Signup />} />
       <Route path="/reset-password/request" element={<PasswordReset />} />
       <Route path="/reset-password" element={<PasswordResetConfirm />} />
+      <Route path="/immersion/goal" element={<ImmersionGoalPage />} />
       <Route path="*" element={<HomeLayout />} />
     </Routes>
   );

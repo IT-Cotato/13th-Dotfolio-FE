@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import AddIcon from "@/assets/add10.svg";
 import RemoveIcon from "@/assets/remove.svg";
 import { Button } from "@/components/common/button";
@@ -11,6 +12,7 @@ const MIN_FOCUS_MINUTES = 1;
 const MAX_FOCUS_MINUTES = 120;
 
 export function ImmersionGoal() {
+  const navigate = useNavigate();
   const [recordCount, setRecordCount] = useState(MAX_RECORD_COUNT);
   const [focusMinutes, setFocusMinutes] = useState("30");
   const parsedFocusMinutes = Number(focusMinutes);
@@ -109,6 +111,14 @@ export function ImmersionGoal() {
         <Button
           label="기록 시작"
           disabled={focusMinutes === "" || hasFocusMinutesError}
+          onClick={() =>
+            navigate("/immersion/record", {
+              state: {
+                focusMinutes: parsedFocusMinutes,
+                recordCount,
+              },
+            })
+          }
         />
       </section>
     </main>

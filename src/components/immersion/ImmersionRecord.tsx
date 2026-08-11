@@ -1,3 +1,4 @@
+import PolygonIcon from "@/assets/polygon.svg";
 import { ImmersionToggle } from "@/components/home/ImmersionToggle";
 import { ImmersionTimer } from "@/components/immersion/ImmersionTimer";
 
@@ -13,6 +14,27 @@ export function ImmersionRecord({ focusMinutes }: ImmersionRecordProps) {
         <ImmersionToggle defaultOn />
         <ImmersionTimer initialMinutes={focusMinutes} />
       </header>
+
+      <div className="relative mx-auto mt-20 flex w-full max-w-[1340px] flex-col items-center gap-8">
+        <div className="flex w-full flex-col items-start gap-8">
+          <div className="flex w-full flex-col items-start gap-6">
+            <nav
+              aria-label="현재 기록 경로"
+              className="flex w-full items-center gap-0.5 px-1"
+            >
+              <span className="text-body2-md text-grey-100">
+                코테이토 13기 프로젝트
+              </span>
+              <span className="flex size-6 items-center justify-center px-1 py-2">
+                <PolygonIcon className="h-2.5 w-3 text-grey-100" />
+              </span>
+              <span className="text-body2-md text-grey-100">기획·아이디어</span>
+            </nav>
+          </div>
+        </div>
+
+        <div aria-label="기록 진행 상태" className="flex items-center gap-3" />
+      </div>
     </main>
   );
 }

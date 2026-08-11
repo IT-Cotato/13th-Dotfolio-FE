@@ -5,9 +5,23 @@ import { CounterButton } from "@/components/common/CounterButton";
 
 const MIN_RECORD_COUNT = 1;
 const MAX_RECORD_COUNT = 5;
+const MIN_FOCUS_MINUTES = 1;
+const MAX_FOCUS_MINUTES = 120;
 
 export function ImmersionGoal() {
   const [recordCount, setRecordCount] = useState(MAX_RECORD_COUNT);
+  const [focusMinutes, setFocusMinutes] = useState("30");
+  const parsedFocusMinutes = Number(focusMinutes);
+  const hasFocusMinutesError =
+    focusMinutes !== "" &&
+    (parsedFocusMinutes < MIN_FOCUS_MINUTES ||
+      parsedFocusMinutes > MAX_FOCUS_MINUTES);
+
+  const handleFocusMinutesChange = (value: string) => {
+    if (/^\d{0,3}$/.test(value)) {
+      setFocusMinutes(value);
+    }
+  };
 
   return (
     <main className="bg-home-image relative flex min-h-svh w-full flex-col items-center justify-center gap-2.5 px-6 py-10">
@@ -49,6 +63,42 @@ export function ImmersionGoal() {
               onClick={() => setRecordCount((count) => count + 1)}
             />
           </div>
+        </div>
+
+        <div className="flex w-full flex-col items-start gap-2">
+          <div className="flex w-full items-center justify-between">
+            <div className="flex flex-col items-start gap-2">
+              <h2 className="w-full text-sub1-sb text-grey-0">시간</h2>
+              <p className="text-body2-md text-grey-200">
+                최대 120분까지 설정할 수 있어요.
+              </p>
+            </div>
+
+            <label className="flex h-12 w-[131px] items-center gap-2.5 rounded-[14px] border-[1.5px] border-[#4E5C7C] p-4">
+              <span className="flex min-w-0 flex-1 items-center justify-between">
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  aria-label="몰입 시간"
+                  aria-invalid={hasFocusMinutesError}
+                  className="w-0 min-w-0 flex-1 bg-transparent text-title2 text-grey-0 outline-none"
+                  value={focusMinutes}
+                  onChange={(event) =>
+                    handleFocusMinutesChange(event.target.value)
+                  }
+                />
+                <span className="shrink-0 text-body-reading2-md text-grey-400">
+                  분
+                </span>
+              </span>
+            </label>
+          </div>
+
+          {hasFocusMinutesError && (
+            <p role="alert" className="w-full text-body3-r text-error-text">
+              시간은 120분 이하로 입력해 주세요.
+            </p>
+          )}
         </div>
       </section>
     </main>

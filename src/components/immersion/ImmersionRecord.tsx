@@ -7,17 +7,24 @@ import { ImmersionTimer } from "@/components/immersion/ImmersionTimer";
 
 interface ImmersionRecordProps {
   focusMinutes: number;
+  onRequestExit: () => void;
   recordCount: number;
 }
 
 export function ImmersionRecord({
   focusMinutes,
+  onRequestExit,
   recordCount,
 }: ImmersionRecordProps) {
   return (
     <ImmersionPageLayout className="px-6 py-6">
       <header className="relative flex w-full items-center justify-between">
-        <ImmersionToggle defaultOn />
+        <ImmersionToggle
+          isOn
+          onToggle={(nextIsOn) => {
+            if (!nextIsOn) onRequestExit();
+          }}
+        />
         <ImmersionTimer initialMinutes={focusMinutes} />
       </header>
 

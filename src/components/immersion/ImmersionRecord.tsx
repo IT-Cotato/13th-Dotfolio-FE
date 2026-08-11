@@ -1,4 +1,5 @@
 import PolygonIcon from "@/assets/polygon.svg";
+import { Button } from "@/components/common/button";
 import { ImmersionToggle } from "@/components/home/ImmersionToggle";
 import { ImmersionTimer } from "@/components/immersion/ImmersionTimer";
 
@@ -30,6 +31,13 @@ export function ImmersionRecord({ focusMinutes }: ImmersionRecordProps) {
               </span>
               <span className="text-body2-md text-grey-100">기획·아이디어</span>
             </nav>
+
+            <div className="flex w-full items-center justify-between px-1">
+              <h1 className="w-full max-w-[452px] text-title1 text-grey-0">
+                데이터 시각화 대시보드 개선
+              </h1>
+              <Button label="저장하고 다음 기록" size="compact" />
+            </div>
           </div>
         </div>
 

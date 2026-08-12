@@ -69,6 +69,10 @@
       url('/images/background.jpg') lightgray 0px -0.093px / 127.431% 100.018% no-repeat;
   }
 
+  .bg-home-image {
+    background: url('/images/background.jpg') lightgray 0px -0.093px / 127.431% 100.018% no-repeat;
+  }
+
   .bg-primary-gradient {
     background: linear-gradient(121deg, #4873ff 0%, #426eff 35.58%, #2d50e9 100%);
   }

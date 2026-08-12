@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { AuthBrandLogo } from "@/components/login/AuthBrandLogo";
 import { LoginHeader } from "@/components/login/LoginHeader";
 
 interface AuthLayoutProps {
@@ -17,7 +18,9 @@ export function AuthLayout({ children }: AuthLayoutProps) {
           </div>
         </div>
 
-        <aside className="hidden w-1/2 md:block" aria-hidden="true" />
+        <aside className="hidden w-1/2 items-center justify-center md:flex" aria-hidden="true">
+          <AuthBrandLogo />
+        </aside>
       </section>
     </main>
   );

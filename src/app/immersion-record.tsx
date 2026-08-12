@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { ImmersionRecord } from "@/components/immersion/ImmersionRecord";
 import { ImmersionInterrupted } from "@/components/immersion/ImmersionInterrupted";
+import { exitImmersionHistory } from "@/utils/immersionHistory";
 
 interface ImmersionRecordLocationState {
   focusMinutes?: number;
@@ -16,6 +17,7 @@ export default function ImmersionRecordPage() {
   const { state } = useLocation();
   const [isExitOpen, setIsExitOpen] = useState(false);
   const hasAddedHistoryGuard = useRef(false);
+  const isConfirmingExit = useRef(false);
   const locationState = state as ImmersionRecordLocationState | null;
   const focusMinutes = locationState?.focusMinutes ?? DEFAULT_FOCUS_MINUTES;
   const recordCount = locationState?.recordCount ?? DEFAULT_RECORD_COUNT;
@@ -31,6 +33,8 @@ export default function ImmersionRecordPage() {
     }
 
     const handlePopState = () => {
+      if (isConfirmingExit.current) return;
+
       window.history.pushState(
         { ...window.history.state, immersionGuard: true },
         "",
@@ -43,6 +47,17 @@ export default function ImmersionRecordPage() {
     return () => window.removeEventListener("popstate", handlePopState);
   }, []);
 
+  const handleConfirmExit = () => {
+    isConfirmingExit.current = true;
+    exitImmersionHistory({
+      history: window.history,
+      target: window,
+      onHistoryCleared: () => {
+        navigate("/immersion/returning", { replace: true });
+      },
+    });
+  };
+
   return (
     <>
       <ImmersionRecord
@@ -54,7 +69,7 @@ export default function ImmersionRecordPage() {
         <div className="fixed inset-0 z-50">
           <ImmersionInterrupted
             onClose={() => setIsExitOpen(false)}
-            onReturnHome={() => navigate("/immersion/returning")}
+            onReturnHome={handleConfirmExit}
           />
         </div>
       )}

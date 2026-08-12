@@ -1,5 +1,6 @@
 interface HistoryNavigator {
   go: (delta: number) => void;
+  pushState: (data: unknown, unused: string) => void;
 }
 
 interface PopStateTarget {
@@ -23,6 +24,13 @@ export function exitImmersionHistory({
   onHistoryCleared,
   target,
 }: ExitImmersionHistoryOptions) {
-  target.addEventListener("popstate", onHistoryCleared, { once: true });
+  target.addEventListener(
+    "popstate",
+    () => {
+      history.pushState(null, "");
+      onHistoryCleared();
+    },
+    { once: true },
+  );
   history.go(-IMMERSION_HISTORY_ENTRY_COUNT);
 }

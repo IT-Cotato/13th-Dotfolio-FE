@@ -13,6 +13,11 @@ test("confirmed exit removes record and guard before returning home", () => {
         index += delta;
         popStateListener?.();
       },
+      pushState() {
+        entries.splice(index + 1);
+        entries.push(entries[index]);
+        index += 1;
+      },
     },
     target: {
       addEventListener(_type, listener) {
@@ -26,6 +31,8 @@ test("confirmed exit removes record and guard before returning home", () => {
   });
 
   assert.equal(entries[index], "/");
-  assert.equal(index, 0);
-  assert.equal(index - 1, -1, "Back from home cannot restore record mode");
+  assert.equal(entries.includes("/immersion/record"), false);
+
+  index = Math.min(index + 1, entries.length - 1);
+  assert.equal(entries[index], "/", "Forward from home cannot restore record mode");
 });

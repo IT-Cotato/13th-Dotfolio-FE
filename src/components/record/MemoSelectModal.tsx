@@ -7,11 +7,12 @@ import type { Memo } from '@/types/memo';
 
 interface MemoSelectModalProps {
   isOpen: boolean;
+  selectedMemos: Memo[];
   onClose: () => void;
   onSelect: (memos: Memo[]) => void;
 }
 
-export const MemoSelectModal = ({ isOpen, onClose, onSelect }: MemoSelectModalProps) => {
+export const MemoSelectModal = ({ isOpen, selectedMemos, onClose, onSelect }: MemoSelectModalProps) => {
   const [memos, setMemos] = useState<Memo[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -23,12 +24,17 @@ export const MemoSelectModal = ({ isOpen, onClose, onSelect }: MemoSelectModalPr
     let cancelled = false;
 
     const fetchMemos = async () => {
+      // 모달을 열 때마다 이전에 남아있던 선택 상태를 지우고, 현재 첨부된 메모로 다시 시작.
+      setSelectedIds(new Set(selectedMemos.map(memo => memo.id)));
       setIsLoading(true);
       setError(null);
       try {
         const response = await getMemos();
         if (cancelled) return;
-        setMemos(response.data.map(toMemo));
+        const fetched = response.data.map(toMemo);
+        setMemos(fetched);
+        // API 응답에 없는 id(삭제되었거나 목록에 안 뜨는 메모)는 선택 상태에서 제외.
+        setSelectedIds(prev => new Set([...prev].filter(id => fetched.some(memo => memo.id === id))));
       } catch (err) {
         if (cancelled) return;
         setError(err instanceof ApiError ? err.message : '메모를 불러오지 못했습니다.');
@@ -41,6 +47,7 @@ export const MemoSelectModal = ({ isOpen, onClose, onSelect }: MemoSelectModalPr
     return () => {
       cancelled = true;
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen]);
 
   if (!isOpen) return null;

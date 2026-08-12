@@ -263,6 +263,7 @@ export default function RecordWrite() {
 
       <MemoSelectModal
         isOpen={isMemoModalOpen}
+        selectedMemos={selectedMemos}
         onClose={() => setIsMemoModalOpen(false)}
         onSelect={memos => {
           setSelectedMemos(memos);
@@ -273,7 +274,7 @@ export default function RecordWrite() {
       <MemoDetailModal memo={detailMemo} onClose={() => setDetailMemo(null)} />
 
       {toast && (
-        <div className="fixed top-4 left-1/2 -translate-x-1/2 z-[100]">
+        <div className="fixed top-4 left-1/2 -translate-x-1/2 z-100">
           <Toast message={toast.message} onUndo={toast.onUndo} variant={toast.variant} />
         </div>
       )}

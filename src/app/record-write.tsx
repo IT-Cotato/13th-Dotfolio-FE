@@ -11,9 +11,9 @@ import { MemoDetailModal } from '@/components/record/MemoDetailModal';
 import { useActivities } from '@/contexts/ActivitiesContext';
 import { useTemplates } from '@/contexts/TemplatesContext';
 import { createRecord, updateRecord, getRecords, getRecordDetail } from '@/api/records';
+import { getMemos, toMemo } from '@/api/memos';
 import { ApiError } from '@/api/client';
 import { useToast } from '@/hooks/useToast';
-import MEMOS from '@/mock/memos.json';
 import type { Memo } from '@/types/memo';
 import MemoUploadIcon from '@/assets/memoupload.svg';
 
@@ -64,7 +64,11 @@ export default function RecordWrite() {
           ...prev,
           ...Object.fromEntries(detailResponse.data.answers.map(a => [a.templateQuestionId, a.answerText])),
         }));
-        setSelectedMemos(MEMOS.filter(memo => detailResponse.data.memos.some(m => m.memoId === memo.id)));
+
+        const memosResponse = await getMemos();
+        if (cancelled) return;
+        const allMemos = memosResponse.data.map(toMemo);
+        setSelectedMemos(allMemos.filter(memo => detailResponse.data.memos.some(m => m.memoId === memo.id)));
       } catch (error) {
         console.error('[record-write] 기존 임시저장 기록을 불러오지 못했습니다.', error);
       }
@@ -259,7 +263,6 @@ export default function RecordWrite() {
 
       <MemoSelectModal
         isOpen={isMemoModalOpen}
-        memos={MEMOS}
         onClose={() => setIsMemoModalOpen(false)}
         onSelect={memos => {
           setSelectedMemos(memos);

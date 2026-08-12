@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
+import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from 'react';
 import type { RecordTemplate, TemplateQuestion } from '@/constants/templates';
 import { getTemplates, createTemplate, type TemplateDetail } from '@/api/templates';
 
@@ -63,32 +63,33 @@ const toRecordTemplate = (item: TemplateDetail, builtinIndex: number): RecordTem
 export const TemplatesProvider = ({ children }: { children: ReactNode }) => {
   const [templates, setTemplates] = useState<RecordTemplate[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  // 조회 요청끼리 순서가 뒤바뀌어 도착해도, 가장 나중에 보낸 요청의 응답만 반영되도록 추적.
+  const fetchIdRef = useRef(0);
 
-  useEffect(() => {
-    let cancelled = false;
-
-    const fetchTemplates = async () => {
-      setIsLoading(true);
-      try {
-        const response = await getTemplates();
-        if (cancelled) return;
-        let builtinIndex = 0;
-        setTemplates(response.data.map(item => toRecordTemplate(item, item.isBuiltin ? builtinIndex++ : 0)));
-      } catch {
-        if (!cancelled) setTemplates([]);
-      } finally {
-        if (!cancelled) setIsLoading(false);
-      }
-    };
-
-    fetchTemplates();
-    return () => {
-      cancelled = true;
-    };
+  const fetchTemplates = useCallback(async () => {
+    const requestId = ++fetchIdRef.current;
+    setIsLoading(true);
+    try {
+      const response = await getTemplates();
+      if (requestId !== fetchIdRef.current) return;
+      let builtinIndex = 0;
+      setTemplates(response.data.map(item => toRecordTemplate(item, item.isBuiltin ? builtinIndex++ : 0)));
+    } catch {
+      if (requestId === fetchIdRef.current) setTemplates([]);
+    } finally {
+      if (requestId === fetchIdRef.current) setIsLoading(false);
+    }
   }, []);
 
+  useEffect(() => {
+    const fetchInitial = async () => {
+      await fetchTemplates();
+    };
+    fetchInitial();
+  }, [fetchTemplates]);
+
   const addCustomTemplate = async (data: CustomTemplateFormData) => {
-    const response = await createTemplate({
+    await createTemplate({
       title: data.title,
       description: data.description,
       questions: data.questions.map(q => ({
@@ -97,7 +98,8 @@ export const TemplatesProvider = ({ children }: { children: ReactNode }) => {
         required: q.required ?? false,
       })),
     });
-    setTemplates(prev => [...prev, toRecordTemplate(response.data, 0)]);
+    // 생성 직후 목록을 다시 조회해서 최신 상태로 맞춤 (진행 중이던 초기 조회가 뒤늦게 도착해도 이 요청이 우선하도록 fetchIdRef가 갱신됨).
+    await fetchTemplates();
   };
 
   return (

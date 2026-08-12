@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from 'react';
+import { useCallback, useRef, useState, useEffect } from 'react';
 import { ActivityTag } from '@/components/common/ActivityTag';
 import { Button } from '@/components/common/button';
 import { DatePicker } from '@/components/common/DatePicker';
@@ -31,6 +31,8 @@ export const ActivityModal = ({ isOpen, onClose, onSubmit, activity }: ActivityM
   const tagInputRef = useRef<HTMLInputElement>(null);
   const startPickerRef = useRef<HTMLDivElement>(null);
   const endPickerRef = useRef<HTMLDivElement>(null);
+  // 조회 요청끼리 순서가 뒤바뀌어 도착해도, 가장 나중에 보낸 요청의 응답만 반영되도록 추적.
+  const fetchIdRef = useRef(0);
 
   useEffect(() => {
     if (!openPicker) return;
@@ -44,26 +46,24 @@ export const ActivityModal = ({ isOpen, onClose, onSubmit, activity }: ActivityM
     return () => document.removeEventListener('mousedown', handleOutsideClick);
   }, [openPicker]);
 
+  const fetchTypes = useCallback(async () => {
+    const requestId = ++fetchIdRef.current;
+    try {
+      const response = await getActivityTypes();
+      if (requestId !== fetchIdRef.current) return;
+      setTypes(response.data);
+    } catch {
+      if (requestId === fetchIdRef.current) setTypes([]);
+    }
+  }, []);
+
   useEffect(() => {
     if (!isOpen) return;
-
-    let cancelled = false;
-
-    const fetchTypes = async () => {
-      try {
-        const response = await getActivityTypes();
-        if (cancelled) return;
-        setTypes(response.data);
-      } catch {
-        if (!cancelled) setTypes([]);
-      }
+    const run = async () => {
+      await fetchTypes();
     };
-
-    fetchTypes();
-    return () => {
-      cancelled = true;
-    };
-  }, [isOpen]);
+    run();
+  }, [isOpen, fetchTypes]);
 
   if (!isOpen) return null;
 
@@ -93,9 +93,9 @@ export const ActivityModal = ({ isOpen, onClose, onSubmit, activity }: ActivityM
     setTypeError(null);
     try {
       const response = await createActivityType(trimmed);
-      const newType: ActivityTypeItem = { id: response.data, name: trimmed, isDefault: false };
-      setTypes(prev => [...prev, newType]);
-      setSelectedTypeId(newType.id);
+      setSelectedTypeId(response.data);
+      // 생성 직후 목록을 다시 조회해서 최신 상태로 맞춤 (진행 중이던 초기 조회가 뒤늦게 도착해도 이 요청이 우선하도록 fetchIdRef가 갱신됨).
+      await fetchTypes();
     } catch (error) {
       setTypeError(error instanceof ApiError ? error.message : '활동 종류 생성에 실패했습니다.');
     } finally {

@@ -1,17 +1,54 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import CloseIcon from '@/assets/close.svg';
 import { MemoCard } from '@/components/record/MemoCard';
+import { getMemos, toMemo } from '@/api/memos';
+import { ApiError } from '@/api/client';
 import type { Memo } from '@/types/memo';
 
 interface MemoSelectModalProps {
   isOpen: boolean;
-  memos: Memo[];
+  selectedMemos: Memo[];
   onClose: () => void;
   onSelect: (memos: Memo[]) => void;
 }
 
-export const MemoSelectModal = ({ isOpen, memos, onClose, onSelect }: MemoSelectModalProps) => {
+export const MemoSelectModal = ({ isOpen, selectedMemos, onClose, onSelect }: MemoSelectModalProps) => {
+  const [memos, setMemos] = useState<Memo[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    let cancelled = false;
+
+    const fetchMemos = async () => {
+      // 모달을 열 때마다 이전에 남아있던 선택 상태를 지우고, 현재 첨부된 메모로 다시 시작.
+      setSelectedIds(new Set(selectedMemos.map(memo => memo.id)));
+      setIsLoading(true);
+      setError(null);
+      try {
+        const response = await getMemos();
+        if (cancelled) return;
+        const fetched = response.data.map(toMemo);
+        setMemos(fetched);
+        // API 응답에 없는 id(삭제되었거나 목록에 안 뜨는 메모)는 선택 상태에서 제외.
+        setSelectedIds(prev => new Set([...prev].filter(id => fetched.some(memo => memo.id === id))));
+      } catch (err) {
+        if (cancelled) return;
+        setError(err instanceof ApiError ? err.message : '메모를 불러오지 못했습니다.');
+      } finally {
+        if (!cancelled) setIsLoading(false);
+      }
+    };
+
+    fetchMemos();
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
@@ -49,16 +86,22 @@ export const MemoSelectModal = ({ isOpen, memos, onClose, onSelect }: MemoSelect
         </div>
 
         <div className="w-full min-h-0 overflow-y-auto scrollbar-hide">
-          <div className="grid grid-cols-[266px_266px] gap-x-6 gap-y-4">
-            {memos.map(memo => (
-              <MemoCard
-                key={memo.id}
-                memo={memo}
-                selected={selectedIds.has(memo.id)}
-                onToggle={() => toggle(memo.id)}
-              />
-            ))}
-          </div>
+          {isLoading ? (
+            <p className="text-body2-r text-grey-500 text-center py-10">불러오는 중...</p>
+          ) : error ? (
+            <p className="text-body2-r text-error-text text-center py-10">{error}</p>
+          ) : (
+            <div className="grid grid-cols-[266px_266px] gap-x-6 gap-y-4">
+              {memos.map(memo => (
+                <MemoCard
+                  key={memo.id}
+                  memo={memo}
+                  selected={selectedIds.has(memo.id)}
+                  onToggle={() => toggle(memo.id)}
+                />
+              ))}
+            </div>
+          )}
         </div>
 
         <button

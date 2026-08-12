@@ -1,10 +1,11 @@
-import { useRef, useState, useEffect } from 'react';
+import { useCallback, useRef, useState, useEffect } from 'react';
 import { ActivityTag } from '@/components/common/ActivityTag';
 import { Button } from '@/components/common/button';
 import { DatePicker } from '@/components/common/DatePicker';
 import CalendarIcon from '@/assets/calendar_today.svg';
 import CloseIcon from '@/assets/close.svg';
-import { ACTIVITY_TYPES } from '@/constants/activity';
+import { getActivityTypes, createActivityType, type ActivityTypeItem } from '@/api/activityTypes';
+import { ApiError } from '@/api/client';
 import type { ActivityFormData } from '@/contexts/ActivitiesContext';
 import type { Activity } from '@/types/activity';
 
@@ -17,14 +18,12 @@ interface ActivityModalProps {
 
 export const ActivityModal = ({ isOpen, onClose, onSubmit, activity }: ActivityModalProps) => {
   const [title, setTitle] = useState(activity?.title ?? '');
-  const [selectedTags, setSelectedTags] = useState<string[]>(activity ? [activity.activityTypeName] : []);
-  const [extraTags, setExtraTags] = useState<string[]>(
-    activity && !ACTIVITY_TYPES.includes(activity.activityTypeName as (typeof ACTIVITY_TYPES)[number])
-      ? [activity.activityTypeName]
-      : []
-  );
+  const [types, setTypes] = useState<ActivityTypeItem[]>([]);
+  const [selectedTypeId, setSelectedTypeId] = useState(activity?.activityTypeId ?? '');
   const [isAddingTag, setIsAddingTag] = useState(false);
   const [newTagValue, setNewTagValue] = useState('');
+  const [isCreatingType, setIsCreatingType] = useState(false);
+  const [typeError, setTypeError] = useState<string | null>(null);
   const [startDate, setStartDate] = useState(activity?.startDate ?? '');
   const [endDate, setEndDate] = useState(activity?.endDate ?? '');
   const [endDateUnknown, setEndDateUnknown] = useState(activity?.endDateUnknown ?? false);
@@ -32,6 +31,8 @@ export const ActivityModal = ({ isOpen, onClose, onSubmit, activity }: ActivityM
   const tagInputRef = useRef<HTMLInputElement>(null);
   const startPickerRef = useRef<HTMLDivElement>(null);
   const endPickerRef = useRef<HTMLDivElement>(null);
+  // 조회 요청끼리 순서가 뒤바뀌어 도착해도, 가장 나중에 보낸 요청의 응답만 반영되도록 추적.
+  const fetchIdRef = useRef(0);
 
   useEffect(() => {
     if (!openPicker) return;
@@ -45,20 +46,61 @@ export const ActivityModal = ({ isOpen, onClose, onSubmit, activity }: ActivityM
     return () => document.removeEventListener('mousedown', handleOutsideClick);
   }, [openPicker]);
 
+  const fetchTypes = useCallback(async () => {
+    const requestId = ++fetchIdRef.current;
+    try {
+      const response = await getActivityTypes();
+      if (requestId !== fetchIdRef.current) return;
+      setTypes(response.data);
+    } catch {
+      if (requestId === fetchIdRef.current) setTypes([]);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const run = async () => {
+      await fetchTypes();
+    };
+    run();
+  }, [isOpen, fetchTypes]);
+
   if (!isOpen) return null;
 
-  const toggleTag = (tag: string) => {
-    setSelectedTags(prev => prev.includes(tag) ? [] : [tag]);
+  const typeOptions = (
+    activity && !types.some(t => t.id === activity.activityTypeId)
+      ? [{ id: activity.activityTypeId, name: activity.activityTypeName, isDefault: false }, ...types]
+      : types
+  ).slice().sort((a, b) => Number(b.isDefault) - Number(a.isDefault));
+
+  const selectType = (id: string) => {
+    setSelectedTypeId(prev => (prev === id ? '' : id));
   };
 
-  const commitNewTag = () => {
+  const commitNewTag = async () => {
     const trimmed = newTagValue.trim();
-    if (trimmed && !extraTags.includes(trimmed) && !ACTIVITY_TYPES.includes(trimmed as (typeof ACTIVITY_TYPES)[number])) {
-      setExtraTags(prev => [...prev, trimmed]);
-      setSelectedTags([trimmed]);
-    }
     setNewTagValue('');
     setIsAddingTag(false);
+    if (!trimmed) return;
+
+    const existing = typeOptions.find(t => t.name === trimmed);
+    if (existing) {
+      setSelectedTypeId(existing.id);
+      return;
+    }
+
+    setIsCreatingType(true);
+    setTypeError(null);
+    try {
+      const response = await createActivityType(trimmed);
+      setSelectedTypeId(response.data);
+      // 생성 직후 목록을 다시 조회해서 최신 상태로 맞춤 (진행 중이던 초기 조회가 뒤늦게 도착해도 이 요청이 우선하도록 fetchIdRef가 갱신됨).
+      await fetchTypes();
+    } catch (error) {
+      setTypeError(error instanceof ApiError ? error.message : '활동 종류 생성에 실패했습니다.');
+    } finally {
+      setIsCreatingType(false);
+    }
   };
 
   const handleTagInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -68,7 +110,7 @@ export const ActivityModal = ({ isOpen, onClose, onSubmit, activity }: ActivityM
 
   const isDisabled =
     !title.trim() ||
-    selectedTags.length === 0 ||
+    !selectedTypeId ||
     !startDate ||
     (!endDate && !endDateUnknown);
 
@@ -102,20 +144,12 @@ export const ActivityModal = ({ isOpen, onClose, onSubmit, activity }: ActivityM
         <div className="flex flex-col gap-2">
           <p className="text-sub2-sb text-grey-900">활동 종류</p>
           <div className="flex gap-2 py-2 overflow-x-auto scrollbar-hide">
-            {ACTIVITY_TYPES.map(tag => (
+            {typeOptions.map(type => (
               <ActivityTag
-                key={tag}
-                label={tag}
-                selected={selectedTags.includes(tag)}
-                onClick={() => toggleTag(tag)}
-              />
-            ))}
-            {extraTags.map(tag => (
-              <ActivityTag
-                key={tag}
-                label={tag}
-                selected={selectedTags.includes(tag)}
-                onClick={() => toggleTag(tag)}
+                key={type.id}
+                label={type.name}
+                selected={selectedTypeId === type.id}
+                onClick={() => selectType(type.id)}
               />
             ))}
             {isAddingTag ? (
@@ -127,6 +161,7 @@ export const ActivityModal = ({ isOpen, onClose, onSubmit, activity }: ActivityM
                 onChange={e => setNewTagValue(e.target.value)}
                 onKeyDown={handleTagInputKeyDown}
                 onBlur={commitNewTag}
+                disabled={isCreatingType}
                 size={Math.max(4, newTagValue.length)}
                 className="px-3 py-2 rounded-xl border border-dashed border-grey-100 text-body2-md text-grey-900 outline-none bg-transparent shrink-0"
               />
@@ -134,12 +169,14 @@ export const ActivityModal = ({ isOpen, onClose, onSubmit, activity }: ActivityM
               <button
                 type="button"
                 onClick={() => setIsAddingTag(true)}
+                disabled={isCreatingType}
                 className="flex shrink-0 items-center justify-center px-3 py-2 rounded-xl border border-dashed border-grey-100 text-body2-md text-grey-700 cursor-pointer"
               >
                 +
               </button>
             )}
           </div>
+          {typeError && <p className="text-caption1 text-error-text">{typeError}</p>}
         </div>
 
         {/* 날짜 */}
@@ -221,7 +258,7 @@ export const ActivityModal = ({ isOpen, onClose, onSubmit, activity }: ActivityM
           disabled={isDisabled}
           onClick={() => onSubmit({
             title,
-            activityTypeId: selectedTags[0] ?? '',
+            activityTypeId: selectedTypeId,
             description: activity?.description ?? '',
             startDate,
             endDate,

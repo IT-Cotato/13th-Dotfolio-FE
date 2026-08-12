@@ -83,6 +83,46 @@ export const toRecordEntry = (item: RecordListItem): RecordEntry => ({
   memoIds: [],
 });
 
+export interface CreateRecordAnswerInput {
+  templateQuestionId: string;
+  answerText: string;
+}
+
+export interface CreateRecordMemoInput {
+  memoId: string;
+  collapsed: boolean;
+}
+
+export interface CreateRecordPayload {
+  activityId: string;
+  templateId: string;
+  title: string;
+  answers: CreateRecordAnswerInput[];
+  memos: CreateRecordMemoInput[];
+  status: string;
+}
+
+export function createRecord(payload: CreateRecordPayload) {
+  return requestApi<RecordDetail>("/api/records", {
+    method: "POST",
+    body: payload,
+  });
+}
+
+export interface UpdateRecordPayload {
+  title: string;
+  answers: CreateRecordAnswerInput[];
+  memos: CreateRecordMemoInput[];
+  status: string;
+}
+
+export function updateRecord(recordId: string, payload: UpdateRecordPayload) {
+  return requestApi<RecordDetail>(`/api/records/${recordId}`, {
+    method: "PATCH",
+    body: payload,
+  });
+}
+
 export function getRecordDetail(recordId: string) {
   return requestApi<RecordDetail>(`/api/records/${recordId}`);
 }

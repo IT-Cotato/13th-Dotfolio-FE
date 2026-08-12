@@ -6,16 +6,20 @@ import { Breadcrumb } from '@/components/common/Breadcrumb';
 import { PrimaryButton } from '@/components/common/createButton';
 import { CustomTemplateModal, type CustomTemplateData } from '@/components/common/CustomTemplateModal';
 import { Template } from '@/components/common/Template';
+import { Toast } from '@/components/common/Toast';
 import { useTemplates } from '@/contexts/TemplatesContext';
+import { useToast } from '@/hooks/useToast';
 
 export default function TemplateAll() {
   const navigate = useNavigate();
   const { templates, addCustomTemplate } = useTemplates();
   const [isCustomModalOpen, setIsCustomModalOpen] = useState(false);
+  const { toast, fireToast } = useToast();
 
-  const handleCreateCustomTemplate = (data: CustomTemplateData) => {
-    addCustomTemplate(data);
+  const handleCreateCustomTemplate = async (data: CustomTemplateData) => {
+    await addCustomTemplate(data);
     setIsCustomModalOpen(false);
+    fireToast('템플릿이 성공적으로 생성되었습니다.');
   };
 
   return (
@@ -51,6 +55,12 @@ export default function TemplateAll() {
         onClose={() => setIsCustomModalOpen(false)}
         onSubmit={handleCreateCustomTemplate}
       />
+
+      {toast && (
+        <div className="fixed top-4 left-1/2 -translate-x-1/2 z-100">
+          <Toast message={toast.message} variant={toast.variant} />
+        </div>
+      )}
     </Card>
   );
 }

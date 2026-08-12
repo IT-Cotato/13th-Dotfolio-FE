@@ -1,6 +1,7 @@
 import { HeroSection } from "@/components/landing/HeroSection";
 import { ExperienceProblemSection } from "@/components/landing/ExperienceProblemSection";
 import { PainPointsSection } from "@/components/landing/PainPointsSection";
+import { SolutionSection } from "@/components/landing/SolutionSection";
 
 export default function Landing() {
   return (
@@ -9,6 +10,7 @@ export default function Landing() {
         <HeroSection />
         <ExperienceProblemSection />
         <PainPointsSection />
+        <SolutionSection />
       </main>
     </div>
   );

@@ -1,6 +1,6 @@
 <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
 <g filter="url(#filter0_i_1943_29055)">
-<circle cx="6" cy="6" r="6" fill="white"/>
+<circle cx="6" cy="6" r="6" fill="currentColor"/>
 </g>
 <defs>
 <filter id="filter0_i_1943_29055" x="0" y="-0.576" width="12" height="12.576" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">

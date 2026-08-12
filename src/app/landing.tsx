@@ -3,6 +3,7 @@ import { ExperienceProblemSection } from "@/components/landing/ExperienceProblem
 import { PainPointsSection } from "@/components/landing/PainPointsSection";
 import { SolutionSection } from "@/components/landing/SolutionSection";
 import { BrandStorySection } from "@/components/landing/BrandStorySection";
+import { LandingFooter } from "@/components/landing/LandingFooter";
 
 export default function Landing() {
   return (
@@ -14,6 +15,7 @@ export default function Landing() {
         <SolutionSection />
         <BrandStorySection />
       </main>
+      <LandingFooter />
     </div>
   );
 }

@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Card } from '@/components/common/card';
 import { Breadcrumb } from '@/components/common/Breadcrumb';
@@ -10,9 +10,10 @@ import { MemoLoadedCard } from '@/components/record/MemoLoadedCard';
 import { MemoDetailModal } from '@/components/record/MemoDetailModal';
 import { useActivities } from '@/contexts/ActivitiesContext';
 import { useTemplates } from '@/contexts/TemplatesContext';
-import { useRecords } from '@/contexts/RecordsContext';
+import { createRecord, updateRecord, getRecords, getRecordDetail } from '@/api/records';
+import { getMemos, toMemo } from '@/api/memos';
+import { ApiError } from '@/api/client';
 import { useToast } from '@/hooks/useToast';
-import MEMOS from '@/mock/memos.json';
 import type { Memo } from '@/types/memo';
 import MemoUploadIcon from '@/assets/memoupload.svg';
 
@@ -21,7 +22,6 @@ export default function RecordWrite() {
   const { templateId } = useParams<{ templateId: string }>();
   const { selectedActivity } = useActivities();
   const { templates } = useTemplates();
-  const { saveDraft, completeRecord } = useRecords();
   const { toast, fireToast } = useToast();
 
   const template = useMemo(
@@ -29,12 +29,57 @@ export default function RecordWrite() {
     [templates, templateId]
   );
 
-  const [recordId] = useState(() => crypto.randomUUID());
+  const [savedRecordId, setSavedRecordId] = useState<string | null>(null);
   const [title, setTitle] = useState('');
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [selectedMemos, setSelectedMemos] = useState<Memo[]>([]);
   const [isMemoModalOpen, setIsMemoModalOpen] = useState(false);
   const [detailMemo, setDetailMemo] = useState<Memo | null>(null);
+
+  // 임시저장 후 다른 화면으로 이동했다가 같은 활동+템플릿으로 재진입하면,
+  // 새로 만들지 않고 기존 DRAFT 기록을 이어서 수정하도록 조회해서 불러옴.
+  useEffect(() => {
+    if (!selectedActivity || !template) return;
+
+    let cancelled = false;
+
+    const loadExistingDraft = async () => {
+      try {
+        const listResponse = await getRecords({
+          activityId: selectedActivity.id,
+          templateId: template.id,
+          status: 'DRAFT',
+          page: 0,
+          size: 1,
+        });
+        const existing = listResponse.data.content[0];
+        if (!existing || cancelled) return;
+
+        const detailResponse = await getRecordDetail(existing.id);
+        if (cancelled) return;
+
+        setSavedRecordId(existing.id);
+        setTitle(detailResponse.data.title);
+        setAnswers(prev => ({
+          ...prev,
+          ...Object.fromEntries(detailResponse.data.answers.map(a => [a.templateQuestionId, a.answerText])),
+        }));
+
+        const memosResponse = await getMemos();
+        if (cancelled) return;
+        const allMemos = memosResponse.data.map(toMemo);
+        setSelectedMemos(allMemos.filter(memo => detailResponse.data.memos.some(m => m.memoId === memo.id)));
+      } catch (error) {
+        console.error('[record-write] 기존 임시저장 기록을 불러오지 못했습니다.', error);
+      }
+    };
+
+    loadExistingDraft();
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedActivity?.id, template?.id]);
 
   if (!template) {
     navigate('/record');
@@ -50,23 +95,45 @@ export default function RecordWrite() {
     setAnswers(prev => ({ ...prev, [id]: value }));
   };
 
-  const handleTempSave = () => {
+  const buildCommonPayload = (status: 'DRAFT' | 'COMPLETED') => ({
+    title,
+    answers: (template.questions ?? []).map(q => ({
+      templateQuestionId: q.id,
+      answerText: answers[q.id] ?? '',
+    })),
+    memos: selectedMemos.map(memo => ({ memoId: memo.id, collapsed: false })),
+    status,
+  });
+
+  const saveRecord = async (status: 'DRAFT' | 'COMPLETED') => {
+    if (savedRecordId) {
+      await updateRecord(savedRecordId, buildCommonPayload(status));
+      return;
+    }
+    const response = await createRecord({
+      activityId: selectedActivity!.id,
+      templateId: template.id,
+      ...buildCommonPayload(status),
+    });
+    setSavedRecordId(response.data.id);
+  };
+
+  const handleTempSave = async () => {
     if (!selectedActivity) {
       console.error('[record-write] 선택된 활동이 없어 임시저장을 진행할 수 없습니다.');
       return;
     }
-    saveDraft({
-      id: recordId,
-      activityId: selectedActivity.id,
-      templateId: template.id,
-      title,
-      answers,
-      memoIds: selectedMemos.map(memo => memo.id),
-    });
-    fireToast('임시저장되었습니다.');
+    try {
+      await saveRecord('DRAFT');
+      fireToast('임시저장되었습니다.');
+      setTimeout(() => navigate('/record'), 2000);
+    } catch (error) {
+      const message = error instanceof ApiError ? error.message : '임시저장에 실패했습니다.';
+      fireToast(message, undefined, 'error');
+    }
   };
 
-  const handleComplete = () => {
+  const handleComplete = async () => {
     if (!isValid) {
       fireToast('필수 항목을 입력해주세요.', undefined, 'error');
       return;
@@ -75,16 +142,14 @@ export default function RecordWrite() {
       console.error('[record-write] 선택된 활동이 없어 기록완료를 진행할 수 없습니다.');
       return;
     }
-    completeRecord({
-      id: recordId,
-      activityId: selectedActivity.id,
-      templateId: template.id,
-      title,
-      answers,
-      memoIds: selectedMemos.map(memo => memo.id),
-    });
-    fireToast('기록을 성공적으로 저장하였습니다.');
-    setTimeout(() => navigate('/record'), 2000);
+    try {
+      await saveRecord('COMPLETED');
+      fireToast('기록을 성공적으로 저장하였습니다.');
+      setTimeout(() => navigate('/record'), 2000);
+    } catch (error) {
+      const message = error instanceof ApiError ? error.message : '기록 저장에 실패했습니다.';
+      fireToast(message, undefined, 'error');
+    }
   };
 
   return (
@@ -198,7 +263,7 @@ export default function RecordWrite() {
 
       <MemoSelectModal
         isOpen={isMemoModalOpen}
-        memos={MEMOS}
+        selectedMemos={selectedMemos}
         onClose={() => setIsMemoModalOpen(false)}
         onSelect={memos => {
           setSelectedMemos(memos);
@@ -209,7 +274,7 @@ export default function RecordWrite() {
       <MemoDetailModal memo={detailMemo} onClose={() => setDetailMemo(null)} />
 
       {toast && (
-        <div className="fixed top-4 left-1/2 -translate-x-1/2 z-[100]">
+        <div className="fixed top-4 left-1/2 -translate-x-1/2 z-100">
           <Toast message={toast.message} onUndo={toast.onUndo} variant={toast.variant} />
         </div>
       )}

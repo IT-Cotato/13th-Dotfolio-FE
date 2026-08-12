@@ -5,6 +5,7 @@ import {
   createActivity,
   updateActivity as updateActivityApi,
   deleteActivity,
+  restoreActivity as restoreActivityApi,
   archiveActivity as archiveActivityApi,
   type ActivityFormPayload,
   type ActivityListItem,
@@ -22,6 +23,7 @@ interface ActivitiesContextValue {
   addActivity: (data: ActivityFormData) => Promise<void>;
   updateActivity: (id: string, data: ActivityFormData) => Promise<void>;
   removeActivity: (id: string) => Promise<void>;
+  restoreActivity: (id: string) => Promise<void>;
   archiveActivity: (id: string) => Promise<void>;
   selectedActivityId: string | null;
   setSelectedActivityId: (id: string) => void;
@@ -102,6 +104,11 @@ export const ActivitiesProvider = ({ children }: { children: ReactNode }) => {
     await refetch();
   };
 
+  const restoreActivity = async (id: string) => {
+    await restoreActivityApi(id);
+    await refetch();
+  };
+
   const archiveActivity = async (id: string) => {
     await archiveActivityApi(id);
     await refetch();
@@ -119,6 +126,7 @@ export const ActivitiesProvider = ({ children }: { children: ReactNode }) => {
         addActivity,
         updateActivity,
         removeActivity,
+        restoreActivity,
         archiveActivity,
         selectedActivityId,
         setSelectedActivityId,

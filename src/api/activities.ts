@@ -45,6 +45,12 @@ export function deleteActivity(activityId: string) {
   });
 }
 
+export function restoreActivity(activityId: string) {
+  return requestApi<string>(`/api/activities/${activityId}/restore`, {
+    method: "PATCH",
+  });
+}
+
 export function archiveActivity(activityId: string) {
   return requestApi<string>(`/api/activities/${activityId}/archive`, {
     method: "PATCH",

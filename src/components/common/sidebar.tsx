@@ -141,7 +141,10 @@ export const Sidebar = () => {
                     key={activity.id}
                     ref={el => { itemRefs.current[activity.id] = el; }}
                     type="button"
-                    onClick={() => setSelectedActivityId(activity.id)}
+                    onClick={() => {
+                      setSelectedActivityId(activity.id);
+                      navigate('/record');
+                    }}
                     className={`w-full text-left py-3 pl-4 pr-4 cursor-pointer transition-colors text-grey-900 ${
                       isSelected ? 'text-sub2-sb' : 'text-body2-md'
                     }`}

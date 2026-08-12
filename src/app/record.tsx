@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card } from '@/components/common/card';
 import { Breadcrumb } from '@/components/common/Breadcrumb';
@@ -8,30 +8,52 @@ import { PrimaryButton } from '@/components/common/createButton';
 import { ConfirmModal } from '@/components/common/ConfirmModal';
 import { Toast } from '@/components/common/Toast';
 import { RecordList } from '@/components/record/RecordList';
+import { CustomTemplateModal, type CustomTemplateData } from '@/components/common/CustomTemplateModal';
 import { useToast } from '@/hooks/useToast';
+import { useRecordDeletion } from '@/hooks/useRecordDeletion';
 import { useActivities } from '@/contexts/ActivitiesContext';
 import { useTemplates } from '@/contexts/TemplatesContext';
-import { useRecords } from '@/contexts/RecordsContext';
+import { getRecentRecords, toRecordEntry } from '@/api/records';
+import { ApiError } from '@/api/client';
 import type { RecordEntry } from '@/types/record';
 
 export default function Record() {
   const navigate = useNavigate();
   const { selectedActivity } = useActivities();
-  const { templates } = useTemplates();
-  const { records, removeRecord, restoreRecord } = useRecords();
-  const [deleteTarget, setDeleteTarget] = useState<RecordEntry | null>(null);
-  const { toast, fireToast, dismissToast } = useToast();
+  const { templates, addCustomTemplate } = useTemplates();
+  const [records, setRecords] = useState<RecordEntry[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isCustomModalOpen, setIsCustomModalOpen] = useState(false);
+  const toastState = useToast();
+  const { toast, fireToast } = toastState;
 
-  const handleConfirmDelete = () => {
-    if (!deleteTarget) return;
-    const removed = deleteTarget;
-    removeRecord(removed.id);
-    setDeleteTarget(null);
-    fireToast('기록이 삭제되었습니다.', () => {
-      restoreRecord(removed);
-      dismissToast();
-    });
+  const handleCreateCustomTemplate = async (data: CustomTemplateData) => {
+    await addCustomTemplate(data);
+    setIsCustomModalOpen(false);
+    fireToast('템플릿이 성공적으로 생성되었습니다.');
   };
+
+  const fetchRecent = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const response = await getRecentRecords();
+      setRecords(response.data.slice(0, 4).map(toRecordEntry));
+    } catch (error) {
+      const message = error instanceof ApiError ? error.message : '기록을 불러오지 못했습니다.';
+      fireToast(message, undefined, 'error');
+    } finally {
+      setIsLoading(false);
+    }
+  }, [fireToast]);
+
+  useEffect(() => {
+    const run = async () => {
+      await fetchRecent();
+    };
+    run();
+  }, [fetchRecent]);
+
+  const { deleteTarget, setDeleteTarget, handleConfirmDelete } = useRecordDeletion(fetchRecent, toastState);
 
   return (
     <Card>
@@ -61,7 +83,7 @@ export default function Record() {
         </div>
       </div>
 
-      {records.length === 0 ? (
+      {!isLoading && records.length === 0 ? (
         <div className="w-full flex-1 flex flex-col items-center justify-center gap-8">
           <div className="max-w-[260px] flex flex-col items-center gap-2 text-center">
             <p className="text-sub1-sb text-grey-950">원하는 기록 양식이 없나요?</p>
@@ -69,7 +91,7 @@ export default function Record() {
               주제와 질문을 직접 설정해 나만의 템플릿을 만들어보세요.
             </p>
           </div>
-          <PrimaryButton label="템플릿 만들기" />
+          <PrimaryButton label="템플릿 만들기" onClick={() => setIsCustomModalOpen(true)} />
         </div>
       ) : (
         <div className="w-full flex flex-col gap-6">
@@ -78,9 +100,15 @@ export default function Record() {
             moreLabel="전체 기록 보기"
             onMoreClick={() => navigate('/record-all')}
           />
-          <RecordList records={records.slice(0, 4)} onDeleteClick={setDeleteTarget} />
+          <RecordList records={records} onDeleteClick={setDeleteTarget} />
         </div>
       )}
+
+      <CustomTemplateModal
+        isOpen={isCustomModalOpen}
+        onClose={() => setIsCustomModalOpen(false)}
+        onSubmit={handleCreateCustomTemplate}
+      />
 
       <ConfirmModal
         isOpen={!!deleteTarget}
@@ -93,7 +121,7 @@ export default function Record() {
 
       {toast && (
         <div className="fixed top-4 left-1/2 -translate-x-1/2 z-[100]">
-          <Toast message={toast.message} onUndo={toast.onUndo} />
+          <Toast message={toast.message} onUndo={toast.onUndo} variant={toast.variant} />
         </div>
       )}
     </Card>

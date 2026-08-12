@@ -5,6 +5,7 @@ import AddIcon from '@/assets/add.svg';
 import GripIcon from '@/assets/grip.svg';
 import MoreIcon from '@/assets/more.svg';
 import TrashIcon from '@/assets/trash.svg';
+import { ApiError } from '@/api/client';
 import type { TemplateQuestion } from '@/constants/templates';
 
 export interface CustomTemplateData {
@@ -16,7 +17,7 @@ export interface CustomTemplateData {
 interface CustomTemplateModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (data: CustomTemplateData) => void;
+  onSubmit: (data: CustomTemplateData) => Promise<void>;
 }
 
 const DESCRIPTION_MAX_LENGTH = 40;
@@ -33,6 +34,8 @@ export const CustomTemplateModal = ({ isOpen, onClose, onSubmit }: CustomTemplat
   const [description, setDescription] = useState('');
   const [questions, setQuestions] = useState<TemplateQuestion[]>([createEmptyQuestion()]);
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
 
   if (!isOpen) return null;
 
@@ -54,6 +57,7 @@ export const CustomTemplateModal = ({ isOpen, onClose, onSubmit }: CustomTemplat
     setDescription('');
     setQuestions([createEmptyQuestion()]);
     setOpenMenuId(null);
+    setSaveError(null);
   };
 
   const handleClose = () => {
@@ -61,10 +65,18 @@ export const CustomTemplateModal = ({ isOpen, onClose, onSubmit }: CustomTemplat
     onClose();
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!isValid) return;
-    onSubmit({ title, description, questions });
-    resetForm();
+    setIsSaving(true);
+    setSaveError(null);
+    try {
+      await onSubmit({ title, description, questions });
+      resetForm();
+    } catch (error) {
+      setSaveError(error instanceof ApiError ? error.message : '템플릿 생성에 실패했습니다.');
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
@@ -215,8 +227,9 @@ export const CustomTemplateModal = ({ isOpen, onClose, onSubmit }: CustomTemplat
         </button>
 
         {/* 저장 */}
-        <div className="mt-8">
-          <Button label="저장" onClick={handleSave} disabled={!isValid} />
+        <div className="flex flex-col gap-2 mt-8">
+          {saveError && <p className="text-caption1 text-error-text">{saveError}</p>}
+          <Button label={isSaving ? '저장 중...' : '저장'} onClick={handleSave} disabled={!isValid || isSaving} />
         </div>
       </div>
     </div>

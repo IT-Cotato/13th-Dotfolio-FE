@@ -8,6 +8,7 @@ import { PrimaryButton } from '@/components/common/createButton';
 import { ConfirmModal } from '@/components/common/ConfirmModal';
 import { Toast } from '@/components/common/Toast';
 import { RecordList } from '@/components/record/RecordList';
+import { CustomTemplateModal, type CustomTemplateData } from '@/components/common/CustomTemplateModal';
 import { useToast } from '@/hooks/useToast';
 import { useRecordDeletion } from '@/hooks/useRecordDeletion';
 import { useActivities } from '@/contexts/ActivitiesContext';
@@ -19,11 +20,18 @@ import type { RecordEntry } from '@/types/record';
 export default function Record() {
   const navigate = useNavigate();
   const { selectedActivity } = useActivities();
-  const { templates } = useTemplates();
+  const { templates, addCustomTemplate } = useTemplates();
   const [records, setRecords] = useState<RecordEntry[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isCustomModalOpen, setIsCustomModalOpen] = useState(false);
   const toastState = useToast();
   const { toast, fireToast } = toastState;
+
+  const handleCreateCustomTemplate = async (data: CustomTemplateData) => {
+    await addCustomTemplate(data);
+    setIsCustomModalOpen(false);
+    fireToast('템플릿이 성공적으로 생성되었습니다.');
+  };
 
   const fetchRecent = useCallback(async () => {
     setIsLoading(true);
@@ -83,7 +91,7 @@ export default function Record() {
               주제와 질문을 직접 설정해 나만의 템플릿을 만들어보세요.
             </p>
           </div>
-          <PrimaryButton label="템플릿 만들기" />
+          <PrimaryButton label="템플릿 만들기" onClick={() => setIsCustomModalOpen(true)} />
         </div>
       ) : (
         <div className="w-full flex flex-col gap-6">
@@ -95,6 +103,12 @@ export default function Record() {
           <RecordList records={records} onDeleteClick={setDeleteTarget} />
         </div>
       )}
+
+      <CustomTemplateModal
+        isOpen={isCustomModalOpen}
+        onClose={() => setIsCustomModalOpen(false)}
+        onSubmit={handleCreateCustomTemplate}
+      />
 
       <ConfirmModal
         isOpen={!!deleteTarget}

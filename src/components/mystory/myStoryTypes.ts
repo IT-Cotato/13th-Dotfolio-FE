@@ -1,37 +1,25 @@
 export type MyStoryView = 'timeline' | 'search' | 'detail';
 
 export interface Activity {
-  id: string;
-  activityTypeId: string;
+  id: number;
   title: string;
   category: string;
-  description?: string;
   startDate: string;
   endDate: string;
   endDateUnknown: boolean;
 }
 
 export interface StoryRecord {
-  id: string;
-  activityId?: string;
-  activityTitle: string;
-  activityTypeName: string;
-  templateTitle: string;
+  id: number;
+  activityId: number;
   title: string;
   date: string;
-  status: string;
   content: string;
-  sections: DetailSection[];
-  memos: Array<{
-    memoId: string;
-    collapsed: boolean;
-  }>;
+  sections: string[];
 }
 
 export interface DetailSection {
-  id: string;
   label: string;
   question: string;
   text: string;
-  required: boolean;
 }

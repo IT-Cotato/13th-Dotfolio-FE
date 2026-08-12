@@ -1,11 +1,12 @@
-import { useState } from "react";
+import { useState, type FormEvent } from "react";
+import { requestPasswordReset } from "@/api/auth";
+import { ApiError } from "@/api/client";
 import { Button } from "@/components/common/button";
 import { AuthForm } from "@/components/login/AuthForm";
 import { AuthFormIntro } from "@/components/login/AuthFormIntro";
 import { EmailInput } from "@/components/login/EmailInput";
 
-const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const mockRegisteredEmail = "dotfolio@gmail.com";
+const emailPattern = /^(?!\.)(?!.*\.\.)[A-Za-z0-9._+-]{1,64}(?<!\.)@[A-Za-z0-9-]+(\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,}$/;
 
 interface PasswordResetFormProps {
   onComplete: (email: string) => void;
@@ -13,39 +14,48 @@ interface PasswordResetFormProps {
 
 export function PasswordResetForm({ onComplete }: PasswordResetFormProps) {
   const [email, setEmail] = useState("");
-  const [isEmailNotFound, setIsEmailNotFound] = useState(false);
+  const [requestError, setRequestError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const normalizedEmail = email.trim().toLowerCase();
   const isEmailFormatValid = emailPattern.test(normalizedEmail);
   const hasFormatError = email.length > 0 && !isEmailFormatValid;
   const errorMessage = hasFormatError
     ? "올바른 이메일 형식으로 입력해주세요. 예: dotfolio@gmail.com"
-    : isEmailNotFound
-      ? "해당 이메일로 가입된 계정을 찾을 수 없습니다."
-      : undefined;
+    : requestError ?? undefined;
 
   const handleEmailChange = (value: string) => {
     setEmail(value);
-    setIsEmailNotFound(false);
+    setRequestError(null);
   };
 
-  const handleResetMailRequest = () => {
-    if (isEmailFormatValid) {
-      if (normalizedEmail === mockRegisteredEmail) {
-        onComplete(normalizedEmail);
-        return;
-      }
+  const handleResetMailRequest = async (
+    event: FormEvent<HTMLFormElement>,
+  ) => {
+    event.preventDefault();
 
-      setIsEmailNotFound(true);
+    if (!isEmailFormatValid || isSubmitting) {
+      return;
+    }
+
+    setIsSubmitting(true);
+    setRequestError(null);
+
+    try {
+      await requestPasswordReset({ email: normalizedEmail });
+      onComplete(normalizedEmail);
+    } catch (error) {
+      setRequestError(
+        error instanceof ApiError
+          ? error.message
+          : "재설정 메일 요청 중 오류가 발생했습니다. 다시 시도해주세요.",
+      );
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   return (
-    <AuthForm
-      onSubmit={(event) => {
-        event.preventDefault();
-        handleResetMailRequest();
-      }}
-    >
+    <AuthForm onSubmit={handleResetMailRequest}>
       <AuthFormIntro title="비밀번호 재설정">
         <p>도트폴리오에 가입한 이메일 주소를 입력해 주세요.</p>
         <p>비밀번호를 재설정할 수 있는 링크를 이메일로 보내드립니다.</p>
@@ -59,9 +69,9 @@ export function PasswordResetForm({ onComplete }: PasswordResetFormProps) {
       />
 
       <Button
-        disabled={!isEmailFormatValid}
+        disabled={!isEmailFormatValid || isSubmitting}
         label="재설정 메일 보내기"
-        onClick={handleResetMailRequest}
+        type="submit"
       />
     </AuthForm>
   );

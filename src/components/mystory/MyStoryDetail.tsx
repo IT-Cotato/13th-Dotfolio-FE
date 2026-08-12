@@ -1,3 +1,4 @@
+import { DETAIL_SECTIONS } from './myStoryData';
 import type { StoryRecord } from './myStoryTypes';
 import { Breadcrumb } from '@/components/common/Breadcrumb';
 import { Button } from '@/components/common/button';
@@ -10,14 +11,13 @@ interface MyStoryDetailProps {
   activityTitle: string;
   values: string[];
   isSaveDisabled: boolean;
-  isSaving: boolean;
   onBack: () => void;
   onSave: () => void;
   onChange: (index: number, value: string) => void;
   onCopy: (text: string) => Promise<void>;
 }
 
-export function MyStoryDetail({ record, activityTitle, values, isSaveDisabled, isSaving, onBack, onSave, onChange, onCopy }: MyStoryDetailProps) {
+export function MyStoryDetail({ record, activityTitle, values, isSaveDisabled, onBack, onSave, onChange, onCopy }: MyStoryDetailProps) {
   return (
     <div>
       <div className="mb-10">
@@ -35,8 +35,8 @@ export function MyStoryDetail({ record, activityTitle, values, isSaveDisabled, i
           extra={(
             <div className="w-[68px]">
               <Button
-                label={isSaving ? '저장 중...' : '저장'}
-                disabled={isSaveDisabled || isSaving}
+                label="저장"
+                disabled={isSaveDisabled}
                 onClick={onSave}
                 className="!h-[42px] !rounded-xl !text-label2-sb"
               />
@@ -45,8 +45,8 @@ export function MyStoryDetail({ record, activityTitle, values, isSaveDisabled, i
         />
       </div>
       <div className="flex flex-col gap-7">
-        {record.sections.map((section, index) => (
-          <section key={section.id}>
+        {DETAIL_SECTIONS.map((section, index) => (
+          <section key={section.label}>
             <div className="mb-3 flex items-start gap-3">
               <span className="grid w-6 h-6 shrink-0 place-items-center rounded-md bg-primary-50 text-label3-sb text-primary-500">{index + 1}</span>
               <div>

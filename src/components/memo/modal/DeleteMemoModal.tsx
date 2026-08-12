@@ -1,17 +1,32 @@
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { useEscapeKey } from '../hooks/useEscapeKey';
 import { useModalFocus } from '../hooks/useModalFocus';
 
 interface DeleteMemoModalProps {
   onClose: () => void;
-  onConfirm: () => void;
+  onConfirm: () => Promise<void>;
 }
 
 export const DeleteMemoModal = ({ onClose, onConfirm }: DeleteMemoModalProps) => {
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState('');
   const cancelButtonRef = useRef<HTMLButtonElement>(null);
   const dialogRef = useModalFocus<HTMLElement>(cancelButtonRef);
 
   useEscapeKey(onClose);
+
+  const handleConfirm = async () => {
+    if (isDeleting) return;
+    setIsDeleting(true);
+    setDeleteError('');
+    try {
+      await onConfirm();
+    } catch (error) {
+      setDeleteError(error instanceof Error ? error.message : '메모를 삭제하지 못했습니다.');
+    } finally {
+      setIsDeleting(false);
+    }
+  };
 
   return (
     <div
@@ -32,13 +47,15 @@ export const DeleteMemoModal = ({ onClose, onConfirm }: DeleteMemoModalProps) =>
           <h2 id="delete-memo-title" className="text-sub1-sb text-grey-950">메모를 삭제하시겠어요?</h2>
           <p id="delete-memo-description" className="text-body2-r text-grey-700">삭제된 메모는 복구할 수 없습니다.</p>
         </div>
+        {deleteError && <p role="alert" className="mt-4 text-center text-body3-r text-error-text">{deleteError}</p>}
         <div className="mt-6 grid grid-cols-2 gap-2">
           <button
             type="button"
-            onClick={onConfirm}
+            disabled={isDeleting}
+            onClick={() => void handleConfirm()}
             className="rounded-[14px] border border-primary-500 bg-white px-5 py-3.5 text-sub2-sb text-primary-500"
           >
-            메모 삭제
+            {isDeleting ? '삭제 중...' : '메모 삭제'}
           </button>
           <button
             ref={cancelButtonRef}

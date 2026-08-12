@@ -1,7 +1,8 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useNavigate } from "react-router-dom";
 import Home from "./home";
 import Memo from "./memo";
 import Login from "./login";
+import Signup from "./signup";
 import PasswordReset from "./password-reset";
 import PasswordResetConfirm from "./password-reset-confirm";
 import Record from "./record";
@@ -24,14 +25,17 @@ export default function Layout() {
   return (
     <Routes>
       <Route path="/login" element={<Login />} />
-      <Route path="/password-reset" element={<PasswordReset />} />
-      <Route path="/password-reset/confirm" element={<PasswordResetConfirm />} />
+      <Route path="/signup" element={<Signup />} />
+      <Route path="/reset-password/request" element={<PasswordReset />} />
+      <Route path="/reset-password" element={<PasswordResetConfirm />} />
       <Route path="*" element={<HomeLayout />} />
     </Routes>
   );
 }
 
 function HomeLayout() {
+  const navigate = useNavigate();
+
   return (
     <ActivitiesProvider>
       <TemplatesProvider>
@@ -40,7 +44,10 @@ function HomeLayout() {
             <header className="w-full h-20 relative flex items-center justify-between pl-8 pr-6">
               <div className="flex items-center gap-4">
                 <MenuIcon className="w-6 h-6 text-grey-700 cursor-pointer" />
-                <span className="font-nexon text-logo text-grey-600">
+                <span
+                  className="font-nexon text-logo text-grey-600 cursor-pointer"
+                  onClick={() => navigate("/")}
+                >
                   Dotfolio
                 </span>
               </div>

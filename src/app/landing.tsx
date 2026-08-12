@@ -1,5 +1,6 @@
 import { HeroSection } from "@/components/landing/HeroSection";
 import { ExperienceProblemSection } from "@/components/landing/ExperienceProblemSection";
+import { PainPointsSection } from "@/components/landing/PainPointsSection";
 
 export default function Landing() {
   return (
@@ -7,6 +8,7 @@ export default function Landing() {
       <main className="flex w-full flex-col items-center">
         <HeroSection />
         <ExperienceProblemSection />
+        <PainPointsSection />
       </main>
     </div>
   );

@@ -1,13 +1,32 @@
 import { useState } from 'react';
 
-export const ImmersionToggle = () => {
-  const [isOn, setIsOn] = useState(false);
+interface ImmersionToggleProps {
+  defaultOn?: boolean;
+  isOn?: boolean;
+  onToggle?: (nextIsOn: boolean) => void;
+}
+
+export const ImmersionToggle = ({ defaultOn = false, isOn, onToggle }: ImmersionToggleProps) => {
+  const [internalIsOn, setInternalIsOn] = useState(defaultOn);
+  const resolvedIsOn = isOn ?? internalIsOn;
+
+  const handleToggle = () => {
+    const nextIsOn = !resolvedIsOn;
+
+    if (isOn === undefined) {
+      setInternalIsOn(nextIsOn);
+    }
+
+    onToggle?.(nextIsOn);
+  };
 
   return (
     <button
-      onClick={() => setIsOn(!isOn)}
+      type="button"
+      aria-pressed={resolvedIsOn}
+      onClick={handleToggle}
       className={`flex items-center gap-1 rounded-full p-0.75 cursor-pointer transition-colors ${
-        isOn
+        resolvedIsOn
           ? 'flex-row-reverse pl-3 bg-toggle-on'
           : 'pr-3 bg-grey-400'
       }`}

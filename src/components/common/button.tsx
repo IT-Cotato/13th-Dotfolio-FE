@@ -4,16 +4,21 @@ interface ButtonProps {
   onClick?: () => void;
   disabled?: boolean;
   variant?: 'primary' | 'outline';
+  size?: 'default' | 'compact';
   className?: string;
   type?: 'button' | 'submit' | 'reset';
 }
 
-export const Button = ({ label, icon, onClick, disabled = false, variant = 'primary', className = '', type = 'button' }: ButtonProps) => (
+export const Button = ({ label, icon, onClick, disabled = false, variant = 'primary', size = 'default', className = '', type = 'button' }: ButtonProps) => (
   <button
     type={type}
     onClick={onClick}
     disabled={disabled}
-    className={`w-full h-13 flex px-5 py-2.5 items-center justify-center rounded-[14px] text-sub2-sb transition-all ${
+    className={`flex items-center justify-center text-sub2-sb transition-all ${
+      size === 'compact'
+        ? 'w-auto gap-2 rounded-xl px-5 py-2.5'
+        : 'h-13 w-full rounded-[14px] px-5 py-2.5'
+    } ${
       disabled
         ? variant === 'outline'
           ? 'border border-grey-300 bg-white text-grey-300 cursor-not-allowed'

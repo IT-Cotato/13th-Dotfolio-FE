@@ -2,6 +2,7 @@ import { HeroSection } from "@/components/landing/HeroSection";
 import { ExperienceProblemSection } from "@/components/landing/ExperienceProblemSection";
 import { PainPointsSection } from "@/components/landing/PainPointsSection";
 import { SolutionSection } from "@/components/landing/SolutionSection";
+import { BrandStorySection } from "@/components/landing/BrandStorySection";
 
 export default function Landing() {
   return (
@@ -11,6 +12,7 @@ export default function Landing() {
         <ExperienceProblemSection />
         <PainPointsSection />
         <SolutionSection />
+        <BrandStorySection />
       </main>
     </div>
   );

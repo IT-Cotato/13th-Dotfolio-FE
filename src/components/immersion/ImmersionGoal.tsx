@@ -17,10 +17,14 @@ export function ImmersionGoal() {
   const [recordCount, setRecordCount] = useState(MAX_RECORD_COUNT);
   const [focusMinutes, setFocusMinutes] = useState("30");
   const parsedFocusMinutes = Number(focusMinutes);
-  const hasFocusMinutesError =
-    focusMinutes !== "" &&
-    (parsedFocusMinutes < MIN_FOCUS_MINUTES ||
-      parsedFocusMinutes > MAX_FOCUS_MINUTES);
+  const focusMinutesError =
+    focusMinutes === ""
+      ? "몰입 시간을 입력해 주세요."
+      : parsedFocusMinutes < MIN_FOCUS_MINUTES
+        ? "몰입 시간은 1분 이상 입력해 주세요."
+        : parsedFocusMinutes > MAX_FOCUS_MINUTES
+          ? "시간은 120분 이하로 입력해 주세요."
+          : null;
 
   const handleFocusMinutesChange = (value: string) => {
     if (/^\d{0,3}$/.test(value)) {
@@ -87,7 +91,7 @@ export function ImmersionGoal() {
                   type="text"
                   inputMode="numeric"
                   aria-label="몰입 시간"
-                  aria-invalid={hasFocusMinutesError}
+                  aria-invalid={focusMinutesError !== null}
                   className="w-0 min-w-0 flex-1 bg-transparent text-title2 text-grey-0 outline-none"
                   value={focusMinutes}
                   onChange={(event) =>
@@ -101,16 +105,16 @@ export function ImmersionGoal() {
             </label>
           </div>
 
-          {hasFocusMinutesError && (
+          {focusMinutesError && (
             <p role="alert" className="w-full text-body3-r text-error-text">
-              시간은 120분 이하로 입력해 주세요.
+              {focusMinutesError}
             </p>
           )}
         </div>
 
         <Button
           label="기록 시작"
-          disabled={focusMinutes === "" || hasFocusMinutesError}
+          disabled={focusMinutesError !== null}
           onClick={() =>
             navigate("/immersion/record", {
               state: {

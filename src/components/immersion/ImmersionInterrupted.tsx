@@ -15,6 +15,8 @@ export function ImmersionInterrupted({
       <ImmersionMessageCard
         buttonLabel="홈으로 돌아가기"
         closeLabel="중단 화면 닫기"
+        dialogLabel="몰입모드 중단 확인"
+        isModal
         message={
           <>
             지금 몰입모드를 중단하면

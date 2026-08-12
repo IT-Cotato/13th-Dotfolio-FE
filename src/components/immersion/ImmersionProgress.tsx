@@ -8,7 +8,14 @@ export function ImmersionProgress({
   totalCount,
 }: ImmersionProgressProps) {
   return (
-    <div className="flex items-center gap-3" aria-label={`${totalCount}개 중 ${currentIndex + 1}번째 기록`}>
+    <div
+      role="progressbar"
+      aria-label={`${totalCount}개 중 ${currentIndex + 1}번째 기록`}
+      aria-valuenow={currentIndex + 1}
+      aria-valuemin={1}
+      aria-valuemax={totalCount}
+      className="flex items-center gap-3"
+    >
       <div className="flex items-center gap-2" aria-hidden="true">
         {Array.from({ length: totalCount }, (_, index) => (
           <span

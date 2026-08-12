@@ -17,19 +17,22 @@ export function ImmersionTimer({ initialMinutes }: ImmersionTimerProps) {
   );
 
   useEffect(() => {
-    const timerId = window.setInterval(() => {
-      setRemainingSeconds((seconds) => {
-        if (seconds <= 1) {
-          window.clearInterval(timerId);
-          return 0;
-        }
+    const endTime = Date.now() + initialMinutes * 60 * 1000;
 
-        return seconds - 1;
-      });
+    const timerId = window.setInterval(() => {
+      const secondsUntilEnd = Math.ceil((endTime - Date.now()) / 1000);
+
+      if (secondsUntilEnd <= 0) {
+        window.clearInterval(timerId);
+        setRemainingSeconds(0);
+        return;
+      }
+
+      setRemainingSeconds(secondsUntilEnd);
     }, 1000);
 
     return () => window.clearInterval(timerId);
-  }, []);
+  }, [initialMinutes]);
 
   return (
     <time className="text-title1 text-grey-0" dateTime={`PT${remainingSeconds}S`}>

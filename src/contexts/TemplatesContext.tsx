@@ -1,6 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from 'react';
 import type { RecordTemplate, TemplateQuestion } from '@/constants/templates';
 import { getTemplates, createTemplate, type TemplateDetail } from '@/api/templates';
+import { ApiError } from '@/api/client';
 
 interface CustomTemplateFormData {
   title: string;
@@ -11,6 +12,7 @@ interface CustomTemplateFormData {
 interface TemplatesContextValue {
   templates: RecordTemplate[];
   isLoading: boolean;
+  error: string | null;
   addCustomTemplate: (data: CustomTemplateFormData) => Promise<void>;
 }
 
@@ -63,9 +65,12 @@ const toRecordTemplate = (item: TemplateDetail, builtinIndex: number): RecordTem
 export const TemplatesProvider = ({ children }: { children: ReactNode }) => {
   const [templates, setTemplates] = useState<RecordTemplate[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   // 조회 요청끼리 순서가 뒤바뀌어 도착해도, 가장 나중에 보낸 요청의 응답만 반영되도록 추적.
   const fetchIdRef = useRef(0);
 
+  // 조회 실패는 error 상태로만 반영 — 기존 templates는 그대로 유지함.
+  // (특히 생성 직후 재조회가 실패해도, 이미 만들어진 서버 데이터와 무관하게 화면 목록 전체가 사라지면 안 됨)
   const fetchTemplates = useCallback(async () => {
     const requestId = ++fetchIdRef.current;
     setIsLoading(true);
@@ -74,8 +79,10 @@ export const TemplatesProvider = ({ children }: { children: ReactNode }) => {
       if (requestId !== fetchIdRef.current) return;
       let builtinIndex = 0;
       setTemplates(response.data.map(item => toRecordTemplate(item, item.isBuiltin ? builtinIndex++ : 0)));
-    } catch {
-      if (requestId === fetchIdRef.current) setTemplates([]);
+      setError(null);
+    } catch (err) {
+      if (requestId !== fetchIdRef.current) return;
+      setError(err instanceof ApiError ? err.message : '템플릿 목록을 불러오지 못했습니다.');
     } finally {
       if (requestId === fetchIdRef.current) setIsLoading(false);
     }
@@ -103,7 +110,7 @@ export const TemplatesProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <TemplatesContext.Provider value={{ templates, isLoading, addCustomTemplate }}>
+    <TemplatesContext.Provider value={{ templates, isLoading, error, addCustomTemplate }}>
       {children}
     </TemplatesContext.Provider>
   );

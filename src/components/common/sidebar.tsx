@@ -102,8 +102,8 @@ export const Sidebar = () => {
       <NavItem
         icon={<DotOneIcon />}
         label="홈"
-        isActive={location.pathname === '/'}
-        onClick={() => navigate('/')}
+        isActive={location.pathname === '/home'}
+        onClick={() => navigate('/home')}
       />
       <NavItem
         icon={<DotTwoIcon />}

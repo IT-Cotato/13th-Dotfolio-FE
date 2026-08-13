@@ -5,9 +5,12 @@ import { Breadcrumb } from '@/components/common/Breadcrumb';
 import { CategoryHeader } from '@/components/common/CategoryHeader';
 import { Toast } from '@/components/common/Toast';
 import { RecordActionButtons } from '@/components/record/RecordActionButtons';
+import { RecordTemplateForm } from '@/components/record/RecordTemplateForm';
 import { MemoSelectModal } from '@/components/record/MemoSelectModal';
 import { MemoLoadedCard } from '@/components/record/MemoLoadedCard';
 import { MemoDetailModal } from '@/components/record/MemoDetailModal';
+import { MemoAddButton } from '@/components/record/MemoAddButton';
+import { MemoEmptyState } from '@/components/record/MemoEmptyState';
 import { useActivities } from '@/contexts/ActivitiesContext';
 import { useTemplates } from '@/contexts/TemplatesContext';
 import { createRecord, updateRecord, getRecords, getRecordDetail } from '@/api/records';
@@ -15,7 +18,6 @@ import { getMemos, toMemo } from '@/api/memos';
 import { ApiError } from '@/api/client';
 import { useToast } from '@/hooks/useToast';
 import type { Memo } from '@/types/memo';
-import MemoUploadIcon from '@/assets/memoupload.svg';
 
 export default function RecordWrite() {
   const navigate = useNavigate();
@@ -188,33 +190,15 @@ export default function RecordWrite() {
             <div className="w-full flex items-center justify-between">
               <p className="text-sub1-sb text-grey-900 pl-1">메모 {selectedMemos.length}</p>
               {selectedMemos.length > 0 && (
-                <button
-                  type="button"
+                <MemoAddButton
                   onClick={() => setIsMemoModalOpen(true)}
-                  className="px-3 py-1 mr-1 rounded-lg border border-grey-100 bg-grey-0 text-primary-500 text-label3-sb cursor-pointer"
-                >
-                  메모 추가
-                </button>
+                  className="mr-1"
+                />
               )}
             </div>
             <div className="w-full flex flex-col gap-4 px-4 py-4 rounded-2xl border border-dashed border-grey-100">
               {selectedMemos.length === 0 ? (
-                <div className="flex flex-col items-center gap-6 text-center">
-                  <div className="flex flex-col items-center gap-2">
-                    <MemoUploadIcon className="w-6 h-6 text-primary-400" />
-                    <p className="text-sub2-sb text-grey-900">메모 불러오기</p>
-                    <p className="text-body-reading2-md text-grey-700">
-                      저장된 메모를 불러와<br />기록 작성에 활용해보세요.
-                    </p>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => setIsMemoModalOpen(true)}
-                    className="w-full px-5 py-2.5 rounded-xl border border-grey-100 text-primary-500 text-sub2-sb cursor-pointer"
-                  >
-                    메모 선택
-                  </button>
-                </div>
+                <MemoEmptyState onSelect={() => setIsMemoModalOpen(true)} />
               ) : (
                 selectedMemos.map(memo => (
                   <MemoLoadedCard
@@ -228,36 +212,11 @@ export default function RecordWrite() {
             </div>
           </div>
 
-          <div className="flex flex-col gap-4">
-            <p className="text-sub1-sb text-grey-900">템플릿 양식</p>
-            <div className="flex flex-col gap-8 p-6 rounded-3xl border border-grey-100">
-              {template.questions?.map((question, index) => (
-                <div key={question.id} className="flex flex-col gap-2">
-                  <div className="flex items-center gap-3">
-                    <span className="w-5 h-5 shrink-0 flex items-center justify-center rounded-md bg-primary-50 text-primary-500 text-label3-sb">
-                      {index + 1}
-                    </span>
-                    <p className="text-sub2-sb text-grey-900">
-                      {question.required && <span className="text-error-text">* </span>}
-                      {question.label}
-                    </p>
-                  </div>
-                  <div className="flex flex-col gap-2 pl-8">
-                    {question.description && (
-                      <p className="text-body2-md text-grey-700">{question.description}</p>
-                    )}
-                    <textarea
-                      value={answers[question.id] ?? ''}
-                      onChange={e => handleAnswerChange(question.id, e.target.value)}
-                      placeholder="내용을 입력해주세요."
-                      rows={4}
-                      className="w-full p-4 rounded-xl border border-grey-100 text-body-reading2-md text-grey-900 placeholder:text-grey-400 outline-none resize-none transition-colors"
-                    />
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
+          <RecordTemplateForm
+            answers={answers}
+            onAnswerChange={handleAnswerChange}
+            questions={template.questions ?? []}
+          />
         </div>
       </div>
 

@@ -7,7 +7,11 @@ import { ImmersionPageLayout } from "@/components/immersion/ImmersionPageLayout"
 import { ImmersionTimer } from "@/components/immersion/ImmersionTimer";
 import { ImmersionMemoPanel } from "@/components/immersion/ImmersionMemoPanel";
 import { RecordTemplateForm } from "@/components/record/RecordTemplateForm";
-import { getRecordDetail, type RecordDetail, type RecordMemo } from "@/api/records";
+import {
+  getRecordDetail,
+  type RecordDetail,
+  type RecordMemo,
+} from "@/api/records";
 import type { TemplateQuestion } from "@/constants/templates";
 
 interface ImmersionRecordProps {
@@ -34,7 +38,7 @@ export function ImmersionRecord({
     () =>
       [...(currentRecord?.answers ?? [])]
         .sort((left, right) => left.sortOrder - right.sortOrder)
-        .map(answer => ({
+        .map((answer) => ({
           id: answer.templateQuestionId,
           label: answer.questionText,
           description: answer.questionDescription ?? undefined,
@@ -53,16 +57,18 @@ export function ImmersionRecord({
       }
 
       try {
-        const responses = await Promise.all(recordIds.map(recordId => getRecordDetail(recordId)));
+        const responses = await Promise.all(
+          recordIds.map((recordId) => getRecordDetail(recordId)),
+        );
         if (!isCancelled) {
-          const loadedRecords = responses.map(response => response.data);
+          const loadedRecords = responses.map((response) => response.data);
           const firstRecord = loadedRecords[0];
 
           setRecords(loadedRecords);
           setMemos(firstRecord?.memos ?? []);
           setAnswers(
             Object.fromEntries(
-              (firstRecord?.answers ?? []).map(answer => [
+              (firstRecord?.answers ?? []).map((answer) => [
                 answer.templateQuestionId,
                 answer.answerText,
               ]),
@@ -122,10 +128,12 @@ export function ImmersionRecord({
 
           <div className="flex min-h-[678px] w-full items-start gap-6">
             <ImmersionMemoPanel
-              activityTitle={currentRecord?.activityTitle ?? ''}
+              activityTitle={currentRecord?.activityTitle ?? ""}
               memos={memos}
-              onRemove={memoId => {
-                setMemos(previous => previous.filter(memo => memo.memoId !== memoId));
+              onRemove={(memoId) => {
+                setMemos((previous) =>
+                  previous.filter((memo) => memo.memoId !== memoId),
+                );
               }}
             />
             <section
@@ -133,14 +141,21 @@ export function ImmersionRecord({
               className="flex min-h-[678px] min-w-0 flex-1 flex-col items-start gap-10 rounded-[32px] bg-[rgba(0,17,78,0.35)] p-6"
             >
               {isLoading ? (
-                <p className="text-body2-md text-grey-200">기록을 불러오는 중...</p>
+                <p className="text-body2-md text-grey-200">
+                  기록을 불러오는 중...
+                </p>
               ) : loadError ? (
-                <p role="alert" className="text-body2-md text-error-text">{loadError}</p>
+                <p role="alert" className="text-body2-md text-error-text">
+                  {loadError}
+                </p>
               ) : (
                 <RecordTemplateForm
                   answers={answers}
                   onAnswerChange={(questionId, value) => {
-                    setAnswers(previous => ({ ...previous, [questionId]: value }));
+                    setAnswers((previous) => ({
+                      ...previous,
+                      [questionId]: value,
+                    }));
                   }}
                   questions={questions}
                   variant="immersion"
@@ -150,7 +165,10 @@ export function ImmersionRecord({
           </div>
         </div>
 
-        <ImmersionProgress currentIndex={currentIndex} totalCount={recordCount} />
+        <ImmersionProgress
+          currentIndex={currentIndex}
+          totalCount={recordCount}
+        />
       </div>
     </ImmersionPageLayout>
   );

@@ -4,7 +4,7 @@ interface ButtonProps {
   onClick?: () => void;
   disabled?: boolean;
   variant?: 'primary' | 'outline';
-  size?: 'default' | 'compact';
+  size?: 'default' | 'compact' | 'tip';
   className?: string;
   type?: 'button' | 'submit' | 'reset';
 }
@@ -14,10 +14,12 @@ export const Button = ({ label, icon, onClick, disabled = false, variant = 'prim
     type={type}
     onClick={onClick}
     disabled={disabled}
-    className={`flex items-center justify-center text-sub2-sb transition-all ${
-      size === 'compact'
-        ? 'w-auto gap-2 rounded-xl px-5 py-2.5'
-        : 'h-13 w-full rounded-[14px] px-5 py-2.5'
+    className={`flex items-center justify-center transition-all ${
+      size === 'tip'
+        ? 'text-label3-sb w-auto gap-1 rounded-xl py-1 pr-2 pl-3'
+        : size === 'compact'
+          ? 'text-sub2-sb w-auto gap-2 rounded-xl px-5 py-2.5'
+          : 'text-sub2-sb h-13 w-full rounded-[14px] px-5 py-2.5'
     } ${
       disabled
         ? variant === 'outline'

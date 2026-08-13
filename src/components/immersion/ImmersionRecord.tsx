@@ -1,9 +1,12 @@
+import { useState } from "react";
 import PolygonIcon from "@/assets/polygon.svg";
 import { Button } from "@/components/common/button";
 import { ImmersionToggle } from "@/components/home/ImmersionToggle";
 import { ImmersionProgress } from "@/components/immersion/ImmersionProgress";
 import { ImmersionPageLayout } from "@/components/immersion/ImmersionPageLayout";
 import { ImmersionTimer } from "@/components/immersion/ImmersionTimer";
+import { RecordTemplateForm } from "@/components/record/RecordTemplateForm";
+import { RECORD_TEMPLATES } from "@/constants/templates";
 
 interface ImmersionRecordProps {
   focusMinutes: number;
@@ -16,6 +19,9 @@ export function ImmersionRecord({
   onRequestExit,
   recordCount,
 }: ImmersionRecordProps) {
+  const [answers, setAnswers] = useState<Record<string, string>>({});
+  const questions = RECORD_TEMPLATES[0]?.questions ?? [];
+
   return (
     <ImmersionPageLayout className="px-6 py-6">
       <header className="relative flex w-full items-center justify-between">
@@ -52,15 +58,24 @@ export function ImmersionRecord({
             </div>
           </div>
 
-          <div className="flex h-[678px] w-full items-start gap-6">
+          <div className="flex min-h-[678px] w-full items-start gap-6">
             <aside
               aria-label="불러온 기록"
               className="flex h-full w-[389px] shrink-0 flex-col items-end gap-4 rounded-[32px] bg-[rgba(0,17,78,0.35)] p-6"
             />
             <section
               aria-label="기록 입력"
-              className="flex h-full min-w-0 flex-1 flex-col items-start gap-10 rounded-[32px] bg-[rgba(0,17,78,0.35)] p-6"
-            />
+              className="flex min-h-[678px] min-w-0 flex-1 flex-col items-start gap-10 rounded-[32px] bg-[rgba(0,17,78,0.35)] p-6"
+            >
+              <RecordTemplateForm
+                answers={answers}
+                onAnswerChange={(questionId, value) => {
+                  setAnswers(previous => ({ ...previous, [questionId]: value }));
+                }}
+                questions={questions}
+                variant="immersion"
+              />
+            </section>
           </div>
         </div>
 

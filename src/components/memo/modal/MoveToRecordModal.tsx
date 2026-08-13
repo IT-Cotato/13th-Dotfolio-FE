@@ -1,24 +1,23 @@
 import { useState } from 'react';
 import { useEscapeKey } from '../hooks/useEscapeKey';
 import { useModalFocus } from '../hooks/useModalFocus';
+import type { MemoActivityOption } from '../types';
+
+interface MoveTemplateOption {
+  id: string;
+  title: string;
+}
 
 interface MoveToRecordModalProps {
   onClose: () => void;
-  onMove?: (activity: string, template: string) => void;
+  onMove: (activityId: string, templateId: string) => void;
+  activities: MemoActivityOption[];
+  isActivitiesLoading: boolean;
+  activitiesError: string | null;
+  templates: MoveTemplateOption[];
+  isTemplatesLoading: boolean;
+  templatesError: string | null;
 }
-
-const activities = [
-  '코테이토 13기 프로젝트',
-  '경영 데이터분석 워크샵',
-  '마케팅 공모전',
-];
-
-const templates = [
-  '아이디어 · 기획',
-  '협업 · 갈등',
-  '문제 해결 · 성과',
-  '도전 · 몰입',
-];
 
 const ArrowLeftIcon = () => (
   <svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none">
@@ -32,17 +31,30 @@ const CloseIcon = () => (
   </svg>
 );
 
-export const MoveToRecordModal = ({ onClose, onMove }: MoveToRecordModalProps) => {
-  const [selectedActivity, setSelectedActivity] = useState('');
-  const [selectedTemplate, setSelectedTemplate] = useState('');
-  const canMove = Boolean(selectedActivity && selectedTemplate);
+export const MoveToRecordModal = ({
+  onClose,
+  onMove,
+  activities,
+  isActivitiesLoading,
+  activitiesError,
+  templates,
+  isTemplatesLoading,
+  templatesError,
+}: MoveToRecordModalProps) => {
+  const [selectedActivityId, setSelectedActivityId] = useState('');
+  const [selectedTemplateId, setSelectedTemplateId] = useState('');
+  const canMove = Boolean(selectedActivityId && selectedTemplateId);
   const dialogRef = useModalFocus<HTMLElement>();
 
   useEscapeKey(onClose);
 
+  const selectActivity = (activityId: string) => {
+    setSelectedActivityId(activityId);
+  };
+
   const handleMove = () => {
     if (!canMove) return;
-    onMove?.(selectedActivity, selectedTemplate);
+    onMove(selectedActivityId, selectedTemplateId);
     onClose();
   };
 
@@ -74,20 +86,23 @@ export const MoveToRecordModal = ({ onClose, onMove }: MoveToRecordModalProps) =
             <div className="mt-6 grid grid-cols-2 gap-2">
               {activities.map((activity) => (
                 <button
-                  key={activity}
+                  key={activity.id}
                   type="button"
-                  aria-pressed={selectedActivity === activity}
-                  onClick={() => setSelectedActivity(activity)}
+                  aria-pressed={selectedActivityId === activity.id}
+                  onClick={() => selectActivity(activity.id)}
                   className={`min-h-[84px] rounded-2xl border-[1.5px] px-6 py-4 text-body1-md transition-colors ${
-                    selectedActivity === activity
+                    selectedActivityId === activity.id
                       ? 'border-primary-500 bg-primary-50 text-primary-500'
                       : 'border-grey-100 bg-white text-grey-900 hover:border-primary-200'
                   }`}
                 >
-                  {activity}
+                  {activity.title}
                 </button>
               ))}
             </div>
+            {isActivitiesLoading && <p className="mt-4 text-center text-body3-r text-grey-500">활동을 불러오는 중...</p>}
+            {!isActivitiesLoading && activitiesError && <p role="alert" className="mt-4 text-center text-body3-r text-error-text">{activitiesError}</p>}
+            {!isActivitiesLoading && !activitiesError && activities.length === 0 && <p className="mt-4 text-center text-body3-r text-grey-500">선택할 수 있는 활동이 없습니다.</p>}
           </fieldset>
 
           <fieldset>
@@ -96,20 +111,23 @@ export const MoveToRecordModal = ({ onClose, onMove }: MoveToRecordModalProps) =
             <div className="mt-6 grid grid-cols-2 gap-2">
               {templates.map((template) => (
                 <button
-                  key={template}
+                  key={template.id}
                   type="button"
-                  aria-pressed={selectedTemplate === template}
-                  onClick={() => setSelectedTemplate(template)}
+                  aria-pressed={selectedTemplateId === template.id}
+                  onClick={() => setSelectedTemplateId(template.id)}
                   className={`rounded-2xl border-[1.5px] px-6 py-4 text-body1-md transition-colors ${
-                    selectedTemplate === template
+                    selectedTemplateId === template.id
                       ? 'border-primary-500 bg-primary-50 text-primary-500'
                       : 'border-grey-100 bg-white text-grey-900 hover:border-primary-200'
                   }`}
                 >
-                  {template}
+                  {template.title}
                 </button>
               ))}
             </div>
+            {isTemplatesLoading && <p className="mt-4 text-center text-body3-r text-grey-500">템플릿을 불러오는 중...</p>}
+            {!isTemplatesLoading && templatesError && <p role="alert" className="mt-4 text-center text-body3-r text-error-text">{templatesError}</p>}
+            {!isTemplatesLoading && !templatesError && templates.length === 0 && <p className="mt-4 text-center text-body3-r text-grey-500">사용할 수 있는 템플릿이 없습니다.</p>}
           </fieldset>
         </div>
 

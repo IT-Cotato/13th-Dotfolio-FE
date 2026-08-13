@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   createMemo as createMemoRequest,
   deleteMemoImage as deleteMemoImageRequest,
@@ -7,6 +8,7 @@ import {
   getMemoImagePresignedUrl,
   getMemos,
   markMemoImportant,
+  restoreMemos as restoreMemosRequest,
   updateMemo as updateMemoRequest,
   uploadMemoImage,
   type MemoResponse,
@@ -27,6 +29,7 @@ import {
   type MemoData,
 } from '@/components/memo';
 import { useActivities } from '@/contexts/ActivitiesContext';
+import { useTemplates } from '@/contexts/TemplatesContext';
 import { useToast } from '@/hooks/useToast';
 
 const formatCreatedAt = (createdAt: string) => {
@@ -65,7 +68,18 @@ const getErrorMessage = (error: unknown, fallback: string) => (
 );
 
 export default function Memo() {
-  const { activities: activityList } = useActivities();
+  const navigate = useNavigate();
+  const {
+    activities: activityList,
+    isLoading: isActivitiesLoading,
+    error: activitiesError,
+    setSelectedActivityId,
+  } = useActivities();
+  const {
+    templates: templateList,
+    isLoading: isTemplatesLoading,
+    error: templatesError,
+  } = useTemplates();
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [memos, setMemos] = useState<MemoData[]>([]);
   const [selectedTag, setSelectedTag] = useState('');
@@ -73,6 +87,7 @@ export default function Memo() {
   const [openMemoId, setOpenMemoId] = useState<string>();
   const [openingMemoId, setOpeningMemoId] = useState<string>();
   const [isMoveOpen, setIsMoveOpen] = useState(false);
+  const [moveMemoIds, setMoveMemoIds] = useState<string[]>([]);
   const [deleteMemoId, setDeleteMemoId] = useState<string>();
   const [isBulkDeleting, setIsBulkDeleting] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -112,6 +127,11 @@ export default function Memo() {
   const activities = useMemo<MemoActivityOption[]>(() => {
     return activityList.map(({ id, title }) => ({ id, title }));
   }, [activityList]);
+  const templates = useMemo(() => (
+    templateList
+      .filter((template) => !template.isCustom)
+      .map(({ id, title }) => ({ id, title }))
+  ), [templateList]);
 
   const tags = activities.map((activity) => activity.title);
   const activeTag = selectedTag && tags.includes(selectedTag) ? selectedTag : '';
@@ -119,6 +139,24 @@ export default function Memo() {
     ? memos.filter((memo) => memo.tag === activeTag)
     : memos;
   const openMemo = memos.find((memo) => memo.id === openMemoId);
+
+  const openMoveModal = (memoIds: string[]) => {
+    if (memoIds.length === 0) return;
+    setMoveMemoIds(memoIds);
+    setIsMoveOpen(true);
+  };
+
+  const closeMoveModal = () => {
+    setIsMoveOpen(false);
+    setMoveMemoIds([]);
+  };
+
+  const moveToRecord = (activityId: string, templateId: string) => {
+    setSelectedActivityId(activityId);
+    navigate(`/record/write/${templateId}`, {
+      state: { memoIds: moveMemoIds },
+    });
+  };
 
   const createMemo = async (input: MemoCreateInput) => {
     let images;
@@ -219,17 +257,23 @@ export default function Memo() {
       });
     };
 
-    const deleteTimer = window.setTimeout(() => {
-      void deleteMemosRequest([deletedMemoId]).catch((error) => {
-        restoreDeletedMemo();
-        fireToast(getErrorMessage(error, '메모를 삭제하지 못했습니다.'), undefined, 'error');
-      });
-    }, 2000);
+    try {
+      await deleteMemosRequest([deletedMemoId]);
+    } catch (error) {
+      restoreDeletedMemo();
+      fireToast(getErrorMessage(error, '메모를 삭제하지 못했습니다.'), undefined, 'error');
+      return;
+    }
 
     fireToast('메모가 삭제되었습니다.', () => {
-      window.clearTimeout(deleteTimer);
-      restoreDeletedMemo();
       dismissToast();
+      void restoreMemosRequest([deletedMemoId])
+        .then(() => {
+          restoreDeletedMemo();
+        })
+        .catch((error: unknown) => {
+          fireToast(getErrorMessage(error, '메모를 복구하지 못했습니다.'), undefined, 'error');
+        });
     });
   };
 
@@ -243,7 +287,14 @@ export default function Memo() {
       await deleteMemosRequest(memoIds);
       setMemos((current) => current.filter((memo) => !selectedMemoIds.has(memo.id)));
       setSelectedIds(new Set());
-      fireToast(`${memoIds.length}개의 메모가 삭제되었습니다.`);
+      fireToast(`${memoIds.length}개의 메모가 삭제되었습니다.`, () => {
+        dismissToast();
+        void restoreMemosRequest(memoIds)
+          .then(() => loadMemos())
+          .catch((error: unknown) => {
+            fireToast(getErrorMessage(error, '메모를 복구하지 못했습니다.'), undefined, 'error');
+          });
+      });
     } catch (error) {
       fireToast(getErrorMessage(error, '메모를 삭제하지 못했습니다.'), undefined, 'error');
     } finally {
@@ -278,7 +329,7 @@ export default function Memo() {
           count={selectedIds.size}
           isDeleting={isBulkDeleting}
           onCancel={() => setSelectedIds(new Set())}
-          onMove={() => setIsMoveOpen(true)}
+          onMove={() => openMoveModal([...selectedIds])}
           onDelete={() => void deleteSelectedMemos()}
         />
       )}
@@ -309,7 +360,7 @@ export default function Memo() {
               fireToast(getErrorMessage(error, '중요 메모 설정을 변경하지 못했습니다.'), undefined, 'error');
             });
           }}
-          onMove={() => setIsMoveOpen(true)}
+          onMove={(id) => openMoveModal([id])}
           selectedIds={selectedIds}
           onSelect={selectMemo}
           onOpen={(id) => void openMemoDetail(id)}
@@ -329,11 +380,22 @@ export default function Memo() {
           onUpdate={saveMemo}
           onToggleImportant={() => toggleImportant(openMemo.id)}
           onDeleteImage={deleteImage}
-          onMove={() => setIsMoveOpen(true)}
+          onMove={() => openMoveModal([openMemo.id])}
           onDelete={() => setDeleteMemoId(openMemo.id)}
         />
       )}
-      {isMoveOpen && <MoveToRecordModal onClose={() => setIsMoveOpen(false)} />}
+      {isMoveOpen && (
+        <MoveToRecordModal
+          activities={activities}
+          activitiesError={activitiesError}
+          isActivitiesLoading={isActivitiesLoading}
+          isTemplatesLoading={isTemplatesLoading}
+          onClose={closeMoveModal}
+          onMove={moveToRecord}
+          templates={templates}
+          templatesError={templatesError}
+        />
+      )}
       {deleteMemoId !== undefined && (
         <DeleteMemoModal onClose={() => setDeleteMemoId(undefined)} onConfirm={deleteMemo} />
       )}

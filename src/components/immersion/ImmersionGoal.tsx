@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import AddIcon from "@/assets/add10.svg";
 import RemoveIcon from "@/assets/remove.svg";
@@ -6,6 +6,7 @@ import { Button } from "@/components/common/button";
 import { CounterButton } from "@/components/common/CounterButton";
 import { ImmersionToggle } from "@/components/home/ImmersionToggle";
 import { ImmersionPageLayout } from "@/components/immersion/ImmersionPageLayout";
+import { getRecords, type RecordListItem } from "@/api/records";
 
 const MIN_RECORD_COUNT = 1;
 const MAX_RECORD_COUNT = 5;
@@ -16,15 +17,70 @@ export function ImmersionGoal() {
   const navigate = useNavigate();
   const [recordCount, setRecordCount] = useState(MAX_RECORD_COUNT);
   const [focusMinutes, setFocusMinutes] = useState("30");
+  const [draftRecords, setDraftRecords] = useState<RecordListItem[]>([]);
+  const [isLoadingRecords, setIsLoadingRecords] = useState(true);
+  const [recordsError, setRecordsError] = useState<string | null>(null);
+  const availableRecordCount = Math.min(draftRecords.length, MAX_RECORD_COUNT);
   const parsedFocusMinutes = Number(focusMinutes);
   const focusMinutesError =
     focusMinutes === ""
       ? "몰입 시간을 입력해 주세요."
       : parsedFocusMinutes < MIN_FOCUS_MINUTES
-        ? "몰입 시간은 1분 이상 입력해 주세요."
+        ? "시간은 1분 이상 입력해 주세요."
         : parsedFocusMinutes > MAX_FOCUS_MINUTES
           ? "시간은 120분 이하로 입력해 주세요."
           : null;
+
+  useEffect(() => {
+    let isCancelled = false;
+
+    const loadDraftRecords = async () => {
+      try {
+        const firstPage = await getRecords({ status: "DRAFT", page: 0, size: 1 });
+        if (isCancelled) return;
+
+        if (firstPage.data.totalElements === 0) {
+          setDraftRecords([]);
+          setRecordCount(MIN_RECORD_COUNT);
+          return;
+        }
+
+        const recordsPage = await getRecords({
+          status: "DRAFT",
+          page: 0,
+          size: firstPage.data.totalElements,
+        });
+        if (isCancelled) return;
+
+        setDraftRecords(recordsPage.data.content);
+        setRecordCount(Math.min(recordsPage.data.totalElements, MAX_RECORD_COUNT));
+      } catch {
+        if (!isCancelled) setRecordsError("기록 중인 기록을 불러오지 못했어요.");
+      } finally {
+        if (!isCancelled) setIsLoadingRecords(false);
+      }
+    };
+
+    void loadDraftRecords();
+    return () => {
+      isCancelled = true;
+    };
+  }, []);
+
+  const handleStart = () => {
+    const recordIds = [...draftRecords]
+      .sort(() => Math.random() - 0.5)
+      .slice(0, recordCount)
+      .map(record => record.id);
+
+    navigate("/immersion/record", {
+      state: {
+        focusMinutes: parsedFocusMinutes,
+        recordCount,
+        recordIds,
+      },
+    });
+  };
 
   const handleFocusMinutesChange = (value: string) => {
     if (/^\d{0,3}$/.test(value)) {
@@ -69,7 +125,7 @@ export function ImmersionGoal() {
             </span>
             <CounterButton
               ariaLabel="기록 개수 늘리기"
-              disabled={recordCount === MAX_RECORD_COUNT}
+              disabled={recordCount >= availableRecordCount}
               icon={<AddIcon className="size-2.5" />}
               onClick={() => setRecordCount((count) => count + 1)}
             />
@@ -114,16 +170,19 @@ export function ImmersionGoal() {
 
         <Button
           label="기록 시작"
-          disabled={focusMinutesError !== null}
-          onClick={() =>
-            navigate("/immersion/record", {
-              state: {
-                focusMinutes: parsedFocusMinutes,
-                recordCount,
-              },
-            })
+          disabled={
+            focusMinutesError !== null ||
+            isLoadingRecords ||
+            recordsError !== null ||
+            availableRecordCount === 0
           }
+          onClick={handleStart}
         />
+        {recordsError && (
+          <p role="alert" className="w-full text-body3-r text-error-text">
+            {recordsError}
+          </p>
+        )}
       </section>
     </ImmersionPageLayout>
   );

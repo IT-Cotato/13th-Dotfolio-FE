@@ -20,8 +20,18 @@ export interface MemoListItem {
   createdAt: string;
 }
 
-export function getMemos() {
-  return requestApi<MemoListItem[]>("/api/memos");
+export interface GetMemosParams {
+  startDate?: string;
+  endDate?: string;
+}
+
+export function getMemos(params: GetMemosParams = {}) {
+  const query = new URLSearchParams();
+  if (params.startDate) query.set("startDate", params.startDate);
+  if (params.endDate) query.set("endDate", params.endDate);
+
+  const queryString = query.toString();
+  return requestApi<MemoListItem[]>(`/api/memos${queryString ? `?${queryString}` : ""}`);
 }
 
 const formatDDay = (days: number): string => {

@@ -7,12 +7,14 @@ import { ImmersionPageLayout } from "@/components/immersion/ImmersionPageLayout"
 import { ImmersionTimer } from "@/components/immersion/ImmersionTimer";
 import { ImmersionMemoPanel } from "@/components/immersion/ImmersionMemoPanel";
 import { RecordTemplateForm } from "@/components/record/RecordTemplateForm";
+import { MemoSelectModal } from "@/components/record/MemoSelectModal";
 import {
   getRecordDetail,
   type RecordDetail,
   type RecordMemo,
 } from "@/api/records";
 import type { TemplateQuestion } from "@/constants/templates";
+import type { Memo } from "@/types/memo";
 
 interface ImmersionRecordProps {
   focusMinutes: number;
@@ -31,6 +33,7 @@ export function ImmersionRecord({
   const [currentIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [memos, setMemos] = useState<RecordMemo[]>([]);
+  const [isMemoModalOpen, setIsMemoModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(recordIds.length > 0);
   const [loadError, setLoadError] = useState<string | null>(null);
   const currentRecord = records[currentIndex];
@@ -46,6 +49,40 @@ export function ImmersionRecord({
         })),
     [currentRecord],
   );
+  const selectedMemos = useMemo<Memo[]>(
+    () => memos.map(memo => ({
+      id: memo.memoId,
+      date: memo.createdAt.slice(0, 10).replace(/-/g, "."),
+      dDay: "",
+      title: memo.title,
+      tag: currentRecord?.activityTitle ?? "",
+      content: memo.content,
+    })),
+    [currentRecord?.activityTitle, memos],
+  );
+
+  const handleSelectMemos = (selectedMemos: Memo[]) => {
+    const existingMemos = new Map(memos.map(memo => [memo.memoId, memo]));
+
+    setMemos(selectedMemos.map((selectedMemo, index) => {
+      const existingMemo = existingMemos.get(selectedMemo.id);
+      if (existingMemo) return existingMemo;
+
+      return {
+        memoId: selectedMemo.id,
+        activityId: "",
+        title: selectedMemo.title,
+        content: selectedMemo.content,
+        color: "",
+        important: false,
+        sortOrder: index,
+        collapsed: true,
+        createdAt: selectedMemo.date.replace(/\./g, "-") + "T00:00:00",
+        expiresAt: null,
+      };
+    }));
+    setIsMemoModalOpen(false);
+  };
 
   useEffect(() => {
     let isCancelled = false;
@@ -135,6 +172,7 @@ export function ImmersionRecord({
                   previous.filter((memo) => memo.memoId !== memoId),
                 );
               }}
+              onRequestSelect={() => setIsMemoModalOpen(true)}
             />
             <section
               aria-label="기록 입력"
@@ -170,6 +208,14 @@ export function ImmersionRecord({
           totalCount={recordCount}
         />
       </div>
+
+      <MemoSelectModal
+        isOpen={isMemoModalOpen}
+        selectedMemos={selectedMemos}
+        onClose={() => setIsMemoModalOpen(false)}
+        onSelect={handleSelectMemos}
+        variant="immersion"
+      />
     </ImmersionPageLayout>
   );
 }

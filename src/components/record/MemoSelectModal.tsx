@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import CloseIcon from '@/assets/close.svg';
+import { Button } from '@/components/common/button';
 import { MemoCard } from '@/components/record/MemoCard';
 import { getMemos, toMemo } from '@/api/memos';
 import { ApiError } from '@/api/client';
@@ -10,13 +11,24 @@ interface MemoSelectModalProps {
   selectedMemos: Memo[];
   onClose: () => void;
   onSelect: (memos: Memo[]) => void;
+  variant?: 'default' | 'immersion';
 }
 
-export const MemoSelectModal = ({ isOpen, selectedMemos, onClose, onSelect }: MemoSelectModalProps) => {
+export const MemoSelectModal = ({
+  isOpen,
+  selectedMemos,
+  onClose,
+  onSelect,
+  variant = 'default',
+}: MemoSelectModalProps) => {
   const [memos, setMemos] = useState<Memo[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const initialIds = useMemo(
+    () => new Set(selectedMemos.map(memo => memo.id)),
+    [selectedMemos],
+  );
 
   useEffect(() => {
     if (!isOpen) return;
@@ -24,7 +36,6 @@ export const MemoSelectModal = ({ isOpen, selectedMemos, onClose, onSelect }: Me
     let cancelled = false;
 
     const fetchMemos = async () => {
-      // 모달을 열 때마다 이전에 남아있던 선택 상태를 지우고, 현재 첨부된 메모로 다시 시작.
       setSelectedIds(new Set(selectedMemos.map(memo => memo.id)));
       setIsLoading(true);
       setError(null);
@@ -33,35 +44,42 @@ export const MemoSelectModal = ({ isOpen, selectedMemos, onClose, onSelect }: Me
         if (cancelled) return;
         const fetched = response.data.map(toMemo);
         setMemos(fetched);
-        // API 응답에 없는 id(삭제되었거나 목록에 안 뜨는 메모)는 선택 상태에서 제외.
-        setSelectedIds(prev => new Set([...prev].filter(id => fetched.some(memo => memo.id === id))));
-      } catch (err) {
+        setSelectedIds(previous => new Set(
+          [...previous].filter(id => fetched.some(memo => memo.id === id)),
+        ));
+      } catch (fetchError) {
         if (cancelled) return;
-        setError(err instanceof ApiError ? err.message : '메모를 불러오지 못했습니다.');
+        setError(
+          fetchError instanceof ApiError
+            ? fetchError.message
+            : '메모를 불러오지 못했습니다.',
+        );
       } finally {
         if (!cancelled) setIsLoading(false);
       }
     };
 
-    fetchMemos();
+    void fetchMemos();
     return () => {
       cancelled = true;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isOpen]);
+  }, [isOpen, selectedMemos]);
 
   if (!isOpen) return null;
 
   const toggle = (id: string) => {
-    setSelectedIds(prev => {
-      const next = new Set(prev);
+    setSelectedIds(previous => {
+      const next = new Set(previous);
       if (next.has(id)) next.delete(id);
       else next.add(id);
       return next;
     });
   };
 
-  const isValid = selectedIds.size > 0;
+  const hasChanged =
+    selectedIds.size !== initialIds.size ||
+    [...selectedIds].some(id => !initialIds.has(id));
+  const isValid = variant === 'immersion' ? hasChanged : selectedIds.size > 0;
 
   const handleComplete = () => {
     if (!isValid) return;
@@ -70,26 +88,46 @@ export const MemoSelectModal = ({ isOpen, selectedMemos, onClose, onSelect }: Me
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center"
-      style={{ background: '#1C1C1A9E' }}
+      className={`fixed inset-0 z-50 flex items-center justify-center ${
+        variant === 'immersion'
+          ? 'bg-[rgba(26,26,28,0.70)] backdrop-blur-[1.5px]'
+          : ''
+      }`}
+      style={variant === 'default' ? { background: '#1C1C1A9E' } : undefined}
       onClick={onClose}
     >
       <div
-        className="relative w-full max-w-155 h-173 max-h-[80vh] bg-white rounded-3xl px-8 pt-6 pb-8 flex flex-col gap-11.5"
-        onClick={e => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        aria-label="메모 불러오기"
+        className={`relative flex w-full flex-col ${
+          variant === 'immersion'
+            ? 'h-[692px] max-w-[620px] gap-8 rounded-[40px] bg-[rgba(0,17,78,0.35)] p-8 shadow-[0_0_20px_rgba(0,0,0,0.18)]'
+            : 'h-173 max-h-[80vh] max-w-155 gap-11.5 rounded-3xl bg-white px-8 pt-6 pb-8'
+        }`}
+        onClick={event => event.stopPropagation()}
       >
-        <div className="w-full shrink-0 flex items-center justify-between">
-          <p className="text-grey-900 text-title1">메모 불러오기</p>
-          <button type="button" onClick={onClose} className="cursor-pointer">
-            <CloseIcon className="w-4 h-4 text-grey-400" />
+        <div className="flex w-full shrink-0 items-center justify-between">
+          <p className={`text-title1 ${variant === 'immersion' ? 'text-grey-0' : 'text-grey-900'}`}>
+            메모 불러오기
+          </p>
+          <button
+            type="button"
+            aria-label="메모 불러오기 닫기"
+            onClick={onClose}
+            className="flex size-6 cursor-pointer items-center justify-center p-2"
+          >
+            <CloseIcon className="size-4 shrink-0 text-grey-400" />
           </button>
         </div>
 
-        <div className="w-full min-h-0 overflow-y-auto scrollbar-hide">
+        <div className="min-h-0 w-full overflow-y-auto scrollbar-hide">
           {isLoading ? (
-            <p className="text-body2-r text-grey-500 text-center py-10">불러오는 중...</p>
+            <p className={`py-10 text-center text-body2-r ${variant === 'immersion' ? 'text-grey-200' : 'text-grey-500'}`}>
+              불러오는 중...
+            </p>
           ) : error ? (
-            <p className="text-body2-r text-error-text text-center py-10">{error}</p>
+            <p className="py-10 text-center text-body2-r text-error-text">{error}</p>
           ) : (
             <div className="grid grid-cols-[266px_266px] gap-x-6 gap-y-4">
               {memos.map(memo => (
@@ -98,24 +136,34 @@ export const MemoSelectModal = ({ isOpen, selectedMemos, onClose, onSelect }: Me
                   memo={memo}
                   selected={selectedIds.has(memo.id)}
                   onToggle={() => toggle(memo.id)}
+                  variant={variant}
                 />
               ))}
             </div>
           )}
         </div>
 
-        <button
-          type="button"
-          disabled={!isValid}
-          onClick={handleComplete}
-          className={`w-full shrink-0 px-5 py-3.5 rounded-2xl text-sub2-sb transition-colors ${
-            isValid
-              ? 'bg-primary-500 text-grey-0 cursor-pointer'
-              : 'bg-grey-300 text-grey-0 cursor-not-allowed'
-          }`}
-        >
-          선택 완료
-        </button>
+        {variant === 'immersion' ? (
+          <Button
+            label="선택 완료"
+            disabled={!isValid}
+            onClick={handleComplete}
+            className="h-auto shrink-0 py-3.5"
+          />
+        ) : (
+          <button
+            type="button"
+            disabled={!isValid}
+            onClick={handleComplete}
+            className={`w-full shrink-0 rounded-2xl px-5 py-3.5 text-sub2-sb transition-colors ${
+              isValid
+                ? 'cursor-pointer bg-primary-500 text-grey-0'
+                : 'cursor-not-allowed bg-grey-300 text-grey-0'
+            }`}
+          >
+            선택 완료
+          </button>
+        )}
       </div>
     </div>
   );

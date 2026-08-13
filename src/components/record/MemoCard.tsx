@@ -1,39 +1,54 @@
-import CheckIcon from '@/assets/check.svg';
 import HourglassIcon from '@/assets/hourglass.svg';
+import { Checkbox } from '@/components/common/CheckBox';
 import type { Memo } from '@/types/memo';
 
 interface MemoCardProps {
   memo: Memo;
   selected: boolean;
   onToggle: () => void;
+  variant?: 'default' | 'immersion';
 }
 
-export const MemoCard = ({ memo, selected, onToggle }: MemoCardProps) => (
-  <button
-    type="button"
-    onClick={onToggle}
-    className="w-[266px] h-[266px] shrink-0 flex flex-col rounded-[20px] border border-grey-100 text-left cursor-pointer overflow-hidden"
+export const MemoCard = ({ memo, selected, onToggle, variant = 'default' }: MemoCardProps) => (
+  <label
+    className={`flex w-[266px] shrink-0 cursor-pointer flex-col overflow-hidden rounded-[20px] text-left ${
+      variant === 'immersion'
+        ? 'min-h-[266px] max-h-[454px] bg-[#414F6F]'
+        : 'h-[266px] border border-grey-100'
+    }`}
   >
-    <div className="w-full h-13.5 shrink-0 flex items-center gap-2 px-4 py-4 border-b border-grey-100">
-      <span
-        className={`w-5 h-5 shrink-0 flex items-center justify-center rounded-[4px] border transition-colors ${
-          selected ? 'bg-primary-500 border-primary-500' : 'bg-white border-grey-100'
-        }`}
-      >
-        {selected && <CheckIcon className="w-3 h-2.5 text-grey-0" />}
+    <div className={`flex h-[54px] w-full shrink-0 items-center gap-2 p-4 ${
+      variant === 'immersion' ? 'border-b-[1.5px] border-[#4E5C7C]' : 'border-b border-grey-100'
+    }`}>
+      <Checkbox checked={selected} id={`memo-select-${memo.id}`} onChange={() => onToggle()} />
+      <span className={variant === 'immersion' ? 'text-body3-md text-grey-100' : 'text-body3-md text-grey-600'}>
+        {memo.date}
       </span>
-      <span className="text-grey-600 text-body3-md">{memo.date}</span>
-      <span className="flex items-center gap-1 px-2 py-1 rounded-full border border-grey-100 bg-grey-50 text-grey-600 text-label3-md">
-        <HourglassIcon className="w-3 h-3" />
-        {memo.dDay}
-      </span>
+      {variant === 'default' && (
+        <span className="text-label3-md flex items-center gap-1 rounded-full border border-grey-100 bg-grey-50 px-2 py-1 text-grey-600">
+          <HourglassIcon className="size-3" />
+          {memo.dDay}
+        </span>
+      )}
     </div>
-    <div className="flex-1 flex flex-col gap-2.5 px-4 py-4 overflow-hidden">
-      <p className="text-grey-950 text-sub1-sb truncate">{memo.title}</p>
-      <span className="inline-flex items-center w-fit px-3 py-1 rounded-full bg-grey-600 text-grey-0 text-label3-sb">
-        # {memo.tag}
-      </span>
-      <p className="text-grey-900 text-body-reading2-md line-clamp-3">{memo.content}</p>
+    <div className="flex min-h-0 flex-1 flex-col gap-2.5 overflow-hidden p-4">
+      <p className={variant === 'immersion' ? 'text-sub1-sb min-h-[25px] text-grey-0' : 'text-sub1-sb truncate text-grey-950'}>
+        {memo.title}
+      </p>
+      {memo.tag && (
+        <span className={`text-label3-sb inline-flex w-fit items-center gap-1 rounded-[500px] px-3 py-1 ${
+          variant === 'immersion'
+            ? 'border border-grey-200 text-grey-100'
+            : 'bg-grey-600 text-grey-0'
+        }`}>
+          # {memo.tag}
+        </span>
+      )}
+      <p className={`text-body-reading2-md overflow-hidden ${
+        variant === 'immersion' ? 'memo-card-text text-grey-0' : 'line-clamp-3 text-grey-900'
+      }`}>
+        {memo.content}
+      </p>
     </div>
-  </button>
+  </label>
 );

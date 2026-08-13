@@ -5,8 +5,9 @@ import { ImmersionToggle } from "@/components/home/ImmersionToggle";
 import { ImmersionProgress } from "@/components/immersion/ImmersionProgress";
 import { ImmersionPageLayout } from "@/components/immersion/ImmersionPageLayout";
 import { ImmersionTimer } from "@/components/immersion/ImmersionTimer";
+import { ImmersionMemoPanel } from "@/components/immersion/ImmersionMemoPanel";
 import { RecordTemplateForm } from "@/components/record/RecordTemplateForm";
-import { getRecordDetail, type RecordDetail } from "@/api/records";
+import { getRecordDetail, type RecordDetail, type RecordMemo } from "@/api/records";
 import type { TemplateQuestion } from "@/constants/templates";
 
 interface ImmersionRecordProps {
@@ -25,6 +26,7 @@ export function ImmersionRecord({
   const [records, setRecords] = useState<RecordDetail[]>([]);
   const [currentIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string>>({});
+  const [memos, setMemos] = useState<RecordMemo[]>([]);
   const [isLoading, setIsLoading] = useState(recordIds.length > 0);
   const [loadError, setLoadError] = useState<string | null>(null);
   const currentRecord = records[currentIndex];
@@ -57,6 +59,7 @@ export function ImmersionRecord({
           const firstRecord = loadedRecords[0];
 
           setRecords(loadedRecords);
+          setMemos(firstRecord?.memos ?? []);
           setAnswers(
             Object.fromEntries(
               (firstRecord?.answers ?? []).map(answer => [
@@ -118,9 +121,12 @@ export function ImmersionRecord({
           </div>
 
           <div className="flex min-h-[678px] w-full items-start gap-6">
-            <aside
-              aria-label="불러온 기록"
-              className="flex h-full w-[389px] shrink-0 flex-col items-end gap-4 rounded-[32px] bg-[rgba(0,17,78,0.35)] p-6"
+            <ImmersionMemoPanel
+              activityTitle={currentRecord?.activityTitle ?? ''}
+              memos={memos}
+              onRemove={memoId => {
+                setMemos(previous => previous.filter(memo => memo.memoId !== memoId));
+              }}
             />
             <section
               aria-label="기록 입력"

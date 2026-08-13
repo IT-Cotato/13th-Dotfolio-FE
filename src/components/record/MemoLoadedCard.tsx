@@ -6,6 +6,7 @@ import VectorUpIcon from '@/assets/vector_up.svg';
 import type { Memo } from '@/types/memo';
 
 interface MemoLoadedCardProps {
+  defaultOpen?: boolean;
   memo: Memo;
   onDelete?: () => void;
   onOpenDetail?: () => void;
@@ -13,12 +14,13 @@ interface MemoLoadedCardProps {
 }
 
 export const MemoLoadedCard = ({
+  defaultOpen = false,
   memo,
   onDelete,
   onOpenDetail,
   variant = 'default',
 }: MemoLoadedCardProps) => {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(defaultOpen);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const isImmersion = variant === 'immersion';

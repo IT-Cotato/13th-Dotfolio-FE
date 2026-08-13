@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { ImmersionRecord } from "@/components/immersion/ImmersionRecord";
 import { ImmersionInterrupted } from "@/components/immersion/ImmersionInterrupted";
@@ -22,7 +22,10 @@ export default function ImmersionRecordPage() {
   const locationState = state as ImmersionRecordLocationState | null;
   const focusMinutes = locationState?.focusMinutes ?? DEFAULT_FOCUS_MINUTES;
   const recordCount = locationState?.recordCount ?? DEFAULT_RECORD_COUNT;
-  const recordIds = locationState?.recordIds ?? [];
+  const recordIds = useMemo(
+    () => locationState?.recordIds ?? [],
+    [locationState?.recordIds],
+  );
 
   useEffect(() => {
     if (!hasAddedHistoryGuard.current) {

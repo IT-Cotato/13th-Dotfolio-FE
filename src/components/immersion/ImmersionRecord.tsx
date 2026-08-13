@@ -88,8 +88,12 @@ export function ImmersionRecord({
     let isCancelled = false;
 
     const loadRecords = async () => {
+      setIsLoading(true);
+      setLoadError(null);
+
       if (recordIds.length === 0) {
         setLoadError("선택된 기록이 없어요.");
+        setIsLoading(false);
         return;
       }
 

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { ImmersionRecord } from "@/components/immersion/ImmersionRecord";
 import { ImmersionInterrupted } from "@/components/immersion/ImmersionInterrupted";
@@ -7,6 +7,7 @@ import { exitImmersionHistory } from "@/utils/immersionHistory";
 interface ImmersionRecordLocationState {
   focusMinutes?: number;
   recordCount?: number;
+  recordIds?: string[];
 }
 
 const DEFAULT_FOCUS_MINUTES = 30;
@@ -21,6 +22,10 @@ export default function ImmersionRecordPage() {
   const locationState = state as ImmersionRecordLocationState | null;
   const focusMinutes = locationState?.focusMinutes ?? DEFAULT_FOCUS_MINUTES;
   const recordCount = locationState?.recordCount ?? DEFAULT_RECORD_COUNT;
+  const recordIds = useMemo(
+    () => locationState?.recordIds ?? [],
+    [locationState?.recordIds],
+  );
 
   useEffect(() => {
     if (!hasAddedHistoryGuard.current) {
@@ -64,6 +69,7 @@ export default function ImmersionRecordPage() {
         focusMinutes={focusMinutes}
         onRequestExit={() => setIsExitOpen(true)}
         recordCount={recordCount}
+        recordIds={recordIds}
       />
       {isExitOpen && (
         <div className="fixed inset-0 z-50">

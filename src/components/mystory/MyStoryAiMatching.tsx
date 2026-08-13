@@ -32,6 +32,7 @@ export default function MyStoryAiMatching() {
   const [examples, setExamples] = useState<MatchingQuestionTagResponse[]>([]);
   const [matchedRecords, setMatchedRecords] = useState<MatchingRecordResponse[]>([]);
   const [error, setError] = useState('');
+  const hasMatchedRecords = status === 'complete' && matchedRecords.length > 0;
 
   useEffect(() => {
     const controller = new AbortController();
@@ -82,7 +83,7 @@ export default function MyStoryAiMatching() {
           </span>
           <h1 className="text-title1 text-grey-900">AI 기록 매칭</h1>
         </div>
-        <p className="ml-10 mt-1 text-body2-md text-grey-500">경험을 묻는 자소서 문항을 입력하면 AI가 관련도 높은 기록을 찾아드립니다.</p>
+        <p className="ml-10 mt-1 text-body2-md text-grey-500">이력서·자소서 문항을 입력하면 AI가 관련 기록을 찾아드립니다.</p>
       </header>
 
       <div className="relative mt-8 flex h-[98px] items-end rounded-[14px] border border-grey-100 bg-white p-4">
@@ -116,21 +117,23 @@ export default function MyStoryAiMatching() {
 
       {error && <p role="alert" className="mt-3 text-body3-md text-error-text">{error}</p>}
 
-      <section className="mt-8">
-        <h2 className="text-body2-md text-grey-700">예시 문항</h2>
-        <div className="mt-3 flex flex-wrap gap-2">
-          {examples.map((example) => (
-            <button
-              type="button"
-              key={example.id}
-              onClick={() => chooseExample(example.content)}
-              className="cursor-pointer rounded-xl border border-primary-100 bg-primary-50 px-4 py-2 text-label2-sb text-primary-500 transition-colors hover:bg-primary-100"
-            >
-              {example.content}
-            </button>
-          ))}
-        </div>
-      </section>
+      {!hasMatchedRecords && (
+        <section className="mt-2">
+          <h2 className="text-body2-md text-grey-700">예시 문항</h2>
+          <div className="mt-5 flex flex-wrap gap-2">
+            {examples.map((example) => (
+              <button
+                type="button"
+                key={example.id}
+                onClick={() => chooseExample(example.content)}
+                className="cursor-pointer rounded-xl border border-primary-100 bg-primary-50 px-4 py-2 text-label2-sb text-primary-500 transition-colors hover:bg-primary-100"
+              >
+                {example.content}
+              </button>
+            ))}
+          </div>
+        </section>
+      )}
 
       {status === 'analyzing' && (
         <div className="grid min-h-[330px] place-items-center text-center" aria-live="polite">
@@ -145,7 +148,7 @@ export default function MyStoryAiMatching() {
       )}
 
       {status === 'complete' && (
-        <section className="mt-8">
+        <section className="mt-2">
           <h2 className="text-title2 text-grey-900">매칭된 기록 {matchedRecords.length}</h2>
           {matchedRecords.length === 0 ? (
             <p className="mt-8 text-center text-body2-md text-grey-500">관련 기록을 찾지 못했습니다.</p>

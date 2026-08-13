@@ -32,9 +32,7 @@ interface ActivitiesContextValue {
 
 const ActivitiesContext = createContext<ActivitiesContextValue | null>(null);
 
-// TODO: 백엔드 확인 필요 — "보관됨" 상태 문자열이 실제로 COMPLETED가 맞는지 미확인.
-// 다르면 이 값만 바꾸면 됨.
-const ARCHIVED_STATUS = 'COMPLETED';
+const ARCHIVED_STATUS = 'ARCHIVED';
 
 const toActivity = (item: ActivityListItem): Activity => ({
   id: item.id,

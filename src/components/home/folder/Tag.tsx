@@ -2,7 +2,7 @@ interface TagProps {
   label: string;
 }
 
-const MAX_LABEL_LENGTH = 5;
+const MAX_LABEL_LENGTH = 7;
 
 export const Tag = ({ label }: TagProps) => {
   const displayLabel = label.length > MAX_LABEL_LENGTH ? `${label.slice(0, MAX_LABEL_LENGTH)}…` : label;

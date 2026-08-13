@@ -1,5 +1,6 @@
 import { Routes, Route, useNavigate } from "react-router-dom";
 import Home from "./home";
+import Landing from "./landing";
 import Memo from "./memo";
 import Login from "./login";
 import Signup from "./signup";
@@ -36,6 +37,7 @@ export default function Layout() {
       <Route path="/immersion/record" element={<ImmersionRecordPage />} />
       <Route path="/immersion/complete" element={<ImmersionCompletePage />} />
       <Route path="/immersion/returning" element={<ImmersionReturningPage />} />
+      <Route path="/" element={<Landing />} />
       <Route path="*" element={<HomeLayout />} />
     </Routes>
   );
@@ -54,7 +56,7 @@ function HomeLayout() {
                 <MenuIcon className="w-6 h-6 text-grey-700 cursor-pointer" />
                 <span
                   className="font-nexon text-logo text-grey-600 cursor-pointer"
-                  onClick={() => navigate("/")}
+                  onClick={() => navigate("/home")}
                 >
                   Dotfolio
                 </span>
@@ -74,7 +76,7 @@ function HomeLayout() {
               </nav>
               <main className="flex-1 pb-8 pr-6 h-full overflow-y-auto scrollbar-hide">
                 <Routes>
-                  <Route path="/" element={<Home />} />
+                  <Route path="/home" element={<Home />} />
                   <Route path="/memo" element={<Memo />} />
                   <Route path="/record" element={<Record />} />
                   <Route path="/record-all" element={<RecordAll />} />

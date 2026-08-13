@@ -5,6 +5,7 @@ import { Breadcrumb } from '@/components/common/Breadcrumb';
 import { CategoryHeader } from '@/components/common/CategoryHeader';
 import { Toast } from '@/components/common/Toast';
 import { RecordActionButtons } from '@/components/record/RecordActionButtons';
+import { RecordTemplateForm } from '@/components/record/RecordTemplateForm';
 import { MemoSelectModal } from '@/components/record/MemoSelectModal';
 import { MemoLoadedCard } from '@/components/record/MemoLoadedCard';
 import { MemoDetailModal } from '@/components/record/MemoDetailModal';
@@ -228,36 +229,11 @@ export default function RecordWrite() {
             </div>
           </div>
 
-          <div className="flex flex-col gap-4">
-            <p className="text-sub1-sb text-grey-900">템플릿 양식</p>
-            <div className="flex flex-col gap-8 p-6 rounded-3xl border border-grey-100">
-              {template.questions?.map((question, index) => (
-                <div key={question.id} className="flex flex-col gap-2">
-                  <div className="flex items-center gap-3">
-                    <span className="w-5 h-5 shrink-0 flex items-center justify-center rounded-md bg-primary-50 text-primary-500 text-label3-sb">
-                      {index + 1}
-                    </span>
-                    <p className="text-sub2-sb text-grey-900">
-                      {question.required && <span className="text-error-text">* </span>}
-                      {question.label}
-                    </p>
-                  </div>
-                  <div className="flex flex-col gap-2 pl-8">
-                    {question.description && (
-                      <p className="text-body2-md text-grey-700">{question.description}</p>
-                    )}
-                    <textarea
-                      value={answers[question.id] ?? ''}
-                      onChange={e => handleAnswerChange(question.id, e.target.value)}
-                      placeholder="내용을 입력해주세요."
-                      rows={4}
-                      className="w-full p-4 rounded-xl border border-grey-100 text-body-reading2-md text-grey-900 placeholder:text-grey-400 outline-none resize-none transition-colors"
-                    />
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
+          <RecordTemplateForm
+            answers={answers}
+            onAnswerChange={handleAnswerChange}
+            questions={template.questions ?? []}
+          />
         </div>
       </div>
 

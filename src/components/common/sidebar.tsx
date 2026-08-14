@@ -185,14 +185,16 @@ export const Sidebar = () => {
         {myStoryOpen && <MyStorySidebar />}
       </div>
 
-      <ActivityModal
-        isOpen={isActivityModalOpen}
-        onClose={() => setIsActivityModalOpen(false)}
-        onSubmit={data => {
-          addActivity(data);
-          setIsActivityModalOpen(false);
-        }}
-      />
+      {isActivityModalOpen && (
+        <ActivityModal
+          isOpen
+          onClose={() => setIsActivityModalOpen(false)}
+          onSubmit={data => {
+            addActivity(data);
+            setIsActivityModalOpen(false);
+          }}
+        />
+      )}
     </nav>
   );
 };

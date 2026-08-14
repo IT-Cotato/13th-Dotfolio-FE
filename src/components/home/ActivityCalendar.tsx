@@ -1,9 +1,9 @@
-import activityDataRaw from '@/mock/activeday.json';
+import { useEffect, useRef, useState } from 'react';
 import type { ActivityType, DayType } from '@/types/activity';
-
-const activityData = activityDataRaw as Record<string, ActivityType>;
 import { DAY_LABELS, DAY_LABEL_COLORS } from '@/constants/calendar';
 import { toDateStr, getCalendarWeeks } from '@/utils/date';
+import { getRecordsByDateRange } from '@/api/records';
+import { getMemos } from '@/api/memos';
 
 const getPastDotClass = (type: ActivityType): string => {
   switch (type) {
@@ -41,6 +41,38 @@ export const ActivityCalendar = () => {
   const month = now.getMonth();
   const todayStr = toDateStr(year, month, now.getDate());
   const weeks = getCalendarWeeks(year, month);
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const startDate = toDateStr(year, month, 1);
+  const endDate = toDateStr(year, month, daysInMonth);
+
+  const [activityData, setActivityData] = useState<Record<string, ActivityType>>({});
+  const fetchIdRef = useRef(0);
+
+  useEffect(() => {
+    const requestId = ++fetchIdRef.current;
+    const run = async () => {
+      try {
+        const [recordsRes, memosRes] = await Promise.all([
+          getRecordsByDateRange(startDate, endDate),
+          getMemos({ startDate, endDate }),
+        ]);
+        if (requestId !== fetchIdRef.current) return;
+        const data: Record<string, ActivityType> = {};
+        memosRes.data.forEach(memo => {
+          const day = memo.createdAt.slice(0, 10);
+          if (!data[day]) data[day] = 'memo';
+        });
+        recordsRes.data.forEach(record => {
+          const day = record.createdAt.slice(0, 10);
+          data[day] = 'both';
+        });
+        setActivityData(data);
+      } catch {
+        if (requestId === fetchIdRef.current) setActivityData({});
+      }
+    };
+    run();
+  }, [startDate, endDate]);
 
   const getCellType = (day: number): DayType => {
     const dateStr = toDateStr(year, month, day);

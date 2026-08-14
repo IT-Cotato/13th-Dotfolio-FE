@@ -150,3 +150,9 @@ export function getRecords(params: GetRecordsParams = {}) {
   const queryString = query.toString();
   return requestApi<RecordListPage>(`/api/records${queryString ? `?${queryString}` : ""}`);
 }
+
+// startDate/endDate로 조회하면 백엔드가 페이지네이션 없이 배열 전체를 내려줌 (getRecords의 페이지 응답과 다른 응답 형태).
+export function getRecordsByDateRange(startDate: string, endDate: string) {
+  const query = new URLSearchParams({ startDate, endDate });
+  return requestApi<RecordListItem[]>(`/api/records?${query.toString()}`);
+}

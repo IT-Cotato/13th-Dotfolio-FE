@@ -10,14 +10,17 @@ import { RecordTemplateForm } from "@/components/record/RecordTemplateForm";
 import { MemoSelectModal } from "@/components/record/MemoSelectModal";
 import {
   getRecordDetail,
+  updateRecord,
   type RecordDetail,
   type RecordMemo,
 } from "@/api/records";
+import { ApiError } from "@/api/client";
 import type { TemplateQuestion } from "@/constants/templates";
 import type { Memo } from "@/types/memo";
 
 interface ImmersionRecordProps {
   focusMinutes: number;
+  onComplete: (completedCount: number) => void;
   onRequestExit: () => void;
   recordCount: number;
   recordIds: string[];
@@ -27,17 +30,21 @@ type ImmersionRecordMemo = RecordMemo & { activityTitle?: string };
 
 export function ImmersionRecord({
   focusMinutes,
+  onComplete,
   onRequestExit,
   recordCount,
   recordIds,
 }: ImmersionRecordProps) {
   const [records, setRecords] = useState<RecordDetail[]>([]);
-  const [currentIndex] = useState(0);
+  const [currentIndex, setCurrentIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [memos, setMemos] = useState<ImmersionRecordMemo[]>([]);
+  const [completedCount, setCompletedCount] = useState(0);
   const [isMemoModalOpen, setIsMemoModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(recordIds.length > 0);
+  const [isSaving, setIsSaving] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
+  const [saveError, setSaveError] = useState<string | null>(null);
   const currentRecord = records[currentIndex];
   const questions = useMemo<TemplateQuestion[]>(
     () =>
@@ -87,6 +94,70 @@ export function ImmersionRecord({
     setIsMemoModalOpen(false);
   };
 
+  const applyRecord = (record: RecordDetail) => {
+    setAnswers(
+      Object.fromEntries(
+        record.answers.map((answer) => [
+          answer.templateQuestionId,
+          answer.answerText,
+        ]),
+      ),
+    );
+    setMemos(record.memos);
+    setSaveError(null);
+  };
+
+  const handleSave = async () => {
+    if (!currentRecord || isSaving) return;
+
+    const isCompleted = currentRecord.answers
+      .filter((answer) => answer.required)
+      .every((answer) => (answers[answer.templateQuestionId] ?? "").trim());
+
+    setIsSaving(true);
+    setSaveError(null);
+
+    try {
+      const response = await updateRecord(currentRecord.id, {
+        title: currentRecord.title,
+        answers: currentRecord.answers.map((answer) => ({
+          templateQuestionId: answer.templateQuestionId,
+          answerText: answers[answer.templateQuestionId] ?? "",
+        })),
+        memos: memos.map((memo) => ({
+          memoId: memo.memoId,
+          collapsed: memo.collapsed,
+        })),
+        status: isCompleted ? "COMPLETED" : "DRAFT",
+      });
+
+      const nextCompletedCount = completedCount + (isCompleted ? 1 : 0);
+      setCompletedCount(nextCompletedCount);
+      setRecords((previous) =>
+        previous.map((record, index) =>
+          index === currentIndex ? response.data : record,
+        ),
+      );
+
+      const nextRecord = records[currentIndex + 1];
+      if (!nextRecord) {
+        onComplete(nextCompletedCount);
+        return;
+      }
+
+      setCurrentIndex((index) => index + 1);
+      applyRecord(nextRecord);
+    } catch (error) {
+      setSaveError(
+        error instanceof ApiError
+          ? error.message
+          : "기록을 저장하지 못했어요. 다시 시도해 주세요.",
+      );
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   useEffect(() => {
     let isCancelled = false;
 
@@ -109,15 +180,9 @@ export function ImmersionRecord({
           const firstRecord = loadedRecords[0];
 
           setRecords(loadedRecords);
-          setMemos(firstRecord?.memos ?? []);
-          setAnswers(
-            Object.fromEntries(
-              (firstRecord?.answers ?? []).map((answer) => [
-                answer.templateQuestionId,
-                answer.answerText,
-              ]),
-            ),
-          );
+          setCurrentIndex(0);
+          setCompletedCount(0);
+          if (firstRecord) applyRecord(firstRecord);
         }
       } catch {
         if (!isCancelled) setLoadError("기록을 불러오지 못했어요.");
@@ -166,7 +231,25 @@ export function ImmersionRecord({
               <h1 className="w-full max-w-[452px] text-title1 text-grey-0">
                 {currentRecord?.title ?? "기록을 불러오는 중이에요."}
               </h1>
-              <Button label="저장하고 다음 기록" size="compact" />
+              <div className="flex flex-col items-end gap-2">
+                <Button
+                  label={
+                    isSaving
+                      ? "저장 중..."
+                      : currentIndex === records.length - 1
+                        ? "저장"
+                        : "저장하고 다음 기록"
+                  }
+                  size="compact"
+                  disabled={isLoading || loadError !== null || !currentRecord || isSaving}
+                  onClick={handleSave}
+                />
+                {saveError && (
+                  <p role="alert" className="text-body3-r text-error-text">
+                    {saveError}
+                  </p>
+                )}
+              </div>
             </div>
           </div>
 
@@ -194,6 +277,7 @@ export function ImmersionRecord({
                 </p>
               ) : (
                 <RecordTemplateForm
+                  key={currentRecord?.id}
                   answers={answers}
                   onAnswerChange={(questionId, value) => {
                     setAnswers((previous) => ({
@@ -211,7 +295,7 @@ export function ImmersionRecord({
 
         <ImmersionProgress
           currentIndex={currentIndex}
-          totalCount={recordCount}
+          totalCount={records.length || recordCount}
         />
       </div>
 

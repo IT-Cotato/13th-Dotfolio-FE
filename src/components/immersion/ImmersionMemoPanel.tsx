@@ -6,8 +6,7 @@ import type { RecordMemo } from '@/api/records';
 import type { Memo } from '@/types/memo';
 
 interface ImmersionMemoPanelProps {
-  activityTitle: string;
-  memos: RecordMemo[];
+  memos: Array<RecordMemo & { activityTitle?: string }>;
   onRemove: (memoId: string) => void;
   onRequestSelect?: () => void;
 }
@@ -17,7 +16,6 @@ const formatMemoDate = (createdAt: string) => (
 );
 
 export function ImmersionMemoPanel({
-  activityTitle,
   memos,
   onRemove,
   onRequestSelect,
@@ -29,12 +27,12 @@ export function ImmersionMemoPanel({
         date: formatMemoDate(memo.createdAt),
         dDay: '',
         title: memo.title,
-        tag: activityTitle,
+        tag: memo.activityTitle ?? '',
         content: memo.content,
       },
       collapsed: memo.collapsed,
     })),
-    [activityTitle, memos],
+    [memos],
   );
 
   return (

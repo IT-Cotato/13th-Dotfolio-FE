@@ -102,8 +102,8 @@ export const Sidebar = () => {
       <NavItem
         icon={<DotOneIcon />}
         label="홈"
-        isActive={location.pathname === '/'}
-        onClick={() => navigate('/')}
+        isActive={location.pathname === '/home'}
+        onClick={() => navigate('/home')}
       />
       <NavItem
         icon={<DotTwoIcon />}
@@ -185,14 +185,16 @@ export const Sidebar = () => {
         {myStoryOpen && <MyStorySidebar />}
       </div>
 
-      <ActivityModal
-        isOpen={isActivityModalOpen}
-        onClose={() => setIsActivityModalOpen(false)}
-        onSubmit={data => {
-          addActivity(data);
-          setIsActivityModalOpen(false);
-        }}
-      />
+      {isActivityModalOpen && (
+        <ActivityModal
+          isOpen
+          onClose={() => setIsActivityModalOpen(false)}
+          onSubmit={data => {
+            addActivity(data);
+            setIsActivityModalOpen(false);
+          }}
+        />
+      )}
     </nav>
   );
 };

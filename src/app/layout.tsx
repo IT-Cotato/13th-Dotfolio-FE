@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from "react";
 import { Routes, Route, useNavigate } from "react-router-dom";
 import Home from "./home";
 import Landing from "./landing";
@@ -18,6 +19,7 @@ import MyStoryArchive from "./mystory";
 import MyStoryInsightsPage from "./mystory-insights";
 import MyStoryAiMatchingPage from "./mystory-ai-matching";
 import { ImmersionToggle } from "@/components/home/ImmersionToggle";
+import { ImmersionStartingOverlay } from "@/components/immersion/ImmersionStartingOverlay";
 import { Sidebar } from "@/components/common/sidebar";
 import { ActivitiesProvider } from "@/contexts/ActivitiesContext";
 import { TemplatesProvider } from "@/contexts/TemplatesContext";
@@ -25,6 +27,9 @@ import { RecordsProvider } from "@/contexts/RecordsContext";
 import AlarmIcon from "@/assets/alarm.svg";
 import ProfileIcon from "@/assets/profile.svg";
 import MenuIcon from "@/assets/menu.svg";
+import { getRecords } from "@/api/records";
+
+const IMMERSION_LOADING_DELAY_MS = 2000;
 
 export default function Layout() {
   return (
@@ -45,6 +50,58 @@ export default function Layout() {
 
 function HomeLayout() {
   const navigate = useNavigate();
+  const [isStartingImmersion, setIsStartingImmersion] = useState(false);
+  const isCheckingDraftsRef = useRef(false);
+  const hasAddedLoadingGuardRef = useRef(false);
+  const loadingTimeoutRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    if (!isStartingImmersion) return;
+
+    const pushLoadingGuard = () => {
+      window.history.pushState(
+        { ...window.history.state, immersionLoadingGuard: true },
+        "",
+        window.location.href,
+      );
+    };
+
+    if (!hasAddedLoadingGuardRef.current) {
+      pushLoadingGuard();
+      hasAddedLoadingGuardRef.current = true;
+    }
+
+    const preventBack = () => pushLoadingGuard();
+    window.addEventListener("popstate", preventBack);
+
+    loadingTimeoutRef.current = window.setTimeout(() => {
+      window.removeEventListener("popstate", preventBack);
+      navigate("/immersion/goal", { replace: true });
+    }, IMMERSION_LOADING_DELAY_MS);
+
+    return () => {
+      window.removeEventListener("popstate", preventBack);
+      if (loadingTimeoutRef.current !== null) {
+        window.clearTimeout(loadingTimeoutRef.current);
+      }
+    };
+  }, [isStartingImmersion, navigate]);
+
+  const handleImmersionToggle = async (nextIsOn: boolean) => {
+    if (!nextIsOn || isStartingImmersion || isCheckingDraftsRef.current) return;
+
+    isCheckingDraftsRef.current = true;
+    try {
+      const response = await getRecords({ status: "DRAFT", page: 0, size: 1 });
+      if (response.data.totalElements > 0) {
+        setIsStartingImmersion(true);
+      }
+    } catch {
+      // 별도 오류 UI가 정해질 때까지 토글을 OFF 상태로 유지합니다.
+    } finally {
+      isCheckingDraftsRef.current = false;
+    }
+  };
 
   return (
     <ActivitiesProvider>
@@ -71,7 +128,10 @@ function HomeLayout() {
             </header>
             <div className="flex h-[calc(100vh-80px)]">
               <nav className="w-60 shrink-0 flex flex-col items-start py-6 px-6 gap-6">
-                <ImmersionToggle />
+                <ImmersionToggle
+                  isOn={isStartingImmersion}
+                  onToggle={handleImmersionToggle}
+                />
                 <Sidebar />
               </nav>
               <main className="flex-1 pb-8 pr-6 h-full overflow-y-auto scrollbar-hide">
@@ -97,6 +157,7 @@ function HomeLayout() {
                 </Routes>
               </main>
             </div>
+            {isStartingImmersion && <ImmersionStartingOverlay />}
           </div>
         </RecordsProvider>
       </TemplatesProvider>

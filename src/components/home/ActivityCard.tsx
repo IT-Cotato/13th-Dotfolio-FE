@@ -79,6 +79,16 @@ export const ActivityCard = ({ activity, onClick, onEdit, onEnd, onDelete }: Act
           background: 'linear-gradient(180deg, #DEE6EF 0%, rgba(222, 230, 239, 0.50) 26.32%)',
         }}
       >
+        <div
+          className="absolute bg-white"
+          style={{
+            top: '14px',
+            right: '10px',
+            bottom: 1,
+            left: 2,
+            borderRadius: '7.52% / 10.75%',
+          }}
+        />
         <FolderCard className="absolute inset-0 w-full h-full" />
       </div>
 

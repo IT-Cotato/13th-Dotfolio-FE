@@ -155,13 +155,14 @@ export default function Home() {
           </section>
         )}
       </Card>
-      <ActivityModal
-        key={selectedActivity?.id ?? 'new'}
-        isOpen={isModalOpen}
-        activity={selectedActivity ?? undefined}
-        onClose={handleClose}
-        onSubmit={handleSubmit}
-      />
+      {isModalOpen && (
+        <ActivityModal
+          isOpen
+          activity={selectedActivity ?? undefined}
+          onClose={handleClose}
+          onSubmit={handleSubmit}
+        />
+      )}
       <ConfirmModal
         isOpen={confirmModal === 'delete'}
         title="활동을 삭제하시겠어요?"

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import PolygonIcon from "@/assets/polygon.svg";
 import { Button } from "@/components/common/button";
 import { ImmersionToggle } from "@/components/home/ImmersionToggle";
@@ -10,32 +10,57 @@ import { RecordTemplateForm } from "@/components/record/RecordTemplateForm";
 import { MemoSelectModal } from "@/components/record/MemoSelectModal";
 import {
   getRecordDetail,
+  updateRecord,
   type RecordDetail,
   type RecordMemo,
 } from "@/api/records";
+import { ApiError } from "@/api/client";
+import { getMemos } from "@/api/memos";
 import type { TemplateQuestion } from "@/constants/templates";
 import type { Memo } from "@/types/memo";
 
 interface ImmersionRecordProps {
   focusMinutes: number;
+  onComplete: (completedCount: number) => void;
   onRequestExit: () => void;
   recordCount: number;
   recordIds: string[];
 }
 
+type ImmersionRecordMemo = RecordMemo & { activityTitle?: string };
+type ImmersionRecordDetail = Omit<RecordDetail, "memos"> & {
+  memos: ImmersionRecordMemo[];
+};
+
+const withMemoActivityTitles = (
+  record: RecordDetail,
+  activityTitles: Map<string, string>,
+): ImmersionRecordDetail => ({
+  ...record,
+  memos: record.memos.map((memo) => ({
+    ...memo,
+    activityTitle: activityTitles.get(memo.memoId) ?? "",
+  })),
+});
+
 export function ImmersionRecord({
   focusMinutes,
+  onComplete,
   onRequestExit,
   recordCount,
   recordIds,
 }: ImmersionRecordProps) {
-  const [records, setRecords] = useState<RecordDetail[]>([]);
-  const [currentIndex] = useState(0);
+  const [records, setRecords] = useState<ImmersionRecordDetail[]>([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string>>({});
-  const [memos, setMemos] = useState<RecordMemo[]>([]);
+  const [memos, setMemos] = useState<ImmersionRecordMemo[]>([]);
+  const [completedCount, setCompletedCount] = useState(0);
   const [isMemoModalOpen, setIsMemoModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(recordIds.length > 0);
+  const [isSaving, setIsSaving] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
+  const [saveError, setSaveError] = useState<string | null>(null);
+  const memoActivityTitlesRef = useRef(new Map<string, string>());
   const currentRecord = records[currentIndex];
   const questions = useMemo<TemplateQuestion[]>(
     () =>
@@ -55,22 +80,29 @@ export function ImmersionRecord({
       date: memo.createdAt.slice(0, 10).replace(/-/g, "."),
       dDay: "",
       title: memo.title,
-      tag: currentRecord?.activityTitle ?? "",
+      tag: memo.activityTitle ?? "",
       content: memo.content,
     })),
-    [currentRecord?.activityTitle, memos],
+    [memos],
   );
 
   const handleSelectMemos = (selectedMemos: Memo[]) => {
     const existingMemos = new Map(memos.map(memo => [memo.memoId, memo]));
+    memoActivityTitlesRef.current = new Map([
+      ...memoActivityTitlesRef.current,
+      ...selectedMemos.map((memo) => [memo.id, memo.tag] as const),
+    ]);
 
     setMemos(selectedMemos.map((selectedMemo, index) => {
       const existingMemo = existingMemos.get(selectedMemo.id);
-      if (existingMemo) return existingMemo;
+      if (existingMemo) {
+        return { ...existingMemo, activityTitle: selectedMemo.tag };
+      }
 
       return {
         memoId: selectedMemo.id,
         activityId: "",
+        activityTitle: selectedMemo.tag,
         title: selectedMemo.title,
         content: selectedMemo.content,
         color: "",
@@ -82,6 +114,74 @@ export function ImmersionRecord({
       };
     }));
     setIsMemoModalOpen(false);
+  };
+
+  const applyRecord = (record: ImmersionRecordDetail) => {
+    setAnswers(
+      Object.fromEntries(
+        record.answers.map((answer) => [
+          answer.templateQuestionId,
+          answer.answerText,
+        ]),
+      ),
+    );
+    setMemos(record.memos);
+    setSaveError(null);
+  };
+
+  const handleSave = async () => {
+    if (!currentRecord || isSaving) return;
+
+    const isCompleted = currentRecord.answers
+      .filter((answer) => answer.required)
+      .every((answer) => (answers[answer.templateQuestionId] ?? "").trim());
+
+    setIsSaving(true);
+    setSaveError(null);
+
+    try {
+      const response = await updateRecord(currentRecord.id, {
+        title: currentRecord.title,
+        answers: currentRecord.answers.map((answer) => ({
+          templateQuestionId: answer.templateQuestionId,
+          answerText: answers[answer.templateQuestionId] ?? "",
+        })),
+        memos: memos.map((memo) => ({
+          memoId: memo.memoId,
+          collapsed: memo.collapsed,
+        })),
+        status: isCompleted ? "COMPLETED" : "DRAFT",
+      });
+
+      const nextCompletedCount = completedCount + (isCompleted ? 1 : 0);
+      const savedRecord = withMemoActivityTitles(
+        response.data,
+        memoActivityTitlesRef.current,
+      );
+      setCompletedCount(nextCompletedCount);
+      setRecords((previous) =>
+        previous.map((record, index) =>
+          index === currentIndex ? savedRecord : record,
+        ),
+      );
+
+      const nextRecord = records[currentIndex + 1];
+      if (!nextRecord) {
+        onComplete(nextCompletedCount);
+        return;
+      }
+
+      setCurrentIndex((index) => index + 1);
+      applyRecord(nextRecord);
+    } catch (error) {
+      setSaveError(
+        error instanceof ApiError
+          ? error.message
+          : "기록을 저장하지 못했어요. 다시 시도해 주세요.",
+      );
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   useEffect(() => {
@@ -98,23 +198,27 @@ export function ImmersionRecord({
       }
 
       try {
-        const responses = await Promise.all(
-          recordIds.map((recordId) => getRecordDetail(recordId)),
-        );
+        const [responses, memosResponse] = await Promise.all([
+          Promise.all(recordIds.map((recordId) => getRecordDetail(recordId))),
+          getMemos().catch(() => null),
+        ]);
         if (!isCancelled) {
-          const loadedRecords = responses.map((response) => response.data);
+          const activityTitles = new Map<string, string>(
+            (memosResponse?.data ?? []).map((memo): [string, string] => [
+              memo.id,
+              memo.activityTitle ?? "",
+            ]),
+          );
+          memoActivityTitlesRef.current = activityTitles;
+          const loadedRecords = responses.map((response) =>
+            withMemoActivityTitles(response.data, activityTitles),
+          );
           const firstRecord = loadedRecords[0];
 
           setRecords(loadedRecords);
-          setMemos(firstRecord?.memos ?? []);
-          setAnswers(
-            Object.fromEntries(
-              (firstRecord?.answers ?? []).map((answer) => [
-                answer.templateQuestionId,
-                answer.answerText,
-              ]),
-            ),
-          );
+          setCurrentIndex(0);
+          setCompletedCount(0);
+          if (firstRecord) applyRecord(firstRecord);
         }
       } catch {
         if (!isCancelled) setLoadError("기록을 불러오지 못했어요.");
@@ -163,13 +267,30 @@ export function ImmersionRecord({
               <h1 className="w-full max-w-[452px] text-title1 text-grey-0">
                 {currentRecord?.title ?? "기록을 불러오는 중이에요."}
               </h1>
-              <Button label="저장하고 다음 기록" size="compact" />
+              <div className="flex flex-col items-end gap-2">
+                <Button
+                  label={
+                    isSaving
+                      ? "저장 중..."
+                      : currentIndex === records.length - 1
+                        ? "저장"
+                        : "저장하고 다음 기록"
+                  }
+                  size="compact"
+                  disabled={isLoading || loadError !== null || !currentRecord || isSaving}
+                  onClick={handleSave}
+                />
+                {saveError && (
+                  <p role="alert" className="text-body3-r text-error-text">
+                    {saveError}
+                  </p>
+                )}
+              </div>
             </div>
           </div>
 
           <div className="flex min-h-[678px] w-full items-start gap-6">
             <ImmersionMemoPanel
-              activityTitle={currentRecord?.activityTitle ?? ""}
               memos={memos}
               onRemove={(memoId) => {
                 setMemos((previous) =>
@@ -192,6 +313,7 @@ export function ImmersionRecord({
                 </p>
               ) : (
                 <RecordTemplateForm
+                  key={currentRecord?.id}
                   answers={answers}
                   onAnswerChange={(questionId, value) => {
                     setAnswers((previous) => ({
@@ -209,7 +331,7 @@ export function ImmersionRecord({
 
         <ImmersionProgress
           currentIndex={currentIndex}
-          totalCount={recordCount}
+          totalCount={records.length || recordCount}
         />
       </div>
 

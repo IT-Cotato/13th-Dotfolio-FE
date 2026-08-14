@@ -32,9 +32,11 @@ export const MemoCard = ({ memo, selected, onToggle, variant = 'default' }: Memo
       )}
     </div>
     <div className="flex min-h-0 flex-1 flex-col gap-2.5 overflow-hidden p-4">
-      <p className={variant === 'immersion' ? 'text-sub1-sb min-h-[25px] text-grey-0' : 'text-sub1-sb truncate text-grey-950'}>
-        {memo.title}
-      </p>
+      {memo.title?.trim() && (
+        <p className={variant === 'immersion' ? 'text-sub1-sb text-grey-0' : 'text-sub1-sb truncate text-grey-950'}>
+          {memo.title}
+        </p>
+      )}
       {memo.tag && (
         <span className={`text-label3-sb inline-flex w-fit items-center gap-1 rounded-[500px] px-3 py-1 ${
           variant === 'immersion'

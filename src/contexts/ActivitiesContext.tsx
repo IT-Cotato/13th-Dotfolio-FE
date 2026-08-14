@@ -32,6 +32,8 @@ interface ActivitiesContextValue {
 
 const ActivitiesContext = createContext<ActivitiesContextValue | null>(null);
 
+const ARCHIVED_STATUS = 'ARCHIVED';
+
 const toActivity = (item: ActivityListItem): Activity => ({
   id: item.id,
   activityTypeId: item.activityTypeId,
@@ -67,7 +69,8 @@ export const ActivitiesProvider = ({ children }: { children: ReactNode }) => {
     setIsLoading(true);
     try {
       const response = await getActivities();
-      setActivities(response.data.map(toActivity));
+      // 홈 화면 등에서는 보관되지 않은(기록 중) 활동만 보여야 하므로 여기서 걸러냄.
+      setActivities(response.data.filter(item => item.status !== ARCHIVED_STATUS).map(toActivity));
       setError(null);
     } catch (err) {
       setError(err instanceof ApiError ? err.message : '활동 목록을 불러오지 못했습니다.');

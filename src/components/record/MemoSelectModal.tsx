@@ -121,7 +121,7 @@ export const MemoSelectModal = ({
           </button>
         </div>
 
-        <div className="min-h-0 w-full overflow-y-auto scrollbar-hide">
+        <div className="min-h-0 w-full flex-1 overflow-y-auto scrollbar-hide">
           {isLoading ? (
             <p className={`py-10 text-center text-body2-r ${variant === 'immersion' ? 'text-grey-200' : 'text-grey-500'}`}>
               불러오는 중...

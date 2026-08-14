@@ -52,12 +52,26 @@ function HomeLayout() {
   const navigate = useNavigate();
   const [isStartingImmersion, setIsStartingImmersion] = useState(false);
   const isCheckingDraftsRef = useRef(false);
+  const hasAddedLoadingGuardRef = useRef(false);
   const loadingTimeoutRef = useRef<number | null>(null);
 
   useEffect(() => {
     if (!isStartingImmersion) return;
 
-    const preventBack = () => window.history.forward();
+    const pushLoadingGuard = () => {
+      window.history.pushState(
+        { ...window.history.state, immersionLoadingGuard: true },
+        "",
+        window.location.href,
+      );
+    };
+
+    if (!hasAddedLoadingGuardRef.current) {
+      pushLoadingGuard();
+      hasAddedLoadingGuardRef.current = true;
+    }
+
+    const preventBack = () => pushLoadingGuard();
     window.addEventListener("popstate", preventBack);
 
     loadingTimeoutRef.current = window.setTimeout(() => {

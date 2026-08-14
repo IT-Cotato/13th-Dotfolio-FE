@@ -11,8 +11,8 @@ export interface MemoListItem {
   id: string;
   activityId: string;
   activityTitle: string;
-  title: string;
-  content: string;
+  title: string | null;
+  content: string | null;
   isImportant: boolean;
   remainingDaysUntilExpiration: number;
   images: MemoImage[];
@@ -37,9 +37,9 @@ export const toMemo = (item: MemoListItem): Memo => {
     id: item.id,
     date: item.createdAt.slice(0, 10).replace(/-/g, "."),
     dDay: formatDDay(item.remainingDaysUntilExpiration),
-    title: item.title,
-    tag: item.activityTitle,
-    content: item.content,
+    title: item.title ?? "",
+    tag: item.activityTitle ?? "",
+    content: item.content ?? "",
     image: firstImage?.imageUrl,
   };
 };

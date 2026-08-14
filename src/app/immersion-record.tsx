@@ -67,6 +67,12 @@ export default function ImmersionRecordPage() {
     <>
       <ImmersionRecord
         focusMinutes={focusMinutes}
+        onComplete={(completedCount) =>
+          navigate("/immersion/complete", {
+            replace: true,
+            state: { completedCount },
+          })
+        }
         onRequestExit={() => setIsExitOpen(true)}
         recordCount={recordCount}
         recordIds={recordIds}

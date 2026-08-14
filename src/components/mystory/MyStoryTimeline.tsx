@@ -8,19 +8,18 @@ import MoreIcon from '@/assets/more.svg';
 interface MyStoryTimelineProps {
   activities: Activity[];
   records: StoryRecord[];
-  expandedId: number | null;
-  onToggle: (id: number) => void;
-  openMenuId: number | null;
+  expandedIds: ReadonlySet<string>;
+  onToggle: (id: string) => void;
+  openMenuId: string | null;
   onOpenDetail: (record: StoryRecord) => void;
-  onToggleMenu: (id: number) => void;
+  onToggleMenu: (id: string) => void;
   onEditActivity: (activity: Activity) => void;
   onDeleteActivity: (activity: Activity) => void;
 }
-
 export function MyStoryTimeline({
   activities,
   records,
-  expandedId,
+  expandedIds,
   openMenuId,
   onToggle,
   onOpenDetail,
@@ -43,7 +42,7 @@ export function MyStoryTimeline({
       <div className="relative pl-[54px]">
         <span className="absolute left-[4px] top-3 bottom-7 w-0.5 bg-[linear-gradient(180deg,#DEE6EF_0%,rgba(222,230,239,0.2)_100%)]" />
         {activities.map(activity => {
-          const open = expandedId === activity.id;
+          const open = expandedIds.has(activity.id);
           const activityRecords = records.filter(record => record.activityId === activity.id);
           const period = `${activity.startDate.slice(0, 7)} ~ ${activity.endDateUnknown ? '현재' : activity.endDate.slice(0, 7)}`;
           return (

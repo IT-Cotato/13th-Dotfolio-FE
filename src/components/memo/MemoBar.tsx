@@ -15,7 +15,7 @@ export const MemoBar = ({ count, onCancel, onMove, onDelete, isDeleting = false 
     <button type="button" aria-label="전체 선택 취소" onClick={onCancel} className="mr-4 flex h-5 w-5 items-center justify-center">
       <CloseIcon />
     </button>
-    <span className="text-body3-md">{count}개 선택됨</span>
+    <span className="text-body2-md">{count}개 선택됨</span>
     <button type="button" onClick={onMove} className="ml-auto flex items-center gap-2 text-body2-md text-grey-900">
       <RecordIcon className="h-[16px] w-3.5" /> 기록하기로 이동
     </button>

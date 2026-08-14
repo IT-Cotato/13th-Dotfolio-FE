@@ -1,4 +1,4 @@
-import { apiRequest } from './client';
+import { apiRequest, requestApi } from './client';
 
 export interface MemoImageResponse {
   id: string;
@@ -60,12 +60,21 @@ export const createMemo = (request: MemoCreateRequest) => (
   })
 );
 
-export const deleteMemos = (memoIds: string[]) => {
+export const deleteMemos = async (memoIds: string[]) => {
   const searchParams = new URLSearchParams();
   memoIds.forEach((memoId) => searchParams.append('memoIds', memoId));
 
-  return apiRequest<string>(`/api/memos?${searchParams.toString()}`, {
+  await requestApi<void>(`/api/memos?${searchParams.toString()}`, {
     method: 'DELETE',
+  });
+};
+
+export const restoreMemos = async (memoIds: string[]) => {
+  const searchParams = new URLSearchParams();
+  memoIds.forEach((memoId) => searchParams.append('memoIds', memoId));
+
+  await requestApi<void>(`/api/memos/restore?${searchParams.toString()}`, {
+    method: 'PATCH',
   });
 };
 
@@ -86,23 +95,23 @@ export const uploadMemoImage = async (presignedUrl: string, file: File) => {
   if (!response.ok) throw new Error('이미지를 업로드하지 못했습니다.');
 };
 
-export const updateMemo = (memoId: string, request: MemoUpdateRequest) => (
-  apiRequest<string>(`/api/memos/${memoId}`, {
+export const updateMemo = async (memoId: string, request: MemoUpdateRequest) => {
+  await requestApi<void>(`/api/memos/${memoId}`, {
     method: 'PATCH',
-    body: JSON.stringify(request),
-  })
-);
+    body: request,
+  });
+};
 
-export const markMemoImportant = (memoId: string, important: boolean) => {
+export const markMemoImportant = async (memoId: string, important: boolean) => {
   const searchParams = new URLSearchParams({ important: String(important) });
 
-  return apiRequest<string>(`/api/memos/${memoId}/important?${searchParams.toString()}`, {
+  await requestApi<void>(`/api/memos/${memoId}/important?${searchParams.toString()}`, {
     method: 'PATCH',
   });
 };
 
-export const deleteMemoImage = (imageId: string) => (
-  apiRequest<string>(`/api/memos/images/${imageId}`, {
+export const deleteMemoImage = async (imageId: string) => {
+  await requestApi<void>(`/api/memos/images/${imageId}`, {
     method: 'DELETE',
-  })
-);
+  });
+};

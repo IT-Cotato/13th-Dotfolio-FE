@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { Card } from '@/components/common/card';
 import { Breadcrumb } from '@/components/common/Breadcrumb';
 import { CategoryHeader } from '@/components/common/CategoryHeader';
@@ -21,6 +21,7 @@ import type { Memo } from '@/types/memo';
 
 export default function RecordWrite() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { templateId } = useParams<{ templateId: string }>();
   const { selectedActivity } = useActivities();
   const { templates } = useTemplates();
@@ -37,6 +38,12 @@ export default function RecordWrite() {
   const [selectedMemos, setSelectedMemos] = useState<Memo[]>([]);
   const [isMemoModalOpen, setIsMemoModalOpen] = useState(false);
   const [detailMemo, setDetailMemo] = useState<Memo | null>(null);
+  const movedMemoIds = useMemo(() => {
+    const state = location.state as { memoIds?: unknown } | null;
+    return Array.isArray(state?.memoIds)
+      ? new Set(state.memoIds.filter((id): id is string => typeof id === 'string'))
+      : new Set<string>();
+  }, [location.state]);
 
   // 임시저장 후 다른 화면으로 이동했다가 같은 활동+템플릿으로 재진입하면,
   // 새로 만들지 않고 기존 DRAFT 기록을 이어서 수정하도록 조회해서 불러옴.
@@ -55,22 +62,29 @@ export default function RecordWrite() {
           size: 1,
         });
         const existing = listResponse.data.content[0];
-        if (!existing || cancelled) return;
-
-        const detailResponse = await getRecordDetail(existing.id);
         if (cancelled) return;
 
-        setSavedRecordId(existing.id);
-        setTitle(detailResponse.data.title);
-        setAnswers(prev => ({
-          ...prev,
-          ...Object.fromEntries(detailResponse.data.answers.map(a => [a.templateQuestionId, a.answerText])),
-        }));
+        if (!existing && movedMemoIds.size === 0) return;
 
-        const memosResponse = await getMemos();
+        const [detailResponse, memosResponse] = await Promise.all([
+          existing ? getRecordDetail(existing.id) : Promise.resolve(null),
+          getMemos(),
+        ]);
         if (cancelled) return;
+
+        const selectedMemoIds = new Set(movedMemoIds);
+        if (existing && detailResponse) {
+          setSavedRecordId(existing.id);
+          setTitle(detailResponse.data.title);
+          setAnswers(prev => ({
+            ...prev,
+            ...Object.fromEntries(detailResponse.data.answers.map(a => [a.templateQuestionId, a.answerText])),
+          }));
+          detailResponse.data.memos.forEach((memo) => selectedMemoIds.add(memo.memoId));
+        }
+
         const allMemos = memosResponse.data.map(toMemo);
-        setSelectedMemos(allMemos.filter(memo => detailResponse.data.memos.some(m => m.memoId === memo.id)));
+        setSelectedMemos(allMemos.filter((memo) => selectedMemoIds.has(memo.id)));
       } catch (error) {
         console.error('[record-write] 기존 임시저장 기록을 불러오지 못했습니다.', error);
       }
@@ -81,7 +95,7 @@ export default function RecordWrite() {
       cancelled = true;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedActivity?.id, template?.id]);
+  }, [movedMemoIds, selectedActivity?.id, template?.id]);
 
   if (!template) {
     navigate('/record');

@@ -23,6 +23,8 @@ interface ImmersionRecordProps {
   recordIds: string[];
 }
 
+type ImmersionRecordMemo = RecordMemo & { activityTitle?: string };
+
 export function ImmersionRecord({
   focusMinutes,
   onRequestExit,
@@ -32,7 +34,7 @@ export function ImmersionRecord({
   const [records, setRecords] = useState<RecordDetail[]>([]);
   const [currentIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string>>({});
-  const [memos, setMemos] = useState<RecordMemo[]>([]);
+  const [memos, setMemos] = useState<ImmersionRecordMemo[]>([]);
   const [isMemoModalOpen, setIsMemoModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(recordIds.length > 0);
   const [loadError, setLoadError] = useState<string | null>(null);
@@ -55,10 +57,10 @@ export function ImmersionRecord({
       date: memo.createdAt.slice(0, 10).replace(/-/g, "."),
       dDay: "",
       title: memo.title,
-      tag: currentRecord?.activityTitle ?? "",
+      tag: memo.activityTitle ?? "",
       content: memo.content,
     })),
-    [currentRecord?.activityTitle, memos],
+    [memos],
   );
 
   const handleSelectMemos = (selectedMemos: Memo[]) => {
@@ -71,6 +73,7 @@ export function ImmersionRecord({
       return {
         memoId: selectedMemo.id,
         activityId: "",
+        activityTitle: selectedMemo.tag,
         title: selectedMemo.title,
         content: selectedMemo.content,
         color: "",
@@ -169,7 +172,6 @@ export function ImmersionRecord({
 
           <div className="flex min-h-[678px] w-full items-start gap-6">
             <ImmersionMemoPanel
-              activityTitle={currentRecord?.activityTitle ?? ""}
               memos={memos}
               onRemove={(memoId) => {
                 setMemos((previous) =>

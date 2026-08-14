@@ -24,8 +24,10 @@ export const MemoLoadedCard = ({
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const isImmersion = variant === 'immersion';
-  const hasTitle = memo.title.trim().length > 0;
-  const summary = hasTitle ? memo.title : memo.content;
+  const title = memo.title ?? '';
+  const content = memo.content ?? '';
+  const hasTitle = title.trim().length > 0;
+  const summary = hasTitle ? title : content;
 
   useEffect(() => {
     if (!isMenuOpen) return;
@@ -109,15 +111,17 @@ export const MemoLoadedCard = ({
         </div>
 
         <div className="flex w-full flex-col items-start gap-2.5">
-          <p className={`text-sub1-sb min-w-0 max-w-full ${isImmersion ? 'text-grey-0' : 'text-grey-950'} ${
-            !isOpen && !hasTitle
-              ? 'overflow-hidden text-ellipsis whitespace-nowrap'
-              : !isOpen
-                ? 'truncate'
-                : ''
-          }`}>
-            {summary}
-          </p>
+          {(!isOpen || hasTitle) && (
+            <p className={`text-sub1-sb min-w-0 max-w-full ${isImmersion ? 'text-grey-0' : 'text-grey-950'} ${
+              !isOpen && !hasTitle
+                ? 'overflow-hidden text-ellipsis whitespace-nowrap'
+                : !isOpen
+                  ? 'truncate'
+                  : ''
+            }`}>
+              {summary}
+            </p>
+          )}
           {isOpen && (
             <>
               {memo.tag && (

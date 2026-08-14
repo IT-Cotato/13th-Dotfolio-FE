@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { SolutionStep } from "./SolutionStep";
+import { SolutionPreview } from "./SolutionPreview";
 
 const SOLUTION_STEPS = [
   {
@@ -63,8 +64,10 @@ export function SolutionSection() {
             id="solution-preview"
             role="tabpanel"
             aria-label={`${SOLUTION_STEPS[selectedStep].title} 미리보기`}
-            className="h-[519px] w-[673px] shrink-0 rounded-[60px] border-2 border-white bg-white shadow-[0_0_15px_0_rgba(22,53,164,0.05)]"
-          />
+            className="flex h-[519px] w-[673px] shrink-0 items-center justify-center overflow-hidden rounded-[60px] border-2 border-white bg-white shadow-[0_0_15px_0_rgba(22,53,164,0.05)]"
+          >
+            <SolutionPreview selectedStep={selectedStep} />
+          </div>
         </div>
       </div>
     </section>

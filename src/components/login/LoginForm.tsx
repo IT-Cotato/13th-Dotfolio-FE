@@ -30,7 +30,7 @@ export function LoginForm() {
     try {
       const { data } = await login({ email: email.trim(), password });
       saveAuthTokens(data);
-      navigate("/");
+      navigate("/home", { replace: true });
     } catch (error) {
       setLoginError(
         error instanceof ApiError

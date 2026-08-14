@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import PolygonIcon from "@/assets/polygon.svg";
 import { Button } from "@/components/common/button";
 import { ImmersionToggle } from "@/components/home/ImmersionToggle";
@@ -15,6 +15,7 @@ import {
   type RecordMemo,
 } from "@/api/records";
 import { ApiError } from "@/api/client";
+import { getMemos } from "@/api/memos";
 import type { TemplateQuestion } from "@/constants/templates";
 import type { Memo } from "@/types/memo";
 
@@ -27,6 +28,20 @@ interface ImmersionRecordProps {
 }
 
 type ImmersionRecordMemo = RecordMemo & { activityTitle?: string };
+type ImmersionRecordDetail = Omit<RecordDetail, "memos"> & {
+  memos: ImmersionRecordMemo[];
+};
+
+const withMemoActivityTitles = (
+  record: RecordDetail,
+  activityTitles: Map<string, string>,
+): ImmersionRecordDetail => ({
+  ...record,
+  memos: record.memos.map((memo) => ({
+    ...memo,
+    activityTitle: activityTitles.get(memo.memoId) ?? "",
+  })),
+});
 
 export function ImmersionRecord({
   focusMinutes,
@@ -35,7 +50,7 @@ export function ImmersionRecord({
   recordCount,
   recordIds,
 }: ImmersionRecordProps) {
-  const [records, setRecords] = useState<RecordDetail[]>([]);
+  const [records, setRecords] = useState<ImmersionRecordDetail[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [memos, setMemos] = useState<ImmersionRecordMemo[]>([]);
@@ -45,6 +60,7 @@ export function ImmersionRecord({
   const [isSaving, setIsSaving] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [saveError, setSaveError] = useState<string | null>(null);
+  const memoActivityTitlesRef = useRef(new Map<string, string>());
   const currentRecord = records[currentIndex];
   const questions = useMemo<TemplateQuestion[]>(
     () =>
@@ -72,10 +88,16 @@ export function ImmersionRecord({
 
   const handleSelectMemos = (selectedMemos: Memo[]) => {
     const existingMemos = new Map(memos.map(memo => [memo.memoId, memo]));
+    memoActivityTitlesRef.current = new Map([
+      ...memoActivityTitlesRef.current,
+      ...selectedMemos.map((memo) => [memo.id, memo.tag] as const),
+    ]);
 
     setMemos(selectedMemos.map((selectedMemo, index) => {
       const existingMemo = existingMemos.get(selectedMemo.id);
-      if (existingMemo) return existingMemo;
+      if (existingMemo) {
+        return { ...existingMemo, activityTitle: selectedMemo.tag };
+      }
 
       return {
         memoId: selectedMemo.id,
@@ -94,7 +116,7 @@ export function ImmersionRecord({
     setIsMemoModalOpen(false);
   };
 
-  const applyRecord = (record: RecordDetail) => {
+  const applyRecord = (record: ImmersionRecordDetail) => {
     setAnswers(
       Object.fromEntries(
         record.answers.map((answer) => [
@@ -132,10 +154,14 @@ export function ImmersionRecord({
       });
 
       const nextCompletedCount = completedCount + (isCompleted ? 1 : 0);
+      const savedRecord = withMemoActivityTitles(
+        response.data,
+        memoActivityTitlesRef.current,
+      );
       setCompletedCount(nextCompletedCount);
       setRecords((previous) =>
         previous.map((record, index) =>
-          index === currentIndex ? response.data : record,
+          index === currentIndex ? savedRecord : record,
         ),
       );
 
@@ -172,11 +198,21 @@ export function ImmersionRecord({
       }
 
       try {
-        const responses = await Promise.all(
-          recordIds.map((recordId) => getRecordDetail(recordId)),
-        );
+        const [responses, memosResponse] = await Promise.all([
+          Promise.all(recordIds.map((recordId) => getRecordDetail(recordId))),
+          getMemos().catch(() => null),
+        ]);
         if (!isCancelled) {
-          const loadedRecords = responses.map((response) => response.data);
+          const activityTitles = new Map<string, string>(
+            (memosResponse?.data ?? []).map((memo): [string, string] => [
+              memo.id,
+              memo.activityTitle ?? "",
+            ]),
+          );
+          memoActivityTitlesRef.current = activityTitles;
+          const loadedRecords = responses.map((response) =>
+            withMemoActivityTitles(response.data, activityTitles),
+          );
           const firstRecord = loadedRecords[0];
 
           setRecords(loadedRecords);

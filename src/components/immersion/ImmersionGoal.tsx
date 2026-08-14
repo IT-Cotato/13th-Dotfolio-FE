@@ -13,7 +13,11 @@ const MAX_RECORD_COUNT = 5;
 const MIN_FOCUS_MINUTES = 1;
 const MAX_FOCUS_MINUTES = 120;
 
-export function ImmersionGoal() {
+interface ImmersionGoalProps {
+  onRequestExit: () => void;
+}
+
+export function ImmersionGoal({ onRequestExit }: ImmersionGoalProps) {
   const navigate = useNavigate();
   const [recordCount, setRecordCount] = useState(MAX_RECORD_COUNT);
   const [focusMinutes, setFocusMinutes] = useState("30");
@@ -91,7 +95,12 @@ export function ImmersionGoal() {
   return (
     <ImmersionPageLayout className="flex flex-col items-center justify-center gap-2.5 px-6 py-10">
       <div className="absolute left-6 top-6 z-10">
-        <ImmersionToggle defaultOn />
+        <ImmersionToggle
+          isOn
+          onToggle={(nextIsOn) => {
+            if (!nextIsOn) onRequestExit();
+          }}
+        />
       </div>
       <section className="relative flex w-full max-w-[500px] flex-col items-start justify-center gap-8 rounded-[32px] bg-[rgba(0,17,78,0.35)] p-6">
         <header className="flex w-full flex-col items-center justify-center gap-2 text-center">

@@ -259,7 +259,7 @@ export default function MyStory() {
       await updateActivity(editingActivity.id, {
         activityTypeId: activityType.id,
         title: data.title.trim(),
-        description: data.description || editingActivity.description || '',
+        description: data.description ?? editingActivity.description ?? '',
         startedAt: normalizeDate(data.startDate),
         endedAt: data.endDateUnknown ? null : normalizeDate(data.endDate),
         isOngoing: data.endDateUnknown,
@@ -420,7 +420,9 @@ export default function MyStory() {
             endDate: editingActivity.endDate,
             endDateUnknown: editingActivity.endDateUnknown,
             recordCount: records.filter((record) => record.activityId === editingActivity.id).length,
-            completedCount: records.filter((record) => record.activityId === editingActivity.id).length,
+            completedCount: records.filter((record) => (
+              record.activityId === editingActivity.id && record.status === 'COMPLETED'
+            )).length,
           }}
           onSubmit={(data) => void submitActivityUpdate(data)}
         />

@@ -19,7 +19,7 @@ import type { RecordEntry } from '@/types/record';
 
 export default function Record() {
   const navigate = useNavigate();
-  const { selectedActivity } = useActivities();
+  const { selectedActivity, setSelectedActivityId } = useActivities();
   const { templates, addCustomTemplate } = useTemplates();
   const [records, setRecords] = useState<RecordEntry[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -100,7 +100,14 @@ export default function Record() {
             moreLabel="전체 기록 보기"
             onMoreClick={() => navigate('/record-all')}
           />
-          <RecordList records={records} onDeleteClick={setDeleteTarget} />
+          <RecordList
+            records={records}
+            onDeleteClick={setDeleteTarget}
+            onRecordClick={record => {
+              setSelectedActivityId(record.activityId);
+              navigate(`/record/write/${record.templateId}`, { state: { recordId: record.id } });
+            }}
+          />
         </div>
       )}
 

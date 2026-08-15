@@ -1,4 +1,5 @@
 import { useState, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import LottieLib from 'lottie-react';
 const Lottie = (LottieLib as unknown as { default: typeof LottieLib }).default ?? LottieLib;
 import readABook from '@/assets/read-a-book.json';
@@ -12,10 +13,12 @@ import { ConfirmModal } from '@/components/common/ConfirmModal';
 import type { Activity } from '@/types/activity';
 import { useActivities, type ActivityFormData } from '@/contexts/ActivitiesContext';
 import { useRecords } from '@/contexts/RecordsContext';
+import { getRecords } from '@/api/records';
 import { ApiError } from '@/api/client';
 
 export default function Home() {
-  const { activities, isLoading, addActivity, updateActivity, removeActivity, restoreActivity, archiveActivity } = useActivities();
+  const navigate = useNavigate();
+  const { activities, isLoading, addActivity, updateActivity, removeActivity, restoreActivity, archiveActivity, setSelectedActivityId } = useActivities();
   const { records, removeRecordsByActivity, restoreRecord } = useRecords();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedActivity, setSelectedActivity] = useState<Activity | null>(null);
@@ -47,6 +50,17 @@ export default function Home() {
 
   const getErrorMessage = (error: unknown, fallback: string) =>
     error instanceof ApiError ? error.message : fallback;
+
+  const handleActivityClick = async (activity: Activity) => {
+    setSelectedActivityId(activity.id);
+    try {
+      const response = await getRecords({ activityId: activity.id, status: 'DRAFT', page: 0, size: 1 });
+      const draft = response.data.content[0];
+      navigate(draft ? `/record/write/${draft.templateId}` : '/record');
+    } catch {
+      navigate('/record');
+    }
+  };
 
   const handleDelete = async () => {
     if (!targetActivity) return;
@@ -147,6 +161,7 @@ export default function Home() {
               <ActivityCard
                   key={activity.id}
                   activity={activity}
+                  onClick={() => handleActivityClick(activity)}
                   onEdit={() => openEdit(activity)}
                   onEnd={() => openConfirm('end', activity)}
                   onDelete={() => openConfirm('delete', activity)}

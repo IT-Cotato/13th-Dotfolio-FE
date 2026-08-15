@@ -45,10 +45,47 @@ export default function RecordWrite() {
       : new Set<string>();
   }, [location.state]);
 
+  const openRecordId = useMemo(() => {
+    const state = location.state as { recordId?: unknown } | null;
+    return typeof state?.recordId === 'string' ? state.recordId : null;
+  }, [location.state]);
+
+  // 목록에서 특정 기록을 클릭해 들어온 경우, 그 기록을 그대로 불러와서 이어서 보여줌.
+  useEffect(() => {
+    if (!template || !openRecordId) return;
+
+    let cancelled = false;
+
+    const loadRecord = async () => {
+      try {
+        const [detailResponse, memosResponse] = await Promise.all([
+          getRecordDetail(openRecordId),
+          getMemos(),
+        ]);
+        if (cancelled) return;
+
+        setSavedRecordId(detailResponse.data.id);
+        setTitle(detailResponse.data.title);
+        setAnswers(Object.fromEntries(detailResponse.data.answers.map(a => [a.templateQuestionId, a.answerText])));
+
+        const selectedMemoIds = new Set(detailResponse.data.memos.map(memo => memo.memoId));
+        const allMemos = memosResponse.data.map(toMemo);
+        setSelectedMemos(allMemos.filter((memo) => selectedMemoIds.has(memo.id)));
+      } catch (error) {
+        console.error('[record-write] 기록을 불러오지 못했습니다.', error);
+      }
+    };
+
+    loadRecord();
+    return () => {
+      cancelled = true;
+    };
+  }, [openRecordId, template]);
+
   // 임시저장 후 다른 화면으로 이동했다가 같은 활동+템플릿으로 재진입하면,
   // 새로 만들지 않고 기존 DRAFT 기록을 이어서 수정하도록 조회해서 불러옴.
   useEffect(() => {
-    if (!selectedActivity || !template) return;
+    if (!selectedActivity || !template || openRecordId) return;
 
     let cancelled = false;
 
@@ -95,7 +132,7 @@ export default function RecordWrite() {
       cancelled = true;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [movedMemoIds, selectedActivity?.id, template?.id]);
+  }, [movedMemoIds, selectedActivity?.id, template?.id, openRecordId]);
 
   if (!template) {
     navigate('/record');

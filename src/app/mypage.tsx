@@ -264,11 +264,6 @@ export default function MyPage() {
           onLogout={() => openAccountAction('logout')}
           onWithdraw={() => openAccountAction('withdraw')}
           onSubmit={async (nickname, email, profileImage) => {
-            if (email !== profile.email) {
-              fireToast('현재 서버에서 이메일 변경을 지원하지 않습니다.', undefined, 'error');
-              return;
-            }
-
             setIsSavingProfile(true);
             try {
               let profileImageKey: string | undefined;
@@ -280,6 +275,7 @@ export default function MyPage() {
 
               await updateMyPageProfile({
                 ...(nickname !== profile.nickname ? { name: nickname } : {}),
+                ...(email !== profile.email ? { email } : {}),
                 ...(profileImageKey ? { profileImageUrl: profileImageKey } : {}),
               });
               setIsProfileModalOpen(false);

@@ -11,6 +11,7 @@ export interface MyPageProfileResponse {
 
 export interface UpdateProfileRequest {
   name?: string;
+  email?: string;
   profileImageUrl?: string;
 }
 

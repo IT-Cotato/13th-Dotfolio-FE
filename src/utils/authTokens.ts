@@ -23,3 +23,9 @@ export function getAuthorizationHeader() {
   const accessToken = getAccessToken();
   return accessToken ? `${grantType} ${accessToken}` : null;
 }
+
+export function clearAuthTokens() {
+  sessionStorage.removeItem(ACCESS_TOKEN_KEY);
+  sessionStorage.removeItem(REFRESH_TOKEN_KEY);
+  sessionStorage.removeItem(GRANT_TYPE_KEY);
+}

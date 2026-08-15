@@ -10,7 +10,6 @@ import { CategoryDropdown } from '@/components/record/CategoryDropdown';
 import { useToast } from '@/hooks/useToast';
 import { useRecordDeletion } from '@/hooks/useRecordDeletion';
 import { useTemplates } from '@/contexts/TemplatesContext';
-import { useActivities } from '@/contexts/ActivitiesContext';
 import { getRecords, toRecordEntry, toStatusValue } from '@/api/records';
 import { ApiError } from '@/api/client';
 import type { RecordEntry } from '@/types/record';
@@ -21,7 +20,6 @@ const PAGE_SIZE = 7;
 export default function RecordAll() {
   const navigate = useNavigate();
   const { templates } = useTemplates();
-  const { setSelectedActivityId } = useActivities();
   const [records, setRecords] = useState<RecordEntry[]>([]);
   const [statusFilter, setStatusFilter] = useState('전체');
   const [categoryFilter, setCategoryFilter] = useState('all');
@@ -102,10 +100,7 @@ export default function RecordAll() {
         <RecordList
           records={records}
           onDeleteClick={setDeleteTarget}
-          onRecordClick={record => {
-            setSelectedActivityId(record.activityId);
-            navigate(`/record/write/${record.templateId}`, { state: { recordId: record.id } });
-          }}
+          onRecordClick={record => navigate('/mystory/archive', { state: { recordId: record.id } })}
         />
         {pageInfo.totalPages > 1 && (
           <div className="w-full flex items-center justify-center gap-4">

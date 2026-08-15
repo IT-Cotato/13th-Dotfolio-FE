@@ -19,7 +19,7 @@ import type { RecordEntry } from '@/types/record';
 
 export default function Record() {
   const navigate = useNavigate();
-  const { selectedActivity, setSelectedActivityId } = useActivities();
+  const { selectedActivity } = useActivities();
   const { templates, addCustomTemplate } = useTemplates();
   const [records, setRecords] = useState<RecordEntry[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -103,10 +103,7 @@ export default function Record() {
           <RecordList
             records={records}
             onDeleteClick={setDeleteTarget}
-            onRecordClick={record => {
-              setSelectedActivityId(record.activityId);
-              navigate(`/record/write/${record.templateId}`, { state: { recordId: record.id } });
-            }}
+            onRecordClick={record => navigate('/mystory/archive', { state: { recordId: record.id } })}
           />
         </div>
       )}

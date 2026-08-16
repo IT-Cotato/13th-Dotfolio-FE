@@ -43,6 +43,20 @@ export function login(request: LoginRequest) {
   });
 }
 
+export function logout() {
+  return requestApi<void>("/api/auth/logout", {
+    method: "POST",
+    credentials: "include",
+  });
+}
+
+export function withdraw() {
+  return requestApi<void>("/api/auth/withdraw", {
+    method: "DELETE",
+    credentials: "include",
+  });
+}
+
 export function requestPasswordReset(request: PasswordResetRequest) {
   return requestApi<void>("/api/auth/reset-request", {
     method: "POST",

@@ -64,9 +64,9 @@ export function MyStoryDetail({ record, activityTitle, values, isSaveDisabled, i
                 type="button"
                 onClick={() => void onCopy(values[index])}
                 aria-label={`${section.label} 내용 복사`}
-                className="absolute right-4 top-1/2 size-6 -translate-y-1/2 overflow-hidden cursor-pointer"
+                className="absolute right-4 top-1/2 flex size-6 -translate-y-1/2 cursor-pointer items-center justify-center"
               >
-                <MyStoryCopyAsset className="absolute left-[-1070px] top-[-17px] h-[58px] w-[1108px] max-w-none" />
+                <MyStoryCopyAsset aria-hidden className="size-4 shrink-0" />
               </button>
             </div>
           </section>

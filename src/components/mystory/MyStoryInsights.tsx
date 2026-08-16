@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import LottieLib from 'lottie-react';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -66,6 +66,7 @@ export default function MyStoryInsights() {
   const [loadError, setLoadError] = useState('');
   const [selectedStrengthId, setSelectedStrengthId] = useState<string | null>(null);
   const [selectedCompetencyId, setSelectedCompetencyId] = useState<string | null>(null);
+  const hasRequestedInitialInsight = useRef(false);
   const { toast, fireToast } = useToast();
 
   const loadInsights = useCallback(async (signal?: AbortSignal) => {
@@ -151,7 +152,7 @@ export default function MyStoryInsights() {
     };
   }, [eligibility, generationId, loadInsights]);
 
-  const handleCreate = async () => {
+  const handleCreate = useCallback(async () => {
     if (!eligibility?.eligible || isCreating || generationId) return;
     setIsCreating(true);
     try {
@@ -169,7 +170,16 @@ export default function MyStoryInsights() {
     } finally {
       setIsCreating(false);
     }
-  };
+  }, [eligibility?.eligible, fireToast, generationId, isCreating]);
+
+  useEffect(() => {
+    if (insight || !eligibility?.eligible || isCreating || generationId || hasRequestedInitialInsight.current) {
+      return;
+    }
+
+    hasRequestedInitialInsight.current = true;
+    void handleCreate();
+  }, [eligibility?.eligible, generationId, handleCreate, insight, isCreating]);
 
   const selectedStrength = insight?.strengths.find((item) => item.strengthTagId === selectedStrengthId);
   const selectedRecommendation = insight?.recommendations.find((item) => item.jobCompetencyId === selectedCompetencyId);
@@ -200,8 +210,6 @@ export default function MyStoryInsights() {
         <InsightsReadyState
           eligibility={eligibility}
           recordCount={completedRecordCount}
-          onCreate={() => void handleCreate()}
-          generating={generating}
         />
       </div>
     );
@@ -281,7 +289,7 @@ function MessageCard({ message }: { message: string }) {
   return <Card className="relative items-stretch gap-0 rounded-t-[36px] p-6"><h1 className="text-title1 text-grey-900">인사이트</h1><div className="grid min-h-[55vh] place-items-center text-body2-md text-grey-500">{message}</div></Card>;
 }
 
-function InsightsReadyState({ eligibility, recordCount, onCreate, generating }: { eligibility: InsightEligibilityResponse | null; recordCount: number; onCreate: () => void; generating: boolean }) {
+function InsightsReadyState({ eligibility, recordCount }: { eligibility: InsightEligibilityResponse | null; recordCount: number }) {
   const requiredCount = eligibility?.requiredRecordCount ?? 10;
   const jobConfigured = eligibility?.reason !== 'JOB_NOT_CONFIGURED';
   return (
@@ -292,7 +300,6 @@ function InsightsReadyState({ eligibility, recordCount, onCreate, generating }: 
           <h2 className="text-sub1-sb text-grey-950">AI 인사이트를 시작하기 위한 준비</h2>
           <div className="mx-auto mt-4 w-fit rounded-xl bg-grey-50 px-5 py-4 text-body-reading2-md text-grey-800"><p>⚙️ 직무 설정하기 {jobConfigured ? '✓' : '(마이페이지에서 설정해주세요)'}</p><p>📋 기록 {requiredCount}개 쌓기 (현재 {recordCount}개 / {requiredCount}개)</p></div>
           <p className="mt-4 text-body2-md text-grey-700">희망 직무를 설정하고 기록을 채우시면,<br />맞춤형 강점과 역량을 분석해드려요.</p>
-          {(eligibility?.eligible || generating) && <div className="mx-auto mt-6 w-56"><Button label={generating ? '인사이트 생성 중...' : '인사이트 생성'} disabled={generating} onClick={onCreate} /></div>}
         </div>
       </div>
     </Card>

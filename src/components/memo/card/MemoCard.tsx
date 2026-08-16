@@ -49,7 +49,7 @@ export const MemoCard = ({ memo, onDelete, onToggleImportant, onMove, selected, 
       </span>
       {!selected && (
         <div className="pointer-events-auto ml-auto">
-          <MemoMoreMenu isImportant={!!memo.isImportant} emphasized={selected} onToggleImportant={onToggleImportant} onDelete={onDelete} onMove={onMove} />
+          <MemoMoreMenu isImportant={!!memo.isImportant} onToggleImportant={onToggleImportant} onDelete={onDelete} onMove={onMove} />
         </div>
       )}
     </header>

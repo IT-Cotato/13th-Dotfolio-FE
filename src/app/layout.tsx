@@ -183,7 +183,11 @@ function HomeLayout() {
             </div>
             {isStartingImmersion && <ImmersionStartingOverlay />}
             {toast && (
-              <div className="fixed top-4 left-1/2 z-[110] -translate-x-1/2">
+              <div
+                role="alert"
+                aria-atomic="true"
+                className="fixed top-4 left-1/2 z-[110] -translate-x-1/2"
+              >
                 <Toast message={toast.message} variant={toast.variant} />
               </div>
             )}

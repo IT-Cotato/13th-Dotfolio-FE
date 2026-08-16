@@ -73,7 +73,12 @@ export default function MyPage() {
     try {
       const response = await getJobs();
       const jobOptions = response.data.categories.flatMap(category =>
-        category.jobs.map(job => ({ id: job.id, name: job.name })),
+        category.jobs.map(job => ({
+          id: job.id,
+          name: job.name,
+          categoryCode: category.code,
+          categoryName: category.name,
+        })),
       );
       setJobs(jobOptions);
     } catch (error) {

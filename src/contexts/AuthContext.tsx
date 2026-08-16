@@ -11,6 +11,7 @@ import {
   type AccessTokenResponse,
 } from "@/contexts/authContextValue";
 import {
+  AUTH_STATE_CHANGED_EVENT,
   clearAuthTokens,
   getAccessToken,
   saveAuthTokens,
@@ -54,6 +55,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     return () => {
       isActive = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    const syncAuthState = () => {
+      setIsAuthenticated(Boolean(getAccessToken()));
+    };
+
+    window.addEventListener(AUTH_STATE_CHANGED_EVENT, syncAuthState);
+
+    return () => {
+      window.removeEventListener(AUTH_STATE_CHANGED_EVENT, syncAuthState);
     };
   }, []);
 

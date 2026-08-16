@@ -5,6 +5,7 @@ import MyPageVectorIcon from '@/assets/mypage_vector.svg';
 import { logout, withdraw } from '@/api/auth';
 import { ApiError } from '@/api/client';
 import {
+  getJobs,
   getMyPageProfile,
   getProfileImagePresignedUrl,
   updateDesiredJob,
@@ -38,17 +39,14 @@ export default function MyPage() {
   const [isSavingProfileImage, setIsSavingProfileImage] = useState(false);
   const [profileImageToCrop, setProfileImageToCrop] = useState<File>();
   const [isSavingJob, setIsSavingJob] = useState(false);
+  const [jobs, setJobs] = useState<JobOption[]>([]);
+  const [isJobsLoading, setIsJobsLoading] = useState(true);
+  const [jobsError, setJobsError] = useState<string | null>(null);
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [isJobModalOpen, setIsJobModalOpen] = useState(false);
   const [accountAction, setAccountAction] = useState<'logout' | 'withdraw' | null>(null);
   const [isProcessingAccountAction, setIsProcessingAccountAction] = useState(false);
   const profileFileInputRef = useRef<HTMLInputElement>(null);
-
-  const jobs: JobOption[] = (
-    profile?.desiredJobId && profile.desiredJobName
-      ? [{ id: profile.desiredJobId, name: profile.desiredJobName }]
-      : []
-  );
 
   const loadProfile = useCallback(async () => {
     setIsLoading(true);
@@ -66,6 +64,23 @@ export default function MyPage() {
       setLoadError(error instanceof ApiError ? error.message : '마이페이지 정보를 불러오지 못했습니다.');
     } finally {
       setIsLoading(false);
+    }
+  }, []);
+
+  const loadJobs = useCallback(async () => {
+    setIsJobsLoading(true);
+    setJobsError(null);
+    try {
+      const response = await getJobs();
+      const jobOptions = response.data.categories.flatMap(category =>
+        category.jobs.map(job => ({ id: job.id, name: job.name })),
+      );
+      setJobs(jobOptions);
+    } catch (error) {
+      setJobs([]);
+      setJobsError(error instanceof ApiError ? error.message : '직무 목록을 불러오지 못했습니다.');
+    } finally {
+      setIsJobsLoading(false);
     }
   }, []);
 
@@ -133,11 +148,11 @@ export default function MyPage() {
   };
 
   useEffect(() => {
-    const fetchInitialProfile = async () => {
-      await loadProfile();
+    const fetchInitialData = async () => {
+      await Promise.all([loadProfile(), loadJobs()]);
     };
-    void fetchInitialProfile();
-  }, [loadProfile]);
+    void fetchInitialData();
+  }, [loadJobs, loadProfile]);
 
   if (isLoading) {
     return (
@@ -303,8 +318,11 @@ export default function MyPage() {
           isOpen
           jobs={jobs}
           selectedJobId={profile.desiredJobId}
+          isLoading={isJobsLoading}
+          error={jobsError}
           isSaving={isSavingJob}
           onClose={() => setIsJobModalOpen(false)}
+          onRetry={() => void loadJobs()}
           onSubmit={async jobId => {
             setIsSavingJob(true);
             try {

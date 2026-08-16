@@ -13,8 +13,11 @@ interface JobSelectModalProps {
   isOpen: boolean;
   jobs: JobOption[];
   selectedJobId: string | null;
+  isLoading?: boolean;
+  error?: string | null;
   isSaving?: boolean;
   onClose: () => void;
+  onRetry?: () => void;
   onSubmit: (jobId: string) => void;
 }
 
@@ -22,8 +25,11 @@ export const JobSelectModal = ({
   isOpen,
   jobs,
   selectedJobId,
+  isLoading = false,
+  error = null,
   isSaving = false,
   onClose,
+  onRetry,
   onSubmit,
 }: JobSelectModalProps) => {
   const [draftJobId, setDraftJobId] = useState(selectedJobId ?? '');
@@ -62,33 +68,50 @@ export const JobSelectModal = ({
           <p className="mt-2 text-body3-r text-grey-600">나의 스토리 분석에 활용할 직무를 선택해주세요.</p>
         </div>
 
-        <div className="grid max-h-80 grid-cols-2 gap-2 overflow-y-auto scrollbar-hide">
-          {jobs.map(job => (
-            <button
-              key={job.id}
-              type="button"
-              aria-pressed={draftJobId === job.id}
-              onClick={() => setDraftJobId(job.id)}
-              className={`min-h-14 rounded-[14px] border px-4 py-3 text-body2-md transition-colors ${
-                draftJobId === job.id
-                  ? 'border-primary-500 bg-primary-50 text-primary-500'
-                  : 'border-grey-100 bg-white text-grey-800 hover:border-primary-200'
-              }`}
-            >
-              {job.name}
-            </button>
-          ))}
-        </div>
-
-        {jobs.length <= 1 && (
-          <p className="rounded-[14px] bg-grey-50 px-4 py-8 text-center text-body3-r text-grey-500">
-            직무 목록 API가 준비되면 다른 직무를 선택할 수 있습니다.
+        {isLoading ? (
+          <p className="rounded-[14px] bg-grey-50 px-4 py-10 text-center text-body3-r text-grey-500" aria-live="polite">
+            직무 목록을 불러오는 중...
           </p>
+        ) : error ? (
+          <div className="flex flex-col items-center gap-4 rounded-[14px] bg-grey-50 px-4 py-8 text-center">
+            <p role="alert" className="text-body3-r text-error-text">{error}</p>
+            {onRetry && (
+              <button
+                type="button"
+                onClick={onRetry}
+                className="rounded-xl border border-primary-500 px-4 py-2 text-body3-md text-primary-500"
+              >
+                다시 시도
+              </button>
+            )}
+          </div>
+        ) : jobs.length === 0 ? (
+          <p className="rounded-[14px] bg-grey-50 px-4 py-10 text-center text-body3-r text-grey-500">
+            선택할 수 있는 직무가 없습니다.
+          </p>
+        ) : (
+          <div className="grid max-h-80 grid-cols-2 gap-2 overflow-y-auto scrollbar-hide">
+            {jobs.map(job => (
+              <button
+                key={job.id}
+                type="button"
+                aria-pressed={draftJobId === job.id}
+                onClick={() => setDraftJobId(job.id)}
+                className={`min-h-14 rounded-[14px] border px-4 py-3 text-body2-md transition-colors ${
+                  draftJobId === job.id
+                    ? 'border-primary-500 bg-primary-50 text-primary-500'
+                    : 'border-grey-100 bg-white text-grey-800 hover:border-primary-200'
+                }`}
+              >
+                {job.name}
+              </button>
+            ))}
+          </div>
         )}
 
         <Button
           label={isSaving ? '변경 중...' : '변경하기'}
-          disabled={!draftJobId || isUnchanged || isSaving}
+          disabled={!draftJobId || isUnchanged || isLoading || Boolean(error) || isSaving}
           onClick={() => onSubmit(draftJobId)}
         />
       </div>

@@ -20,6 +20,22 @@ export interface ProfileImagePresignedUrlResponse {
   s3Key: string;
 }
 
+export interface JobSummaryResponse {
+  id: string;
+  code: string;
+  name: string;
+}
+
+export interface JobCategoryResponse {
+  code: string;
+  name: string;
+  jobs: JobSummaryResponse[];
+}
+
+export interface JobListResponse {
+  categories: JobCategoryResponse[];
+}
+
 export function getMyPageProfile() {
   return requestApi<MyPageProfileResponse>('/api/members/me');
 }
@@ -53,4 +69,8 @@ export function updateDesiredJob(jobId: string) {
     method: 'PATCH',
     body: { jobId },
   });
+}
+
+export function getJobs() {
+  return requestApi<JobListResponse>('/api/jobs');
 }

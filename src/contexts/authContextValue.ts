@@ -8,6 +8,7 @@ export interface AuthContextValue {
   isAuthenticated: boolean;
   isInitializing: boolean;
   signIn: (response: AccessTokenResponse) => void;
+  signInWithCookie: () => void;
   signOut: () => void;
 }
 

@@ -78,6 +78,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         saveAuthTokens(response);
         setIsAuthenticated(true);
       },
+      signInWithCookie: () => {
+        clearAuthTokens();
+        setIsAuthenticated(true);
+      },
       signOut: () => {
         clearAuthTokens();
         setIsAuthenticated(false);

@@ -125,6 +125,7 @@ export async function apiRequest<T>(path: string, init: RequestInit = {}): Promi
   try {
     response = await fetch(getApiUrl(path), {
       ...init,
+      credentials: init.credentials ?? "include",
       headers,
       signal: abortController.signal,
     });
@@ -187,6 +188,7 @@ export async function requestApi<T>(
     response = await fetch(apiUrl, {
       ...options,
       body: body === undefined ? undefined : JSON.stringify(body),
+      credentials: options.credentials ?? "include",
       headers: requestHeaders,
       signal: abortController.signal,
     });

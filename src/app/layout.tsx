@@ -7,6 +7,7 @@ import Login from "./login";
 import Signup from "./signup";
 import PasswordReset from "./password-reset";
 import PasswordResetConfirm from "./password-reset-confirm";
+import OAuthRedirect from "./oauth-redirect";
 import ImmersionGoalPage from "./immersion-goal";
 import ImmersionRecordPage from "./immersion-record";
 import ImmersionCompletePage from "./immersion-complete";
@@ -26,7 +27,6 @@ import { Sidebar } from "@/components/common/sidebar";
 import { ActivitiesProvider } from "@/contexts/ActivitiesContext";
 import { TemplatesProvider } from "@/contexts/TemplatesContext";
 import { RecordsProvider } from "@/contexts/RecordsContext";
-import AlarmIcon from "@/assets/alarm.svg";
 import ProfileIcon from "@/assets/profile.svg";
 import MenuIcon from "@/assets/menu.svg";
 import { getRecords } from "@/api/records";
@@ -42,6 +42,7 @@ export default function Layout() {
       <Route path="/signup" element={<Signup />} />
       <Route path="/reset-password/request" element={<PasswordReset />} />
       <Route path="/reset-password" element={<PasswordResetConfirm />} />
+      <Route path="/oauth/redirect" element={<OAuthRedirect />} />
       <Route path="/" element={<Landing />} />
       <Route element={<ProtectedRoute />}>
         <Route path="/immersion/goal" element={<ImmersionGoalPage />} />

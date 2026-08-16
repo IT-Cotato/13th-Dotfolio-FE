@@ -76,8 +76,8 @@ export const JobSelectModal = ({
         </button>
 
         <div className="shrink-0">
-          <h2 id="job-select-title" className="text-title2 text-grey-900">희망 직무 선택</h2>
-          <p className="mt-1 text-body3-r text-grey-600">원하는 직무를 선택해주세요</p>
+          <h2 id="job-select-title" className="text-title1 text-grey-900">희망 직무 선택</h2>
+          <p className="mt-1 text-body2-md text-grey-700">원하는 직무를 선택해주세요</p>
         </div>
 
         <div className="mt-8 min-h-0 flex-1 overflow-y-auto scrollbar-hide">

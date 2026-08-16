@@ -240,12 +240,12 @@ export default function MyPage() {
       </section>
 
       <section className="w-full rounded-2xl border border-grey-100 p-6">
-        <h2 className="text-sub2-sb text-grey-900">희망 직무 설정</h2>
+        <h2 className="text-title2 text-grey-900">희망 직무 설정</h2>
         <div className="mt-6 border-t border-grey-100 pt-6">
           <div className="flex items-end justify-between gap-4">
             <div>
-              <span className="text-body3-r text-grey-600">현재 희망 직무</span>
-              <strong className="mt-1 block text-sub2-sb text-grey-900">
+              <span className="text-body2-md text-grey-700">현재 희망 직무</span>
+              <strong className="mt-1 block text-sub1-sb text-grey-900">
                 {profile.desiredJobName ?? '-'}
               </strong>
             </div>
@@ -267,8 +267,8 @@ export default function MyPage() {
         className="flex w-full items-center justify-between rounded-2xl border border-grey-100 p-6 text-left transition-colors hover:border-primary-200 hover:bg-primary-50/40"
       >
         <span>
-          <strong className="block text-sub2-sb text-grey-900">템플릿 관리</strong>
-          <span className="mt-2 block text-body3-r text-grey-600">기록 템플릿을 수정하거나 삭제할 수 있습니다.</span>
+          <strong className="block text-title2 text-grey-900">템플릿 관리</strong>
+          <span className="mt-2 block text-body2-md text-grey-700">기록 템플릿을 수정하거나 삭제할 수 있습니다.</span>
         </span>
         <MyPageVectorIcon aria-hidden className="h-3 w-1.5 shrink-0 text-grey-600 [&_path]:fill-current" />
       </button>

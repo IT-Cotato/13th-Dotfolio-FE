@@ -6,10 +6,11 @@ import { AuthForm } from "@/components/login/AuthForm";
 import { AuthFormIntro } from "@/components/login/AuthFormIntro";
 import { GoogleLoginButton } from "@/components/login/GoogleLoginButton";
 import { LoginFields } from "@/components/login/LoginFields";
-import { saveAuthTokens } from "@/utils/authTokens";
+import { useAuth } from "@/hooks/useAuth";
 
 export function LoginForm() {
   const navigate = useNavigate();
+  const { signIn } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [keepSignedIn, setKeepSignedIn] = useState(false);
@@ -33,7 +34,7 @@ export function LoginForm() {
         password,
         rememberMe: keepSignedIn,
       });
-      saveAuthTokens(data);
+      signIn(data);
       navigate("/home", { replace: true });
     } catch (error) {
       setLoginError(

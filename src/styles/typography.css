@@ -14,9 +14,18 @@
   src: url('/fonts/NEXONLv1Gothic.woff2') format('woff2');
 }
 
+@font-face {
+  font-family: 'NEXON Lv1 Gothic Low';
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+  src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_20-04@2.1/NEXONLv1GothicLow.woff') format('woff');
+}
+
 @theme {
   --font-pretendard: 'Pretendard Variable', sans-serif;
   --font-nexon: 'NEXON Lv1 Gothic', 'Pretendard Variable', sans-serif;
+  --font-nexon-low: 'NEXON Lv1 Gothic Low', 'Pretendard Variable', sans-serif;
 
   /* logo */
   --text-logo: 1.25rem; /* 20px */

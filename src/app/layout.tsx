@@ -25,7 +25,6 @@ import { Sidebar } from "@/components/common/sidebar";
 import { ActivitiesProvider } from "@/contexts/ActivitiesContext";
 import { TemplatesProvider } from "@/contexts/TemplatesContext";
 import { RecordsProvider } from "@/contexts/RecordsContext";
-import AlarmIcon from "@/assets/alarm.svg";
 import ProfileIcon from "@/assets/profile.svg";
 import MenuIcon from "@/assets/menu.svg";
 import { getRecords } from "@/api/records";
@@ -124,10 +123,6 @@ function HomeLayout() {
                 </span>
               </div>
               <div className="flex items-center gap-5">
-                {/* <div className="relative p-0.75">
-                  <AlarmIcon className="w-6 h-6 text-grey-700 cursor-pointer" />
-                  <span className="absolute top-0 right-0 w-1.5 h-1.5 rounded-full bg-error-text" />
-                </div> */}
                 <button type="button" aria-label="마이페이지" onClick={() => navigate('/mypage')}>
                   <ProfileIcon className="w-6 h-6 text-grey-700 cursor-pointer" />
                 </button>

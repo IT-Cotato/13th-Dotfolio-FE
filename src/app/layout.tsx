@@ -18,6 +18,7 @@ import TemplateAll from "./template-all";
 import MyStoryArchive from "./mystory";
 import MyStoryInsightsPage from "./mystory-insights";
 import MyStoryAiMatchingPage from "./mystory-ai-matching";
+import MyPage from "./mypage";
 import { ImmersionToggle } from "@/components/home/ImmersionToggle";
 import { ImmersionStartingOverlay } from "@/components/immersion/ImmersionStartingOverlay";
 import { Sidebar } from "@/components/common/sidebar";
@@ -127,7 +128,9 @@ function HomeLayout() {
                   <AlarmIcon className="w-6 h-6 text-grey-700 cursor-pointer" />
                   <span className="absolute top-0 right-0 w-1.5 h-1.5 rounded-full bg-error-text" />
                 </div>
-                <ProfileIcon className="w-6 h-6 text-grey-700 cursor-pointer" />
+                <button type="button" aria-label="마이페이지" onClick={() => navigate('/mypage')}>
+                  <ProfileIcon className="w-6 h-6 text-grey-700 cursor-pointer" />
+                </button>
               </div>
             </header>
             <div className="flex h-[calc(100vh-80px)]">
@@ -151,6 +154,7 @@ function HomeLayout() {
                     element={<RecordWrite />}
                   />
                   <Route path="/template-all" element={<TemplateAll />} />
+                  <Route path="/mypage" element={<MyPage />} />
                   <Route path="/mystory/archive" element={<MyStoryArchive />} />
                   <Route
                     path="/mystory/insights"

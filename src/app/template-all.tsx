@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Card } from '@/components/common/card';
 import { CategoryHeader } from '@/components/common/CategoryHeader';
 import { Breadcrumb } from '@/components/common/Breadcrumb';
@@ -12,6 +12,9 @@ import { useToast } from '@/hooks/useToast';
 
 export default function TemplateAll() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const navigationState = location.state as { from?: unknown } | null;
+  const backPath = navigationState?.from === '/mypage' ? '/mypage' : '/record';
   const { templates, addCustomTemplate } = useTemplates();
   const [isCustomModalOpen, setIsCustomModalOpen] = useState(false);
   const { toast, fireToast } = useToast();
@@ -33,7 +36,7 @@ export default function TemplateAll() {
       <div className="w-full flex flex-col gap-8">
         <CategoryHeader
           title="템플릿 선택"
-          onBack={() => navigate('/record')}
+          onBack={() => navigate(backPath)}
           extra={<PrimaryButton label="커스텀 템플릿 만들기" onClick={() => setIsCustomModalOpen(true)} />}
         />
         <div className="w-full grid grid-cols-[repeat(auto-fill,266px)] gap-6">

@@ -28,7 +28,11 @@ export function LoginForm() {
     setLoginError(null);
 
     try {
-      const { data } = await login({ email: email.trim(), password });
+      const { data } = await login({
+        email: email.trim(),
+        password,
+        rememberMe: keepSignedIn,
+      });
       saveAuthTokens(data);
       navigate("/home", { replace: true });
     } catch (error) {

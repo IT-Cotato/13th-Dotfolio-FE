@@ -11,12 +11,11 @@ export interface SignupRequest {
 export interface LoginRequest {
   email: string;
   password: string;
+  rememberMe: boolean;
 }
 
 export interface LoginResponse {
-  grantType: string;
   accessToken: string;
-  refreshToken: string;
 }
 
 export interface PasswordResetRequest {
@@ -27,6 +26,14 @@ export interface PasswordResetConfirmRequest {
   token: string;
   email: string;
   newPassword: string;
+}
+
+function getXsrfToken() {
+  const cookie = document.cookie
+    .split("; ")
+    .find((value) => value.startsWith("XSRF-TOKEN="));
+
+  return cookie ? decodeURIComponent(cookie.slice("XSRF-TOKEN=".length)) : null;
 }
 
 export function signup(request: SignupRequest) {
@@ -40,6 +47,18 @@ export function login(request: LoginRequest) {
   return requestApi<LoginResponse>("/api/auth/login", {
     method: "POST",
     body: request,
+    credentials: "include",
+  });
+}
+
+export function refreshAccessToken() {
+  const xsrfToken = getXsrfToken();
+
+  return requestApi<LoginResponse>("/api/auth/refresh", {
+    method: "POST",
+    credentials: "include",
+    headers: xsrfToken ? { "X-XSRF-TOKEN": xsrfToken } : undefined,
+    skipAuthorization: true,
   });
 }
 

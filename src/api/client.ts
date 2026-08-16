@@ -22,6 +22,7 @@ export interface ApiResponse<T> {
 
 interface ApiRequestOptions extends Omit<RequestInit, 'body'> {
   body?: unknown;
+  skipAuthorization?: boolean;
 }
 
 export class ApiError extends Error {
@@ -137,7 +138,7 @@ export async function apiRequest<T>(path: string, init: RequestInit = {}): Promi
 
 export async function requestApi<T>(
   path: string,
-  { body, headers, ...options }: ApiRequestOptions = {},
+  { body, headers, skipAuthorization = false, ...options }: ApiRequestOptions = {},
 ): Promise<ApiResponse<T>> {
   const requestHeaders = new Headers(headers);
   requestHeaders.set('Accept', 'application/json');
@@ -147,7 +148,7 @@ export async function requestApi<T>(
   }
 
   const authorizationHeader = getAuthorizationHeader();
-  if (authorizationHeader && !requestHeaders.has('Authorization')) {
+  if (!skipAuthorization && authorizationHeader && !requestHeaders.has('Authorization')) {
     requestHeaders.set('Authorization', authorizationHeader);
   }
 

@@ -23,6 +23,7 @@ import { ImmersionToggle } from "@/components/home/ImmersionToggle";
 import { ImmersionStartingOverlay } from "@/components/immersion/ImmersionStartingOverlay";
 import { GuestOnlyRoute, ProtectedRoute } from "@/components/login/AuthRoute";
 import { Sidebar } from "@/components/common/sidebar";
+import { Toast } from "@/components/common/Toast";
 import { ActivitiesProvider } from "@/contexts/ActivitiesContext";
 import { TemplatesProvider } from "@/contexts/TemplatesContext";
 import { RecordsProvider } from "@/contexts/RecordsContext";
@@ -30,6 +31,7 @@ import AlarmIcon from "@/assets/alarm.svg";
 import ProfileIcon from "@/assets/profile.svg";
 import MenuIcon from "@/assets/menu.svg";
 import { getRecords } from "@/api/records";
+import { useToast } from "@/hooks/useToast";
 
 const IMMERSION_LOADING_DELAY_MS = 2000;
 
@@ -56,6 +58,7 @@ export default function Layout() {
 
 function HomeLayout() {
   const navigate = useNavigate();
+  const { toast, fireToast } = useToast();
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isStartingImmersion, setIsStartingImmersion] = useState(false);
   const isCheckingDraftsRef = useRef(false);
@@ -102,6 +105,12 @@ function HomeLayout() {
       const response = await getRecords({ status: "DRAFT", page: 0, size: 1 });
       if (response.data.totalElements > 0) {
         setIsStartingImmersion(true);
+      } else {
+        fireToast(
+          "작성 중인 기록이 없어 몰입모드를 시작할 수 없어요.",
+          undefined,
+          "error",
+        );
       }
     } catch {
       // 별도 오류 UI가 정해질 때까지 토글을 OFF 상태로 유지합니다.
@@ -173,6 +182,11 @@ function HomeLayout() {
               </main>
             </div>
             {isStartingImmersion && <ImmersionStartingOverlay />}
+            {toast && (
+              <div className="fixed top-4 left-1/2 z-[110] -translate-x-1/2">
+                <Toast message={toast.message} variant={toast.variant} />
+              </div>
+            )}
           </div>
         </RecordsProvider>
       </TemplatesProvider>

@@ -24,7 +24,11 @@ export default function RecordWrite() {
   const location = useLocation();
   const { templateId } = useParams<{ templateId: string }>();
   const { selectedActivity } = useActivities();
-  const { templates } = useTemplates();
+  const {
+    templates,
+    isLoading: isTemplatesLoading,
+    error: templatesError,
+  } = useTemplates();
   const { toast, fireToast } = useToast();
 
   const template = useMemo(
@@ -97,9 +101,36 @@ export default function RecordWrite() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [movedMemoIds, selectedActivity?.id, template?.id]);
 
-  if (!template) {
-    navigate('/record');
-    return null;
+  if (isTemplatesLoading) {
+    return (
+      <Card>
+        <section
+          aria-live="polite"
+          className="flex min-h-[calc(100vh-260px)] items-center justify-center text-body2-r text-grey-600"
+        >
+          템플릿을 불러오는 중...
+        </section>
+      </Card>
+    );
+  }
+
+  if (templatesError || !template) {
+    return (
+      <Card>
+        <section className="flex min-h-[calc(100vh-260px)] flex-col items-center justify-center gap-4 text-center">
+          <p role="alert" className="text-body2-r text-error-text">
+            {templatesError ?? '선택한 템플릿을 찾을 수 없습니다.'}
+          </p>
+          <button
+            type="button"
+            onClick={() => navigate('/record', { replace: true })}
+            className="rounded-xl border border-primary-500 px-4 py-2 text-body2-md text-primary-500"
+          >
+            기록하기로 돌아가기
+          </button>
+        </section>
+      </Card>
+    );
   }
 
   const requiredQuestions = template.questions?.filter(q => q.required) ?? [];

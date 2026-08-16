@@ -21,6 +21,7 @@ import MyStoryAiMatchingPage from "./mystory-ai-matching";
 import MyPage from "./mypage";
 import { ImmersionToggle } from "@/components/home/ImmersionToggle";
 import { ImmersionStartingOverlay } from "@/components/immersion/ImmersionStartingOverlay";
+import { GuestOnlyRoute, ProtectedRoute } from "@/components/login/AuthRoute";
 import { Sidebar } from "@/components/common/sidebar";
 import { ActivitiesProvider } from "@/contexts/ActivitiesContext";
 import { TemplatesProvider } from "@/contexts/TemplatesContext";
@@ -35,16 +36,20 @@ const IMMERSION_LOADING_DELAY_MS = 2000;
 export default function Layout() {
   return (
     <Routes>
-      <Route path="/login" element={<Login />} />
+      <Route element={<GuestOnlyRoute />}>
+        <Route path="/login" element={<Login />} />
+      </Route>
       <Route path="/signup" element={<Signup />} />
       <Route path="/reset-password/request" element={<PasswordReset />} />
       <Route path="/reset-password" element={<PasswordResetConfirm />} />
-      <Route path="/immersion/goal" element={<ImmersionGoalPage />} />
-      <Route path="/immersion/record" element={<ImmersionRecordPage />} />
-      <Route path="/immersion/complete" element={<ImmersionCompletePage />} />
-      <Route path="/immersion/returning" element={<ImmersionReturningPage />} />
       <Route path="/" element={<Landing />} />
-      <Route path="*" element={<HomeLayout />} />
+      <Route element={<ProtectedRoute />}>
+        <Route path="/immersion/goal" element={<ImmersionGoalPage />} />
+        <Route path="/immersion/record" element={<ImmersionRecordPage />} />
+        <Route path="/immersion/complete" element={<ImmersionCompletePage />} />
+        <Route path="/immersion/returning" element={<ImmersionReturningPage />} />
+        <Route path="*" element={<HomeLayout />} />
+      </Route>
     </Routes>
   );
 }

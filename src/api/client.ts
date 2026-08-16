@@ -1,4 +1,9 @@
-import { getAuthorizationHeader } from '@/utils/authTokens';
+import { refreshAccessToken } from "@/api/auth";
+import {
+  clearAuthTokens,
+  getAuthorizationHeader,
+  saveAuthTokens,
+} from "@/utils/authTokens";
 
 const REQUEST_TIMEOUT_MS = 10_000;
 
@@ -22,6 +27,7 @@ export interface ApiResponse<T> {
 
 interface ApiRequestOptions extends Omit<RequestInit, 'body'> {
   body?: unknown;
+  skipAuthorization?: boolean;
 }
 
 export class ApiError extends Error {
@@ -34,6 +40,22 @@ export class ApiError extends Error {
     this.status = status;
     this.payload = payload;
   }
+}
+
+let refreshTokenPromise: Promise<void> | null = null;
+
+function refreshToken() {
+  if (!refreshTokenPromise) {
+    refreshTokenPromise = refreshAccessToken()
+      .then(({ data }) => {
+        saveAuthTokens(data);
+      })
+      .finally(() => {
+        refreshTokenPromise = null;
+      });
+  }
+
+  return refreshTokenPromise;
 }
 
 const getApiUrl = (path: string) => (
@@ -137,7 +159,8 @@ export async function apiRequest<T>(path: string, init: RequestInit = {}): Promi
 
 export async function requestApi<T>(
   path: string,
-  { body, headers, ...options }: ApiRequestOptions = {},
+  { body, headers, skipAuthorization = false, ...options }: ApiRequestOptions = {},
+  hasRetriedAfterRefresh = false,
 ): Promise<ApiResponse<T>> {
   const requestHeaders = new Headers(headers);
   requestHeaders.set('Accept', 'application/json');
@@ -147,7 +170,7 @@ export async function requestApi<T>(
   }
 
   const authorizationHeader = getAuthorizationHeader();
-  if (authorizationHeader && !requestHeaders.has('Authorization')) {
+  if (!skipAuthorization && authorizationHeader && !requestHeaders.has('Authorization')) {
     requestHeaders.set('Authorization', authorizationHeader);
   }
 
@@ -179,6 +202,32 @@ export async function requestApi<T>(
   }
 
   if (!response.ok || isFailedApiResponse(payload)) {
+    const shouldRefreshToken = (
+      response.status === 401
+      && Boolean(authorizationHeader)
+      && !skipAuthorization
+      && !hasRetriedAfterRefresh
+    );
+
+    if (shouldRefreshToken) {
+      try {
+        await refreshToken();
+      } catch {
+        clearAuthTokens();
+        throw new ApiError(getErrorMessage(payload), response.status, payload);
+      }
+
+      return requestApi(
+        path,
+        { body, headers, skipAuthorization, ...options },
+        true,
+      );
+    }
+
+    if (response.status === 401 && hasRetriedAfterRefresh) {
+      clearAuthTokens();
+    }
+
     throw new ApiError(getErrorMessage(payload), response.status, payload);
   }
 

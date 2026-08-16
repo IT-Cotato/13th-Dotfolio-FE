@@ -1,5 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useCallback, useEffect, useState } from 'react';
 import {
   deleteActivity,
   restoreActivity,
@@ -106,8 +105,6 @@ const mapRecordDetail = (record: RecordDetail, previous?: StoryRecord): StoryRec
 });
 
 export default function MyStory() {
-  const location = useLocation();
-  const openedFromStateRef = useRef(false);
   const [view, setView] = useState<MyStoryView>('timeline');
   const [detailReturnView, setDetailReturnView] = useState<'timeline' | 'search'>('timeline');
   const [query, setQuery] = useState('');
@@ -196,32 +193,6 @@ export default function MyStory() {
       setOpeningRecordId(undefined);
     }
   };
-
-  // 다른 화면에서 특정 기록을 클릭해 들어온 경우, 해당 기록의 상세를 바로 열어줌.
-  useEffect(() => {
-    if (openedFromStateRef.current) return;
-    const state = location.state as { recordId?: unknown } | null;
-    const recordId = typeof state?.recordId === 'string' ? state.recordId : null;
-    if (!recordId) return;
-    openedFromStateRef.current = true;
-    const run = async () => {
-      await openDetail({
-        id: recordId,
-        activityId: '',
-        activityTitle: '',
-        activityTypeName: '',
-        templateTitle: '',
-        title: '',
-        date: '',
-        status: '',
-        content: '',
-        sections: [],
-        memos: [],
-      });
-    };
-    run();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [location.state]);
 
   const submitSearch = async () => {
     const next = query.trim();

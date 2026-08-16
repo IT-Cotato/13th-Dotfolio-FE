@@ -224,6 +224,10 @@ export async function requestApi<T>(
       );
     }
 
+    if (response.status === 401 && hasRetriedAfterRefresh) {
+      clearAuthTokens();
+    }
+
     throw new ApiError(getErrorMessage(payload), response.status, payload);
   }
 

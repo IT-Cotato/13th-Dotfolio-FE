@@ -147,7 +147,7 @@ export function SignupForm() {
       <AuthFormField htmlFor="signup-name" label="이름">
         <input
           autoComplete="name"
-          className="h-12 self-stretch rounded-[14px] border border-grey-100 bg-grey-0 p-4 text-body2-md text-grey-900 outline-none placeholder:text-grey-400 focus:border-primary-500"
+          className="h-12 self-stretch rounded-[14px] border border-grey-100 bg-grey-0 p-4 text-body2-md text-grey-900 outline-none placeholder:text-body2-r text-grey-400 focus:border-primary-500"
           id="signup-name"
           onChange={(event) => {
             setName(event.target.value);

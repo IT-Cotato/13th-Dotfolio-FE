@@ -17,7 +17,7 @@ export function EmailInput({
         aria-invalid={hasError}
         aria-label="이메일"
         autoComplete="email"
-        className={`h-12 w-full rounded-[14px] border p-4 text-body2-md text-grey-900 outline-none placeholder:text-grey-400 ${
+        className={`h-12 w-full rounded-[14px] border p-4 text-body2-md text-grey-900 outline-none placeholder:text-body2-r text-grey-400 ${
           hasError
             ? "border-error-border bg-error-bg"
             : "border-grey-100 bg-grey-0 focus:border-primary-500"

@@ -6,7 +6,6 @@ import StarIcon from '@/assets/memo_star.svg';
 
 interface MemoMoreMenuProps {
   isImportant: boolean;
-  emphasized?: boolean;
   onToggleImportant: () => void;
   onDelete: () => void;
   onMove: () => void;
@@ -15,7 +14,7 @@ interface MemoMoreMenuProps {
 
 const MENU_WIDTH = 184;
 
-export const MemoMoreMenu = ({ isImportant, emphasized = false, onToggleImportant, onDelete, onMove, align = 'auto' }: MemoMoreMenuProps) => {
+export const MemoMoreMenu = ({ isImportant, onToggleImportant, onDelete, onMove, align = 'auto' }: MemoMoreMenuProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [resolvedAlign, setResolvedAlign] = useState<'left' | 'right'>('left');
   const menuRef = useRef<HTMLDivElement>(null);
@@ -68,7 +67,7 @@ export const MemoMoreMenu = ({ isImportant, emphasized = false, onToggleImportan
         aria-label="메모 더보기"
         aria-expanded={isOpen}
         onClick={toggleMenu}
-        className={`flex h-8 w-8 items-center justify-center rounded-xl ${isImportant || emphasized ? 'text-primary-300' : 'text-grey-400'} ${isOpen ? 'bg-primary-100' : ''}`}
+        className={`flex h-8 w-8 items-center justify-center rounded-xl text-grey-400 ${isOpen ? 'bg-primary-100' : ''}`}
       >
         <MoreIcon />
       </button>

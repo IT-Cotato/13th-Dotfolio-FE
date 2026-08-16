@@ -26,7 +26,6 @@ import { Sidebar } from "@/components/common/sidebar";
 import { ActivitiesProvider } from "@/contexts/ActivitiesContext";
 import { TemplatesProvider } from "@/contexts/TemplatesContext";
 import { RecordsProvider } from "@/contexts/RecordsContext";
-import AlarmIcon from "@/assets/alarm.svg";
 import ProfileIcon from "@/assets/profile.svg";
 import MenuIcon from "@/assets/menu.svg";
 import { getRecords } from "@/api/records";

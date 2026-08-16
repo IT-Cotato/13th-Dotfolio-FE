@@ -78,7 +78,7 @@ export function SignupEmailField({
     }
   };
 
-  const inputClassName = `h-12 w-0 min-w-0 box-border flex-[1_0_0] rounded-[14px] border p-4 text-body2-md text-grey-900 outline-none placeholder:text-body2-r text-grey-400 focus:border-primary-500 ${
+  const inputClassName = `h-12 w-0 min-w-0 box-border flex-[1_0_0] rounded-[14px] border p-4 text-body2-md text-grey-900 outline-none placeholder:text-body2-r placeholder:text-grey-400 focus:border-primary-500 ${
     hasError ? "border-error-border bg-error-bg" : "border-grey-100 bg-grey-0"
   }`;
 

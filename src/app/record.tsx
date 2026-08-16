@@ -100,7 +100,11 @@ export default function Record() {
             moreLabel="전체 기록 보기"
             onMoreClick={() => navigate('/record-all')}
           />
-          <RecordList records={records} onDeleteClick={setDeleteTarget} />
+          <RecordList
+            records={records}
+            onDeleteClick={setDeleteTarget}
+            onRecordClick={record => navigate('/mystory/archive', { state: { recordId: record.id } })}
+          />
         </div>
       )}
 

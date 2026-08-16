@@ -50,6 +50,7 @@ export default function Layout() {
 
 function HomeLayout() {
   const navigate = useNavigate();
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isStartingImmersion, setIsStartingImmersion] = useState(false);
   const isCheckingDraftsRef = useRef(false);
   const hasAddedLoadingGuardRef = useRef(false);
@@ -110,7 +111,10 @@ function HomeLayout() {
           <div className="w-full h-screen bg-home">
             <header className="w-full h-20 relative flex items-center justify-between pl-8 pr-6">
               <div className="flex items-center gap-4">
-                <MenuIcon className="w-6 h-6 text-grey-700 cursor-pointer" />
+                <MenuIcon
+                  className="w-6 h-6 text-grey-700 cursor-pointer"
+                  onClick={() => setIsSidebarOpen(prev => !prev)}
+                />
                 <span
                   className="font-nexon text-logo text-grey-600 cursor-pointer"
                   onClick={() => navigate("/home")}
@@ -127,14 +131,16 @@ function HomeLayout() {
               </div>
             </header>
             <div className="flex h-[calc(100vh-80px)]">
-              <nav className="w-60 shrink-0 flex flex-col items-start py-6 px-6 gap-6">
-                <ImmersionToggle
-                  isOn={isStartingImmersion}
-                  onToggle={handleImmersionToggle}
-                />
-                <Sidebar />
-              </nav>
-              <main className="flex-1 pb-8 pr-6 h-full overflow-y-auto scrollbar-hide">
+              {isSidebarOpen && (
+                <nav className="w-60 shrink-0 flex flex-col items-start py-6 px-6 gap-6">
+                  <ImmersionToggle
+                    isOn={isStartingImmersion}
+                    onToggle={handleImmersionToggle}
+                  />
+                  <Sidebar />
+                </nav>
+              )}
+              <main className={`flex-1 pb-8 pr-6 h-full overflow-y-auto scrollbar-hide ${isSidebarOpen ? '' : 'pl-8'}`}>
                 <Routes>
                   <Route path="/home" element={<Home />} />
                   <Route path="/memo" element={<Memo />} />

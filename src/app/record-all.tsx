@@ -5,7 +5,6 @@ import { CategoryHeader } from '@/components/common/CategoryHeader';
 import { ConfirmModal } from '@/components/common/ConfirmModal';
 import { Toast } from '@/components/common/Toast';
 import { RecordList } from '@/components/record/RecordList';
-import { RecordDetailModal } from '@/components/record/RecordDetailModal';
 import { StatusTag } from '@/components/record/StatusTag';
 import { CategoryDropdown } from '@/components/record/CategoryDropdown';
 import { useToast } from '@/hooks/useToast';
@@ -27,7 +26,6 @@ export default function RecordAll() {
   const [page, setPage] = useState(0);
   const [pageInfo, setPageInfo] = useState({ totalPages: 0, first: true, last: true });
   const [isLoading, setIsLoading] = useState(false);
-  const [selectedRecordId, setSelectedRecordId] = useState<string | null>(null);
   const toastState = useToast();
   const { toast, fireToast } = toastState;
 
@@ -102,7 +100,7 @@ export default function RecordAll() {
         <RecordList
           records={records}
           onDeleteClick={setDeleteTarget}
-          onRecordClick={record => setSelectedRecordId(record.id)}
+          onRecordClick={record => navigate('/mystory/archive', { state: { recordId: record.id } })}
         />
         {pageInfo.totalPages > 1 && (
           <div className="w-full flex items-center justify-center gap-4">
@@ -128,8 +126,6 @@ export default function RecordAll() {
           </div>
         )}
       </div>
-
-      <RecordDetailModal recordId={selectedRecordId} onClose={() => setSelectedRecordId(null)} />
 
       <ConfirmModal
         isOpen={!!deleteTarget}

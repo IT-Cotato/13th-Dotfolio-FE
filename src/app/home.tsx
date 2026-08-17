@@ -149,7 +149,7 @@ export default function Home() {
           <section className="w-full flex-1 flex flex-col items-center justify-center gap-8">
             <div className="flex flex-col items-center gap-2.5">
               <Lottie animationData={readABook} loop autoplay style={{ width: 160, height: 160 }} />
-              <div className="flex flex-col gap-3">
+              <div className="flex flex-col items-center gap-3 text-center">
                 <p className="text-sub1-sb text-grey-950">첫 기록을 남겨볼까요?</p>
                 <p className="text-body2-r text-grey-700">
                   경험을 하나씩 쌓다 보면 어느새 그럴싸한<br />

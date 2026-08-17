@@ -100,7 +100,7 @@ export default function RecordAll() {
         <RecordList
           records={records}
           onDeleteClick={setDeleteTarget}
-          onRecordClick={record => navigate('/mystory/archive', { state: { recordId: record.id } })}
+          onRecordClick={record => navigate(`/record/write/${record.templateId}`, { state: { recordId: record.id } })}
         />
         {pageInfo.totalPages > 1 && (
           <div className="w-full flex items-center justify-center gap-4">

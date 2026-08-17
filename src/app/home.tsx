@@ -56,7 +56,11 @@ export default function Home() {
     try {
       const response = await getRecords({ activityId: activity.id, status: 'DRAFT', page: 0, size: 1 });
       const draft = response.data.content[0];
-      navigate(draft ? `/record/write/${draft.templateId}` : '/record');
+      if (draft) {
+        navigate(`/record/write/${draft.templateId}`, { state: { recordId: draft.id } });
+      } else {
+        navigate('/record');
+      }
     } catch {
       navigate('/record');
     }

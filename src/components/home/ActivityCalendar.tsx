@@ -28,7 +28,7 @@ const todayTextColor: Record<'today-none' | 'today-memo' | 'today-both', string>
 type TodayType = 'today-none' | 'today-memo' | 'today-both';
 
 const TodayDot = ({ type }: { type: TodayType }) => (
-  <div className="w-7 h-7 rounded-full bg-primary-gradient p-0.5">
+  <div className="w-8 h-8 rounded-full bg-primary-gradient p-0.5">
     <div className={`w-full h-full rounded-full flex items-center justify-center ${todayInnerClass[type]}`}>
       <span className={`text-[8px] leading-none font-medium ${todayTextColor[type]}`}>Today</span>
     </div>
@@ -88,16 +88,16 @@ export const ActivityCalendar = () => {
 
   return (
     <div className="flex flex-col gap-3">
-      <div className="grid grid-cols-7 gap-0.75">
+      <div className="grid grid-cols-7 gap-1">
         {DAY_LABELS.map((label, i) => (
           <div key={i} className={`flex justify-center text-caption1 ${DAY_LABEL_COLORS[i]}`}>
             {label}
           </div>
         ))}
       </div>
-      <div className="flex flex-col gap-0.75">
+      <div className="flex flex-col gap-1">
         {weeks.map((week, wi) => (
-          <div key={wi} className="grid grid-cols-7 gap-0.75">
+          <div key={wi} className="grid grid-cols-7 gap-1">
             {week.map((day, di) => {
               if (!day) return <div key={di} />;
               const type = getCellType(day);
@@ -109,7 +109,7 @@ export const ActivityCalendar = () => {
               return (
                 <div key={di} className="flex justify-center">
                   <div
-                    className={`w-7 h-7 rounded-full ${
+                    className={`w-8 h-8 rounded-full ${
                       type === 'future'
                         ? 'border border-grey-100 bg-transparent'
                         : getPastDotClass(type)

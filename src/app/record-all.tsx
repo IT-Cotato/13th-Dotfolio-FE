@@ -10,6 +10,7 @@ import { CategoryDropdown } from '@/components/record/CategoryDropdown';
 import { useToast } from '@/hooks/useToast';
 import { useRecordDeletion } from '@/hooks/useRecordDeletion';
 import { useTemplates } from '@/contexts/TemplatesContext';
+import { useActivities } from '@/contexts/ActivitiesContext';
 import { getRecords, toRecordEntry, toStatusValue } from '@/api/records';
 import { ApiError } from '@/api/client';
 import type { RecordEntry } from '@/types/record';
@@ -20,6 +21,7 @@ const PAGE_SIZE = 7;
 export default function RecordAll() {
   const navigate = useNavigate();
   const { templates } = useTemplates();
+  const { selectedActivity } = useActivities();
   const [records, setRecords] = useState<RecordEntry[]>([]);
   const [statusFilter, setStatusFilter] = useState('전체');
   const [categoryFilter, setCategoryFilter] = useState('all');
@@ -45,9 +47,15 @@ export default function RecordAll() {
   };
 
   const fetchRecords = useCallback(async () => {
+    if (!selectedActivity) {
+      setRecords([]);
+      setPageInfo({ totalPages: 0, first: true, last: true });
+      return;
+    }
     setIsLoading(true);
     try {
       const response = await getRecords({
+        activityId: selectedActivity.id,
         status: statusFilter === '전체' ? undefined : toStatusValue(statusFilter),
         templateId: categoryFilter === 'all' ? undefined : categoryFilter,
         page,
@@ -65,7 +73,7 @@ export default function RecordAll() {
     } finally {
       setIsLoading(false);
     }
-  }, [statusFilter, categoryFilter, page, fireToast]);
+  }, [selectedActivity, statusFilter, categoryFilter, page, fireToast]);
 
   useEffect(() => {
     const run = async () => {

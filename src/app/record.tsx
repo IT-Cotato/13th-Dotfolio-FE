@@ -13,7 +13,7 @@ import { useToast } from '@/hooks/useToast';
 import { useRecordDeletion } from '@/hooks/useRecordDeletion';
 import { useActivities } from '@/contexts/ActivitiesContext';
 import { useTemplates } from '@/contexts/TemplatesContext';
-import { getRecentRecords, toRecordEntry } from '@/api/records';
+import { getRecords, toRecordEntry } from '@/api/records';
 import { ApiError } from '@/api/client';
 import type { RecordEntry } from '@/types/record';
 
@@ -34,17 +34,22 @@ export default function Record() {
   };
 
   const fetchRecent = useCallback(async () => {
+    if (!selectedActivity) {
+      setRecords([]);
+      setIsLoading(false);
+      return;
+    }
     setIsLoading(true);
     try {
-      const response = await getRecentRecords();
-      setRecords(response.data.slice(0, 4).map(toRecordEntry));
+      const response = await getRecords({ activityId: selectedActivity.id, page: 0, size: 4 });
+      setRecords(response.data.content.map(toRecordEntry));
     } catch (error) {
       const message = error instanceof ApiError ? error.message : '기록을 불러오지 못했습니다.';
       fireToast(message, undefined, 'error');
     } finally {
       setIsLoading(false);
     }
-  }, [fireToast]);
+  }, [selectedActivity, fireToast]);
 
   useEffect(() => {
     const run = async () => {

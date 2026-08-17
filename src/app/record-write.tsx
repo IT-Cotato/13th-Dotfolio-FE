@@ -13,7 +13,7 @@ import { MemoAddButton } from '@/components/record/MemoAddButton';
 import { MemoEmptyState } from '@/components/record/MemoEmptyState';
 import { useActivities } from '@/contexts/ActivitiesContext';
 import { useTemplates } from '@/contexts/TemplatesContext';
-import { createRecord, updateRecord, getRecords, getRecordDetail } from '@/api/records';
+import { createRecord, updateRecord, getRecordDetail } from '@/api/records';
 import { getMemos, toMemo } from '@/api/memos';
 import { ApiError } from '@/api/client';
 import { useToast } from '@/hooks/useToast';
@@ -86,57 +86,28 @@ export default function RecordWrite() {
     };
   }, [openRecordId, template]);
 
-  // 임시저장 후 다른 화면으로 이동했다가 같은 활동+템플릿으로 재진입하면,
-  // 새로 만들지 않고 기존 DRAFT 기록을 이어서 수정하도록 조회해서 불러옴.
+  // 메모함에서 메모를 선택해 기록으로 이동시킨 경우, 새 기록에 그 메모들을 미리 담아둠.
   useEffect(() => {
-    if (!selectedActivity || !template || openRecordId) return;
+    if (openRecordId || movedMemoIds.size === 0) return;
 
     let cancelled = false;
 
-    const loadExistingDraft = async () => {
+    const loadMovedMemos = async () => {
       try {
-        const listResponse = await getRecords({
-          activityId: selectedActivity.id,
-          templateId: template.id,
-          status: 'DRAFT',
-          page: 0,
-          size: 1,
-        });
-        const existing = listResponse.data.content[0];
+        const memosResponse = await getMemos();
         if (cancelled) return;
-
-        if (!existing && movedMemoIds.size === 0) return;
-
-        const [detailResponse, memosResponse] = await Promise.all([
-          existing ? getRecordDetail(existing.id) : Promise.resolve(null),
-          getMemos(),
-        ]);
-        if (cancelled) return;
-
-        const selectedMemoIds = new Set(movedMemoIds);
-        if (existing && detailResponse) {
-          setSavedRecordId(existing.id);
-          setTitle(detailResponse.data.title);
-          setAnswers(prev => ({
-            ...prev,
-            ...Object.fromEntries(detailResponse.data.answers.map(a => [a.templateQuestionId, a.answerText])),
-          }));
-          detailResponse.data.memos.forEach((memo) => selectedMemoIds.add(memo.memoId));
-        }
-
         const allMemos = memosResponse.data.map(toMemo);
-        setSelectedMemos(allMemos.filter((memo) => selectedMemoIds.has(memo.id)));
+        setSelectedMemos(allMemos.filter((memo) => movedMemoIds.has(memo.id)));
       } catch (error) {
-        console.error('[record-write] 기존 임시저장 기록을 불러오지 못했습니다.', error);
+        console.error('[record-write] 이동된 메모를 불러오지 못했습니다.', error);
       }
     };
 
-    loadExistingDraft();
+    loadMovedMemos();
     return () => {
       cancelled = true;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [movedMemoIds, selectedActivity?.id, template?.id, openRecordId]);
+  }, [openRecordId, movedMemoIds]);
 
   if (isTemplatesLoading) {
     return (

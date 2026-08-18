@@ -22,6 +22,24 @@ const isPasswordCompositionValid = (password: string) =>
 const DUPLICATE_EMAIL_ERROR_MESSAGE =
   "이미 가입된 이메일 주소입니다. 다른 이메일을 입력해주세요.";
 
+const GOOGLE_ACCOUNT_EXISTS_CODE = "U018";
+const DUPLICATE_EMAIL_CODE = "U005";
+
+function getApiErrorCode(error: ApiError) {
+  const { payload } = error;
+
+  if (
+    typeof payload === "object"
+    && payload !== null
+    && "code" in payload
+    && typeof payload.code === "string"
+  ) {
+    return payload.code;
+  }
+
+  return null;
+}
+
 export function SignupForm() {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
@@ -78,11 +96,18 @@ export function SignupForm() {
       });
       navigate("/login");
     } catch (error) {
+      const errorCode = error instanceof ApiError ? getApiErrorCode(error) : null;
+      const isGoogleAccountError =
+        error instanceof ApiError &&
+        error.status === 409 &&
+        errorCode === GOOGLE_ACCOUNT_EXISTS_CODE;
       const isDuplicateEmailError =
         error instanceof ApiError &&
-        (error.status === 409 || error.message.includes("이미 가입된 이메일"));
+        (errorCode === DUPLICATE_EMAIL_CODE || error.message.includes("이미 가입된 이메일"));
 
-      if (isDuplicateEmailError) {
+      if (isGoogleAccountError) {
+        navigate(`/signup/google-account?email=${encodeURIComponent(requestedEmail)}`);
+      } else if (isDuplicateEmailError) {
         if (emailRef.current === requestedEmail) {
           setEmailErrorMessage(DUPLICATE_EMAIL_ERROR_MESSAGE);
         }

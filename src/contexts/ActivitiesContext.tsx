@@ -10,6 +10,7 @@ import {
   type ActivityFormPayload,
   type ActivityListItem,
 } from '@/api/activities';
+import { getRecords } from '@/api/records';
 import { toDisplayDate, toIsoDate } from '@/utils/date';
 import { ApiError } from '@/api/client';
 
@@ -34,7 +35,28 @@ const ActivitiesContext = createContext<ActivitiesContextValue | null>(null);
 
 const ARCHIVED_STATUS = 'ARCHIVED';
 
-const toActivity = (item: ActivityListItem): Activity => ({
+type RecordCounts = Map<string, { recordCount: number; completedCount: number }>;
+
+const fetchRecordCounts = async (activityIds: string[]): Promise<RecordCounts> => {
+  const counts: RecordCounts = new Map();
+  await Promise.all(activityIds.map(async (activityId) => {
+    try {
+      const [totalResponse, completedResponse] = await Promise.all([
+        getRecords({ activityId, page: 0, size: 1 }),
+        getRecords({ activityId, status: 'COMPLETED', page: 0, size: 1 }),
+      ]);
+      counts.set(activityId, {
+        recordCount: totalResponse.data.totalElements,
+        completedCount: completedResponse.data.totalElements,
+      });
+    } catch {
+      // 개별 활동의 기록 수 조회 실패는 그 활동만 0으로 표시됨.
+    }
+  }));
+  return counts;
+};
+
+const toActivity = (item: ActivityListItem, counts: RecordCounts): Activity => ({
   id: item.id,
   activityTypeId: item.activityTypeId,
   activityTypeName: item.activityTypeName,
@@ -43,9 +65,8 @@ const toActivity = (item: ActivityListItem): Activity => ({
   startDate: toDisplayDate(item.startedAt),
   endDate: item.endedAt ? toDisplayDate(item.endedAt) : '',
   endDateUnknown: item.isOngoing,
-  // TODO: 백엔드에 활동별 기록 수 집계 API가 생기면 실제 값으로 교체
-  recordCount: 0,
-  completedCount: 0,
+  recordCount: counts.get(item.id)?.recordCount ?? 0,
+  completedCount: counts.get(item.id)?.completedCount ?? 0,
 });
 
 const toPayload = (data: ActivityFormData): ActivityFormPayload => ({
@@ -70,7 +91,9 @@ export const ActivitiesProvider = ({ children }: { children: ReactNode }) => {
     try {
       const response = await getActivities();
       // 홈 화면 등에서는 보관되지 않은(기록 중) 활동만 보여야 하므로 여기서 걸러냄.
-      setActivities(response.data.filter(item => item.status !== ARCHIVED_STATUS).map(toActivity));
+      const visibleItems = response.data.filter(item => item.status !== ARCHIVED_STATUS);
+      const counts = await fetchRecordCounts(visibleItems.map(item => item.id));
+      setActivities(visibleItems.map(item => toActivity(item, counts)));
       setError(null);
     } catch (err) {
       setError(err instanceof ApiError ? err.message : '활동 목록을 불러오지 못했습니다.');

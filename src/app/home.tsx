@@ -13,7 +13,6 @@ import { ConfirmModal } from '@/components/common/ConfirmModal';
 import type { Activity } from '@/types/activity';
 import { useActivities, type ActivityFormData } from '@/contexts/ActivitiesContext';
 import { useRecords } from '@/contexts/RecordsContext';
-import { getRecords } from '@/api/records';
 import { ApiError } from '@/api/client';
 
 export default function Home() {
@@ -51,19 +50,9 @@ export default function Home() {
   const getErrorMessage = (error: unknown, fallback: string) =>
     error instanceof ApiError ? error.message : fallback;
 
-  const handleActivityClick = async (activity: Activity) => {
+  const handleActivityClick = (activity: Activity) => {
     setSelectedActivityId(activity.id);
-    try {
-      const response = await getRecords({ activityId: activity.id, status: 'DRAFT', page: 0, size: 1 });
-      const draft = response.data.content[0];
-      if (draft) {
-        navigate(`/record/write/${draft.templateId}`, { state: { recordId: draft.id } });
-      } else {
-        navigate('/record');
-      }
-    } catch {
-      navigate('/record');
-    }
+    navigate('/record');
   };
 
   const handleDelete = async () => {

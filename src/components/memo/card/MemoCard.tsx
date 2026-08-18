@@ -56,15 +56,15 @@ export const MemoCard = ({ memo, onDelete, onToggleImportant, onMove, selected, 
 
     <div className="flex min-h-0 flex-1 flex-col gap-3 p-4">
       {memo.title && (
-        <h2 className={`flex min-w-0 items-center gap-1 whitespace-nowrap text-sub1-sb ${memo.isImportant ? 'text-primary-500' : 'text-grey-950'}`}>
+        <h2 className={`flex min-w-0 items-start gap-1 text-sub1-sb ${memo.isImportant ? 'text-primary-500' : 'text-grey-950'}`}>
           {memo.isImportant && (
-            <StarIcon className="h-4 w-4 shrink-0 [&_path]:fill-[#FFB516] [&_path]:stroke-[#FFB516]" />
+            <StarIcon className="mt-1 h-4 w-4 shrink-0 [&_path]:fill-[#FFB516] [&_path]:stroke-[#FFB516]" />
           )}
-          <span className="min-w-0 truncate">{memo.title}</span>
+          <span className="line-clamp-2 min-w-0 flex-1 break-words">{memo.title}</span>
         </h2>
       )}
       {memo.tag && (
-        <span className={`w-fit max-w-full truncate rounded-full px-3 py-1 text-label3-sb text-white ${memo.isImportant ? 'bg-primary-gradient' : 'bg-grey-500'}`}>
+        <span className={`line-clamp-2 w-fit max-w-full break-all rounded-xl px-3 py-1 text-label3-sb text-white ${memo.isImportant ? 'bg-primary-gradient' : 'bg-grey-500'}`}>
           # {memo.tag}
         </span>
       )}

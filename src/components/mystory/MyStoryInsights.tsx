@@ -19,6 +19,7 @@ import { Toast } from '@/components/common/Toast';
 import { useToast } from '@/hooks/useToast';
 import AiRecordIcon from '@/assets/ai_record.svg';
 import AiStarIcon from '@/assets/ai_star.svg';
+import CheckIcon from '@/assets/check.svg';
 import loadingBlueAnimation from '@/assets/Loading_blue.json';
 
 const Lottie =
@@ -123,8 +124,21 @@ export default function MyStoryInsights() {
             setPollingAttempt((attempt) => attempt + 1);
           }
         })
-        .catch((error: unknown) => {
+        .catch(async (error: unknown) => {
           if (!controller.signal.aborted) {
+            if (error instanceof ApiError && error.status === 404) {
+              try {
+                await loadInsights(controller.signal);
+                setGenerationId(null);
+              } catch (loadError) {
+                if (!controller.signal.aborted) {
+                  setGenerationId(null);
+                  fireToast(getErrorMessage(loadError, '인사이트 생성 상태를 확인하지 못했습니다.'), undefined, 'error');
+                }
+              }
+              return;
+            }
+
             setGenerationId(null);
             fireToast(getErrorMessage(error, '인사이트 생성 상태를 확인하지 못했습니다.'), undefined, 'error');
           }
@@ -210,6 +224,7 @@ export default function MyStoryInsights() {
         <InsightsReadyState
           eligibility={eligibility}
           recordCount={completedRecordCount}
+          generating={generating}
         />
       </div>
     );
@@ -266,8 +281,9 @@ export default function MyStoryInsights() {
         <p className="mt-1 text-body3-md text-grey-500">사용자의 경험 중 희망 직무 역량을 가장 잘 보여주는 경험을 추천해요.</p>
         <div className="mt-6 flex flex-wrap gap-2">
           {insight.recommendations.map((recommendation) => (
-            <button type="button" key={recommendation.jobCompetencyId} onClick={() => setSelectedCompetencyId((current) => current === recommendation.jobCompetencyId ? null : recommendation.jobCompetencyId)} aria-pressed={selectedCompetencyId === recommendation.jobCompetencyId} className={`flex h-12 cursor-pointer items-center justify-center gap-2 rounded-[14px] px-5 text-body2-md transition-colors ${selectedCompetencyId === recommendation.jobCompetencyId ? 'border border-primary-500 bg-primary-500 text-white' : 'border border-grey-100 bg-white text-grey-900'}`}>
-              {selectedCompetencyId === recommendation.jobCompetencyId && <span aria-hidden className="text-[22px] leading-none">✓</span>}{recommendation.competencyName}
+            <button type="button" key={recommendation.jobCompetencyId} onClick={() => setSelectedCompetencyId((current) => current === recommendation.jobCompetencyId ? null : recommendation.jobCompetencyId)} aria-pressed={selectedCompetencyId === recommendation.jobCompetencyId} className={`flex cursor-pointer items-center justify-center rounded-xl border px-3 py-2.5 text-body2-md transition-colors ${selectedCompetencyId === recommendation.jobCompetencyId ? 'gap-1.5 border-primary-500 bg-primary-500 text-white' : 'border-grey-100 bg-white text-grey-900'}`}>
+              {selectedCompetencyId === recommendation.jobCompetencyId && <CheckIcon aria-hidden className="h-auto w-4 shrink-0 text-white" />}
+              {recommendation.competencyName}
             </button>
           ))}
         </div>
@@ -278,7 +294,7 @@ export default function MyStoryInsights() {
         ) : selectedCompetencyId || insight.recommendations.length === 0 ? (
           <JobCompetencyEmpty />
         ) : (
-          <div className="mt-6 grid min-h-[220px] place-items-center rounded-2xl bg-grey-50 text-center text-body3-md leading-6 text-grey-600">원하는 역량을 선택하면<br />AI가 추천하는 대표 경험을 보여줍니다.</div>
+          <div className="mt-6 grid min-h-[220px] place-items-center rounded-2xl bg-grey-50 text-center text-body-reading2-r leading-6 text-grey-700">5가지 중 원하는 역량을 선택하면<br />AI가 추천하는 대표 경험을 보여줍니다.</div>
         )}
       </section>
     </Card>
@@ -289,18 +305,26 @@ function MessageCard({ message }: { message: string }) {
   return <Card className="relative items-stretch gap-0 rounded-t-[36px] p-6"><h1 className="text-title1 text-grey-900">인사이트</h1><div className="grid min-h-[55vh] place-items-center text-body2-md text-grey-500">{message}</div></Card>;
 }
 
-function InsightsReadyState({ eligibility, recordCount }: { eligibility: InsightEligibilityResponse | null; recordCount: number }) {
+function InsightsReadyState({ eligibility, recordCount, generating }: { eligibility: InsightEligibilityResponse | null; recordCount: number; generating: boolean }) {
   const requiredCount = eligibility?.requiredRecordCount ?? 10;
   const jobConfigured = eligibility?.reason !== 'JOB_NOT_CONFIGURED';
   return (
     <Card className="relative items-stretch gap-0 rounded-t-[36px] p-6">
       <h1 className="text-title1 text-grey-900">인사이트</h1>
       <div className="grid min-h-[55vh] place-items-center px-6 text-center">
-        <div className="translate-y-20">
-          <h2 className="text-sub1-sb text-grey-950">AI 인사이트를 시작하기 위한 준비</h2>
-          <div className="mx-auto mt-4 w-fit rounded-xl bg-grey-50 px-5 py-4 text-body-reading2-md text-grey-800"><p>⚙️ 직무 설정하기 {jobConfigured ? '✓' : '(마이페이지에서 설정해주세요)'}</p><p>📋 기록 {requiredCount}개 쌓기 (현재 {recordCount}개 / {requiredCount}개)</p></div>
-          <p className="mt-4 text-body2-md text-grey-700">희망 직무를 설정하고 기록을 채우시면,<br />맞춤형 강점과 역량을 분석해드려요.</p>
-        </div>
+        {generating ? (
+          <div role="status" aria-live="polite">
+            <Lottie animationData={loadingBlueAnimation} autoplay loop className="mx-auto size-20" />
+            <h2 className="mt-3 text-sub1-sb text-grey-950">AI 인사이트를 생성하고 있어요</h2>
+            <p className="mt-2 text-body2-md text-grey-700">쌓인 기록을 분석하고 있으니 잠시만 기다려 주세요.</p>
+          </div>
+        ) : (
+          <div className="translate-y-20">
+            <h2 className="text-sub1-sb text-grey-950">AI 인사이트를 시작하기 위한 준비</h2>
+            <div className="mx-auto mt-4 w-fit rounded-xl bg-grey-50 px-5 py-4 text-body-reading2-md text-grey-800"><p>⚙️ 직무 설정하기 {jobConfigured ? '✓' : '(마이페이지에서 설정해주세요)'}</p><p>📋 기록 {requiredCount}개 쌓기 (현재 {recordCount}개 / {requiredCount}개)</p></div>
+            <p className="mt-4 text-body2-md text-grey-700">희망 직무를 설정하고 기록을 채우시면,<br />맞춤형 강점과 역량을 분석해드려요.</p>
+          </div>
+        )}
       </div>
     </Card>
   );

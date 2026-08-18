@@ -86,7 +86,7 @@ export default function MyStoryAiMatching() {
         <p className="ml-10 mt-1 text-body2-md text-grey-500">이력서·자소서 문항을 입력하면 AI가 관련 기록을 찾아드립니다.</p>
       </header>
 
-      <div className="relative mt-8 flex h-[98px] items-end rounded-[14px] border border-grey-100 bg-white p-4">
+      <div className="relative flex h-[98px] items-end rounded-[14px] border border-grey-100 bg-white p-4">
         <textarea
           value={prompt}
           onChange={(event) => {

@@ -13,7 +13,7 @@ function PasswordRequirementIndicator({
   return (
     <span
       className={`flex items-center gap-1.5 text-body3-r ${
-        isSatisfied ? "text-primary-400" : "text-grey-400"
+        isSatisfied ? "text-primary-400" : "text-grey-500"
       }`}
     >
       <span
@@ -21,7 +21,7 @@ function PasswordRequirementIndicator({
         className={`flex size-3.5 shrink-0 items-center justify-center rounded-full border px-1 py-[5px] ${
           isSatisfied
             ? "border-primary-400 bg-primary-400 text-grey-0"
-            : "border-grey-400 text-grey-400"
+            : "border-grey-400 text-grey-500"
         }`}
       >
         {isSatisfied ? (

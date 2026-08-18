@@ -13,7 +13,7 @@ import { MemoAddButton } from '@/components/record/MemoAddButton';
 import { MemoEmptyState } from '@/components/record/MemoEmptyState';
 import { useActivities } from '@/contexts/ActivitiesContext';
 import { useTemplates } from '@/contexts/TemplatesContext';
-import { createRecord, updateRecord, getRecords, getRecordDetail } from '@/api/records';
+import { createRecord, updateRecord, getRecordDetail } from '@/api/records';
 import { getMemos, toMemo } from '@/api/memos';
 import { ApiError } from '@/api/client';
 import { useToast } from '@/hooks/useToast';
@@ -49,57 +49,65 @@ export default function RecordWrite() {
       : new Set<string>();
   }, [location.state]);
 
-  // 임시저장 후 다른 화면으로 이동했다가 같은 활동+템플릿으로 재진입하면,
-  // 새로 만들지 않고 기존 DRAFT 기록을 이어서 수정하도록 조회해서 불러옴.
+  const openRecordId = useMemo(() => {
+    const state = location.state as { recordId?: unknown } | null;
+    return typeof state?.recordId === 'string' ? state.recordId : null;
+  }, [location.state]);
+
+  // 목록에서 특정 기록을 클릭해 들어온 경우, 그 기록을 그대로 불러와서 이어서 보여줌.
   useEffect(() => {
-    if (!selectedActivity || !template) return;
+    if (!template || !openRecordId) return;
 
     let cancelled = false;
 
-    const loadExistingDraft = async () => {
+    const loadRecord = async () => {
       try {
-        const listResponse = await getRecords({
-          activityId: selectedActivity.id,
-          templateId: template.id,
-          status: 'DRAFT',
-          page: 0,
-          size: 1,
-        });
-        const existing = listResponse.data.content[0];
-        if (cancelled) return;
-
-        if (!existing && movedMemoIds.size === 0) return;
-
         const [detailResponse, memosResponse] = await Promise.all([
-          existing ? getRecordDetail(existing.id) : Promise.resolve(null),
+          getRecordDetail(openRecordId),
           getMemos(),
         ]);
         if (cancelled) return;
 
-        const selectedMemoIds = new Set(movedMemoIds);
-        if (existing && detailResponse) {
-          setSavedRecordId(existing.id);
-          setTitle(detailResponse.data.title);
-          setAnswers(prev => ({
-            ...prev,
-            ...Object.fromEntries(detailResponse.data.answers.map(a => [a.templateQuestionId, a.answerText])),
-          }));
-          detailResponse.data.memos.forEach((memo) => selectedMemoIds.add(memo.memoId));
-        }
+        setSavedRecordId(detailResponse.data.id);
+        setTitle(detailResponse.data.title);
+        setAnswers(Object.fromEntries(detailResponse.data.answers.map(a => [a.templateQuestionId, a.answerText])));
 
+        const selectedMemoIds = new Set(detailResponse.data.memos.map(memo => memo.memoId));
         const allMemos = memosResponse.data.map(toMemo);
         setSelectedMemos(allMemos.filter((memo) => selectedMemoIds.has(memo.id)));
       } catch (error) {
-        console.error('[record-write] 기존 임시저장 기록을 불러오지 못했습니다.', error);
+        console.error('[record-write] 기록을 불러오지 못했습니다.', error);
       }
     };
 
-    loadExistingDraft();
+    loadRecord();
     return () => {
       cancelled = true;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [movedMemoIds, selectedActivity?.id, template?.id]);
+  }, [openRecordId, template]);
+
+  // 메모함에서 메모를 선택해 기록으로 이동시킨 경우, 새 기록에 그 메모들을 미리 담아둠.
+  useEffect(() => {
+    if (openRecordId || movedMemoIds.size === 0) return;
+
+    let cancelled = false;
+
+    const loadMovedMemos = async () => {
+      try {
+        const memosResponse = await getMemos();
+        if (cancelled) return;
+        const allMemos = memosResponse.data.map(toMemo);
+        setSelectedMemos(allMemos.filter((memo) => movedMemoIds.has(memo.id)));
+      } catch (error) {
+        console.error('[record-write] 이동된 메모를 불러오지 못했습니다.', error);
+      }
+    };
+
+    loadMovedMemos();
+    return () => {
+      cancelled = true;
+    };
+  }, [openRecordId, movedMemoIds]);
 
   if (isTemplatesLoading) {
     return (

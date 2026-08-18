@@ -29,7 +29,7 @@ export function PasswordInput({
         aria-invalid={hasError}
         aria-label={ariaLabel}
         autoComplete={autoComplete}
-        className={`h-full w-full rounded-[14px] border p-4 text-body2-md text-grey-900 outline-none placeholder:text-grey-400 ${
+        className={`h-full w-full rounded-[14px] border p-4 text-body2-md text-grey-900 outline-none placeholder:text-body2-r placeholder:text-grey-400 ${
           hasError
             ? "border-error-border bg-error-bg"
             : "border-grey-100 bg-grey-0 focus:border-primary-500"

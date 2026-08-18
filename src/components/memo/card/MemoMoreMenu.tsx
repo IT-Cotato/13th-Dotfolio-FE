@@ -6,7 +6,6 @@ import StarIcon from '@/assets/memo_star.svg';
 
 interface MemoMoreMenuProps {
   isImportant: boolean;
-  emphasized?: boolean;
   onToggleImportant: () => void;
   onDelete: () => void;
   onMove: () => void;
@@ -15,7 +14,7 @@ interface MemoMoreMenuProps {
 
 const MENU_WIDTH = 184;
 
-export const MemoMoreMenu = ({ isImportant, emphasized = false, onToggleImportant, onDelete, onMove, align = 'auto' }: MemoMoreMenuProps) => {
+export const MemoMoreMenu = ({ isImportant, onToggleImportant, onDelete, onMove, align = 'auto' }: MemoMoreMenuProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [resolvedAlign, setResolvedAlign] = useState<'left' | 'right'>('left');
   const menuRef = useRef<HTMLDivElement>(null);
@@ -68,7 +67,7 @@ export const MemoMoreMenu = ({ isImportant, emphasized = false, onToggleImportan
         aria-label="메모 더보기"
         aria-expanded={isOpen}
         onClick={toggleMenu}
-        className={`flex h-8 w-8 items-center justify-center rounded-xl ${isImportant || emphasized ? 'text-primary-300' : 'text-grey-400'} ${isOpen ? 'bg-primary-100' : ''}`}
+        className={`flex h-8 w-8 items-center justify-center rounded-xl text-grey-400 ${isOpen ? 'bg-primary-100' : ''}`}
       >
         <MoreIcon />
       </button>
@@ -76,15 +75,15 @@ export const MemoMoreMenu = ({ isImportant, emphasized = false, onToggleImportan
       {isOpen && (
         <div className={`absolute top-10 z-30 w-[184px] rounded-2xl border border-grey-100 bg-white p-4 shadow-[0_0_30px_rgba(22,53,164,0.08)] ${resolvedAlign === 'right' ? 'right-0' : 'left-0'}`}>
           <p className="mb-3 text-sub2-sb text-grey-400">메모 관리</p>
-          <button type="button" onClick={() => run(onToggleImportant)} className="flex h-11 w-full items-center gap-4 text-body2-md text-grey-900">
+          <button type="button" onClick={() => run(onToggleImportant)} className="-mx-2 flex h-11 w-[calc(100%+1rem)] cursor-pointer items-center gap-4 rounded-xl px-2 text-body2-md text-grey-900 transition-colors hover:bg-grey-50">
             <StarIcon className="h-5 w-5" />
             {isImportant ? '중요한 메모 취소' : '중요한 메모'}
           </button>
-          <button type="button" onClick={() => run(onMove)} className="flex h-11 w-full items-center gap-4 text-body2-md text-grey-900">
+          <button type="button" onClick={() => run(onMove)} className="-mx-2 flex h-11 w-[calc(100%+1rem)] cursor-pointer items-center gap-4 rounded-xl px-2 text-body2-md text-grey-900 transition-colors hover:bg-grey-50">
             <RecordIcon className="h-5 w-5" />
             기록하기로 이동
           </button>
-          <button type="button" onClick={() => run(onDelete)} className="flex h-11 w-full items-center gap-4 text-body2-md text-grey-900">
+          <button type="button" onClick={() => run(onDelete)} className="-mx-2 flex h-11 w-[calc(100%+1rem)] cursor-pointer items-center gap-4 rounded-xl px-2 text-body2-md text-grey-900 transition-colors hover:bg-grey-50">
             <DeleteIcon className="h-5 w-5" />
             메모 삭제
           </button>

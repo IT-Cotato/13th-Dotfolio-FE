@@ -96,7 +96,11 @@ function isFailedApiResponse(payload: unknown) {
   );
 }
 
-export async function apiRequest<T>(path: string, init: RequestInit = {}): Promise<T> {
+export async function apiRequest<T>(
+  path: string,
+  init: RequestInit = {},
+  hasRetriedAfterRefresh = false,
+): Promise<T> {
   const headers = new Headers(init.headers);
   const authorizationHeader = getAuthorizationHeader();
   const abortController = new AbortController();
@@ -143,6 +147,27 @@ export async function apiRequest<T>(path: string, init: RequestInit = {}): Promi
   }
 
   if (!response.ok || isFailedApiResponse(payload)) {
+    const shouldRefreshToken = (
+      response.status === 401
+      && Boolean(authorizationHeader)
+      && !hasRetriedAfterRefresh
+    );
+
+    if (shouldRefreshToken) {
+      try {
+        await refreshToken();
+      } catch {
+        clearAuthTokens();
+        throw new ApiError(getErrorMessage(payload), response.status, payload);
+      }
+
+      return apiRequest(path, init, true);
+    }
+
+    if (response.status === 401 && hasRetriedAfterRefresh) {
+      clearAuthTokens();
+    }
+
     throw new ApiError(getErrorMessage(payload), response.status, payload);
   }
 

@@ -1,7 +1,11 @@
 import GoogleIcon from "@/assets/Group.svg";
 import { getGoogleAuthorizationUrl } from "@/api/auth";
 
-export function GoogleLoginButton() {
+interface GoogleLoginButtonProps {
+  label?: string;
+}
+
+export function GoogleLoginButton({ label = "Google로 시작하기" }: GoogleLoginButtonProps) {
   const handleClick = () => {
     window.location.assign(getGoogleAuthorizationUrl());
   };
@@ -16,7 +20,7 @@ export function GoogleLoginButton() {
         aria-hidden="true"
         className="w-[17.38px] h-[18px] shrink-0"
       />
-      Google로 시작하기
+      {label}
     </button>
   );
 }

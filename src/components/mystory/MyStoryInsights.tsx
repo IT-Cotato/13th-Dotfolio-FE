@@ -19,6 +19,7 @@ import { Toast } from '@/components/common/Toast';
 import { useToast } from '@/hooks/useToast';
 import AiRecordIcon from '@/assets/ai_record.svg';
 import AiStarIcon from '@/assets/ai_star.svg';
+import CheckIcon from '@/assets/check.svg';
 import loadingBlueAnimation from '@/assets/Loading_blue.json';
 
 const Lottie =
@@ -280,8 +281,9 @@ export default function MyStoryInsights() {
         <p className="mt-1 text-body3-md text-grey-500">사용자의 경험 중 희망 직무 역량을 가장 잘 보여주는 경험을 추천해요.</p>
         <div className="mt-6 flex flex-wrap gap-2">
           {insight.recommendations.map((recommendation) => (
-            <button type="button" key={recommendation.jobCompetencyId} onClick={() => setSelectedCompetencyId((current) => current === recommendation.jobCompetencyId ? null : recommendation.jobCompetencyId)} aria-pressed={selectedCompetencyId === recommendation.jobCompetencyId} className={`flex h-12 cursor-pointer items-center justify-center gap-2 rounded-[14px] px-5 text-body2-md transition-colors ${selectedCompetencyId === recommendation.jobCompetencyId ? 'border border-primary-500 bg-primary-500 text-white' : 'border border-grey-100 bg-white text-grey-900'}`}>
-              {selectedCompetencyId === recommendation.jobCompetencyId && <span aria-hidden className="text-[22px] leading-none">✓</span>}{recommendation.competencyName}
+            <button type="button" key={recommendation.jobCompetencyId} onClick={() => setSelectedCompetencyId((current) => current === recommendation.jobCompetencyId ? null : recommendation.jobCompetencyId)} aria-pressed={selectedCompetencyId === recommendation.jobCompetencyId} className={`flex cursor-pointer items-center justify-center rounded-xl border px-3 py-2.5 text-body2-md transition-colors ${selectedCompetencyId === recommendation.jobCompetencyId ? 'gap-1.5 border-primary-500 bg-primary-500 text-white' : 'border-grey-100 bg-white text-grey-900'}`}>
+              {selectedCompetencyId === recommendation.jobCompetencyId && <CheckIcon aria-hidden className="h-auto w-4 shrink-0 text-white" />}
+              {recommendation.competencyName}
             </button>
           ))}
         </div>
@@ -292,7 +294,7 @@ export default function MyStoryInsights() {
         ) : selectedCompetencyId || insight.recommendations.length === 0 ? (
           <JobCompetencyEmpty />
         ) : (
-          <div className="mt-6 grid min-h-[220px] place-items-center rounded-2xl bg-grey-50 text-center text-body3-md leading-6 text-grey-600">원하는 역량을 선택하면<br />AI가 추천하는 대표 경험을 보여줍니다.</div>
+          <div className="mt-6 grid min-h-[220px] place-items-center rounded-2xl bg-grey-50 text-center text-body-reading2-r leading-6 text-grey-700">5가지 중 원하는 역량을 선택하면<br />AI가 추천하는 대표 경험을 보여줍니다.</div>
         )}
       </section>
     </Card>

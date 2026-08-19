@@ -25,10 +25,12 @@ async function restoreAuthentication() {
   try {
     const { data } = await refreshAccessToken();
 
-    if (hasAccessToken(data)) {
-      saveAuthTokens(data);
+    if (!hasAccessToken(data)) {
+      clearAuthTokens();
+      return false;
     }
 
+    saveAuthTokens(data);
     return true;
   } catch {
     clearAuthTokens();

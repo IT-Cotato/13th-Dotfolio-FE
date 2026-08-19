@@ -62,6 +62,16 @@ export function ImmersionRecord({
   const [saveError, setSaveError] = useState<string | null>(null);
   const memoActivityTitlesRef = useRef(new Map<string, string>());
   const currentRecord = records[currentIndex];
+  const areRequiredAnswersComplete = useMemo(
+    () =>
+      (currentRecord?.answers ?? [])
+        .filter((answer) => answer.required)
+        .every(
+          (answer) =>
+            (answers[answer.templateQuestionId] ?? "").trim().length > 0,
+        ),
+    [answers, currentRecord],
+  );
   const questions = useMemo<TemplateQuestion[]>(
     () =>
       [...(currentRecord?.answers ?? [])]
@@ -130,11 +140,7 @@ export function ImmersionRecord({
   };
 
   const handleSave = async () => {
-    if (!currentRecord || isSaving) return;
-
-    const isCompleted = currentRecord.answers
-      .filter((answer) => answer.required)
-      .every((answer) => (answers[answer.templateQuestionId] ?? "").trim());
+    if (!currentRecord || !areRequiredAnswersComplete || isSaving) return;
 
     setIsSaving(true);
     setSaveError(null);
@@ -150,10 +156,10 @@ export function ImmersionRecord({
           memoId: memo.memoId,
           collapsed: memo.collapsed,
         })),
-        status: isCompleted ? "COMPLETED" : "DRAFT",
+        status: "COMPLETED",
       });
 
-      const nextCompletedCount = completedCount + (isCompleted ? 1 : 0);
+      const nextCompletedCount = completedCount + 1;
       const savedRecord = withMemoActivityTitles(
         response.data,
         memoActivityTitlesRef.current,
@@ -277,7 +283,13 @@ export function ImmersionRecord({
                         : "저장하고 다음 기록"
                   }
                   size="compact"
-                  disabled={isLoading || loadError !== null || !currentRecord || isSaving}
+                  disabled={
+                    isLoading ||
+                    loadError !== null ||
+                    !currentRecord ||
+                    !areRequiredAnswersComplete ||
+                    isSaving
+                  }
                   onClick={handleSave}
                 />
                 {saveError && (

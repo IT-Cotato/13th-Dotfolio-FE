@@ -8,7 +8,7 @@ export function LandingFooter() {
 
         <div className="flex w-full flex-col items-start gap-4 text-xl leading-7 tracking-[-0.2px] text-grey-600">
           <p className="font-normal">
-            © 2026 Dotpolio. 하루의 작은 점들이 모여 나만의 포트폴리오가 되는 곳
+            © 2026 Dotfolio. 하루의 작은 점들이 모여 나만의 포트폴리오가 되는 곳
           </p>
           <p className="font-semibold">개인정보 처리방침</p>
         </div>

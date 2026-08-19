@@ -106,7 +106,9 @@ export function SignupForm() {
         (errorCode === DUPLICATE_EMAIL_CODE || error.message.includes("이미 가입된 이메일"));
 
       if (isGoogleAccountError) {
-        navigate(`/signup/google-account?email=${encodeURIComponent(requestedEmail)}`);
+        navigate("/signup/google-account", {
+          state: { email: requestedEmail },
+        });
       } else if (isDuplicateEmailError) {
         if (emailRef.current === requestedEmail) {
           setEmailErrorMessage(DUPLICATE_EMAIL_ERROR_MESSAGE);

@@ -22,9 +22,22 @@ interface InsightsReadyStateProps {
   generating: boolean;
 }
 
-export function InsightsReadyState({ eligibility, recordCount, generating }: InsightsReadyStateProps) {
+export function InsightsReadyState({
+  eligibility,
+  recordCount,
+  generating,
+}: InsightsReadyStateProps) {
   const requiredCount = eligibility?.requiredRecordCount ?? 10;
   const jobConfigured = eligibility?.reason !== 'JOB_NOT_CONFIGURED';
+  const analyzedRecordCount = eligibility?.analysisCompletedCount
+    ?? eligibility?.currentRecordCount
+    ?? 0;
+  const failedRecordCount = eligibility?.analysisFailedCount ?? 0;
+  const pendingRecordCount = eligibility?.analysisInProgressCount
+    ?? Math.max(
+      (eligibility?.totalRecordCount ?? recordCount) - analyzedRecordCount - failedRecordCount,
+      0,
+    );
 
   return (
     <Card className="relative items-stretch gap-0 rounded-t-[36px] p-6">
@@ -37,16 +50,29 @@ export function InsightsReadyState({ eligibility, recordCount, generating }: Ins
             <p className="mt-2 text-body2-md text-grey-700">쌓인 기록을 분석하고 있으니 잠시만 기다려 주세요.</p>
           </div>
         ) : (
-          <div className="translate-y-20">
+          <div className="w-full max-w-[420px] translate-y-20">
             <h2 className="text-sub1-sb text-grey-950">AI 인사이트를 시작하기 위한 준비</h2>
-            <div className="mx-auto mt-4 w-fit rounded-xl bg-grey-50 px-5 py-4 text-body-reading2-md text-grey-800">
-              <p className="flex items-center justify-center gap-1.5">
+            <div className="mx-auto mt-4 rounded-xl bg-grey-50 px-5 py-4 text-left text-body-reading2-md text-grey-800">
+              <p className="flex items-center gap-1.5">
                 ⚙️ 직무 설정하기
                 {jobConfigured
                   ? <CheckIcon aria-hidden className="h-auto w-3 shrink-0 text-primary-500" />
                   : '(마이페이지 > 희망 직무 설정)'}
               </p>
-              <p>📋 기록 {requiredCount}개 쌓기 (현재 {recordCount}개 / {requiredCount}개)</p>
+              <div className="mt-3 grid gap-2 border-t border-grey-100 pt-3">
+                <p className="flex items-center justify-between gap-4">
+                  <span>✅ 분석 완료된 기록</span>
+                  <strong className="text-label2-sb text-grey-900">{analyzedRecordCount}/{requiredCount}개</strong>
+                </p>
+                <p className="flex items-center justify-between gap-4">
+                  <span>⏳ 분석 중인 기록</span>
+                  <strong className="text-label2-sb text-grey-900">{pendingRecordCount}개</strong>
+                </p>
+                <div className="flex items-center justify-between gap-4">
+                  <span className="text-error-text">⚠️ 분석 실패한 기록</span>
+                  <strong className="text-label2-sb text-error-text">{failedRecordCount}개</strong>
+                </div>
+              </div>
             </div>
             <p className="mt-4 text-body2-md text-grey-700">희망 직무를 설정하고 기록을 채우시면,<br />맞춤형 강점과 역량을 분석해드려요.</p>
           </div>

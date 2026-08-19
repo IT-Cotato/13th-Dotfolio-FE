@@ -18,6 +18,10 @@ export interface InsightEligibilityResponse {
   nextAvailableAt: string | null;
   currentRecordCount: number;
   requiredRecordCount: number;
+  totalRecordCount?: number;
+  analysisCompletedCount?: number;
+  analysisFailedCount?: number;
+  analysisInProgressCount?: number;
 }
 
 export interface InsightGenerationCreateResponse {

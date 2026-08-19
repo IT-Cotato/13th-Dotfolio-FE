@@ -12,7 +12,7 @@ import {
   type LatestInsightResponse,
 } from '@/api/insight';
 import { ApiError } from '@/api/client';
-import { getRecords } from '@/api/records';
+import { getRecordDetail, getRecords } from '@/api/records';
 import { Button } from '@/components/common/button';
 import { Card } from '@/components/common/card';
 import { Toast } from '@/components/common/Toast';
@@ -198,6 +198,17 @@ export default function MyStoryInsights() {
     }
   }, [eligibility?.eligible, fireToast, generationId, isCreating]);
 
+  const openRecord = useCallback(async (recordId: string) => {
+    try {
+      const response = await getRecordDetail(recordId);
+      navigate(`/record/write/${response.data.templateId}`, {
+        state: { recordId: response.data.id },
+      });
+    } catch (error) {
+      fireToast(getErrorMessage(error, '연결된 기록을 불러오지 못했습니다.'), undefined, 'error');
+    }
+  }, [fireToast, navigate]);
+
   useEffect(() => {
     if (insight || !eligibility?.eligible || isCreating || generationId || hasRequestedInitialInsight.current) {
       return;
@@ -299,7 +310,7 @@ export default function MyStoryInsights() {
             ) : <p className="py-20 text-center text-body2-md text-grey-500">분석된 강점이 없습니다.</p>}
             {!selectedStrength && <p className="mt-auto flex items-center gap-2 pt-6 text-body3-md text-grey-500"><AiStarBadge />강점을 클릭하면 연결된 경험을 탐색할 수 있습니다</p>}
           </div>
-          {selectedStrength && <StrengthSummary strength={selectedStrength} />}
+          {selectedStrength && <StrengthSummary strength={selectedStrength} onOpenRecord={openRecord} />}
         </div>
       </section>
 
@@ -317,7 +328,7 @@ export default function MyStoryInsights() {
         {generating ? (
           <JobCompetencyLoading />
         ) : selectedRecommendation?.navigationAvailable ? (
-          <RecommendationCard recommendation={selectedRecommendation} onOpen={() => navigate(`/record?recordId=${selectedRecommendation.recordId}`)} />
+          <RecommendationCard recommendation={selectedRecommendation} onOpen={() => void openRecord(selectedRecommendation.recordId)} />
         ) : selectedCompetencyId || insight.recommendations.length === 0 ? (
           <JobCompetencyEmpty />
         ) : (
@@ -427,8 +438,7 @@ function StrengthCircle({ strength }: { strength: InsightStrengthResponse }) {
   );
 }
 
-function StrengthSummary({ strength }: { strength: InsightStrengthResponse }) {
-  const navigate = useNavigate();
+function StrengthSummary({ strength, onOpenRecord }: { strength: InsightStrengthResponse; onOpenRecord: (recordId: string) => Promise<void> }) {
   return (
     <aside className="min-w-0 bg-grey-50 p-6 md:p-8">
       <div className="rounded-2xl border border-primary-100 bg-primary-50 px-5 py-4">
@@ -445,7 +455,7 @@ function StrengthSummary({ strength }: { strength: InsightStrengthResponse }) {
             type="button"
             disabled={!record.navigationAvailable}
             key={record.recordId}
-            onClick={() => navigate(`/record?recordId=${record.recordId}`)}
+            onClick={() => void onOpenRecord(record.recordId)}
             className="group/record flex w-full cursor-pointer items-center justify-between border-b border-grey-100 py-5 text-left disabled:cursor-default"
           >
             <span className="min-w-0 pr-4">

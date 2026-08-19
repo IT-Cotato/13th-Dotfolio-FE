@@ -5,7 +5,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { refreshAccessToken } from "@/api/auth";
+import { hasAccessToken, refreshAccessToken } from "@/api/auth";
 import {
   AuthContext,
   type AccessTokenResponse,
@@ -24,6 +24,12 @@ async function restoreAuthentication() {
 
   try {
     const { data } = await refreshAccessToken();
+
+    if (!hasAccessToken(data)) {
+      clearAuthTokens();
+      return false;
+    }
+
     saveAuthTokens(data);
     return true;
   } catch {
@@ -76,6 +82,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       isInitializing,
       signIn: (response: AccessTokenResponse) => {
         saveAuthTokens(response);
+        setIsAuthenticated(true);
+      },
+      signInWithCookie: () => {
+        clearAuthTokens();
         setIsAuthenticated(true);
       },
       signOut: () => {

@@ -5,8 +5,10 @@ import Landing from "./landing";
 import Memo from "./memo";
 import Login from "./login";
 import Signup from "./signup";
+import SignupGoogleAccount from "./signup-google-account";
 import PasswordReset from "./password-reset";
 import PasswordResetConfirm from "./password-reset-confirm";
+import OAuthRedirect from "./oauth-redirect";
 import ImmersionGoalPage from "./immersion-goal";
 import ImmersionRecordPage from "./immersion-record";
 import ImmersionCompletePage from "./immersion-complete";
@@ -41,8 +43,10 @@ export default function Layout() {
         <Route path="/login" element={<Login />} />
       </Route>
       <Route path="/signup" element={<Signup />} />
+      <Route path="/signup/google-account" element={<SignupGoogleAccount />} />
       <Route path="/reset-password/request" element={<PasswordReset />} />
       <Route path="/reset-password" element={<PasswordResetConfirm />} />
+      <Route path="/oauth/redirect" element={<OAuthRedirect />} />
       <Route path="/" element={<Landing />} />
       <Route element={<ProtectedRoute />}>
         <Route path="/immersion/goal" element={<ImmersionGoalPage />} />

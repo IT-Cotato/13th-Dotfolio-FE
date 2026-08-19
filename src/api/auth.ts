@@ -1,5 +1,7 @@
 import { requestApi } from "@/api/client";
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL?.replace(/\/$/, "") ?? "";
+
 export interface SignupRequest {
   email: string;
   password: string;
@@ -16,6 +18,15 @@ export interface LoginRequest {
 
 export interface LoginResponse {
   accessToken: string;
+}
+
+export function hasAccessToken(data: unknown): data is LoginResponse {
+  return (
+    typeof data === "object"
+    && data !== null
+    && "accessToken" in data
+    && typeof data.accessToken === "string"
+  );
 }
 
 export interface PasswordResetRequest {
@@ -36,6 +47,10 @@ function getXsrfToken() {
   return cookie ? decodeURIComponent(cookie.slice("XSRF-TOKEN=".length)) : null;
 }
 
+export function getGoogleAuthorizationUrl() {
+  return `${API_BASE_URL}/oauth2/authorization/google`;
+}
+
 export function signup(request: SignupRequest) {
   return requestApi<string>("/api/auth/signup", {
     method: "POST",
@@ -54,7 +69,7 @@ export function login(request: LoginRequest) {
 export function refreshAccessToken() {
   const xsrfToken = getXsrfToken();
 
-  return requestApi<LoginResponse>("/api/auth/refresh", {
+  return requestApi<unknown>("/api/auth/refresh", {
     method: "POST",
     credentials: "include",
     headers: xsrfToken ? { "X-XSRF-TOKEN": xsrfToken } : undefined,

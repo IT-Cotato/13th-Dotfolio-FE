@@ -1,4 +1,4 @@
-import { refreshAccessToken } from "@/api/auth";
+import { hasAccessToken, refreshAccessToken } from "@/api/auth";
 import {
   clearAuthTokens,
   getAuthorizationHeader,
@@ -48,7 +48,9 @@ function refreshToken() {
   if (!refreshTokenPromise) {
     refreshTokenPromise = refreshAccessToken()
       .then(({ data }) => {
-        saveAuthTokens(data);
+        if (hasAccessToken(data)) {
+          saveAuthTokens(data);
+        }
       })
       .finally(() => {
         refreshTokenPromise = null;
@@ -129,6 +131,7 @@ export async function apiRequest<T>(
   try {
     response = await fetch(getApiUrl(path), {
       ...init,
+      credentials: init.credentials ?? "include",
       headers,
       signal: abortController.signal,
     });
@@ -212,6 +215,7 @@ export async function requestApi<T>(
     response = await fetch(apiUrl, {
       ...options,
       body: body === undefined ? undefined : JSON.stringify(body),
+      credentials: options.credentials ?? "include",
       headers: requestHeaders,
       signal: abortController.signal,
     });

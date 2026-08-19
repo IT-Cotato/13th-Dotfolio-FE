@@ -33,6 +33,9 @@ export const ActivityModal = ({ isOpen, onClose, onSubmit, activity }: ActivityM
   const endPickerRef = useRef<HTMLDivElement>(null);
   // 조회 요청끼리 순서가 뒤바뀌어 도착해도, 가장 나중에 보낸 요청의 응답만 반영되도록 추적.
   const fetchIdRef = useRef(0);
+  // 텍스트 드래그 중 마우스가 배경으로 나가서 click이 배경 자체에서 발생하는 경우와
+  // 실제로 배경을 클릭한 경우를 구분하기 위해, mousedown이 배경 자체에서 시작됐는지 추적.
+  const backdropMouseDownRef = useRef(false);
 
   useEffect(() => {
     if (!openPicker) return;
@@ -118,7 +121,12 @@ export const ActivityModal = ({ isOpen, onClose, onSubmit, activity }: ActivityM
     <div
       className="fixed inset-0 z-50 flex items-center justify-center"
       style={{ background: 'rgba(28, 28, 26, 0.62)' }}
-      onClick={() => { setOpenPicker(null); onClose(); }}
+      onMouseDown={e => { backdropMouseDownRef.current = e.target === e.currentTarget; }}
+      onClick={e => {
+        if (!backdropMouseDownRef.current || e.target !== e.currentTarget) return;
+        setOpenPicker(null);
+        onClose();
+      }}
     >
       <div
         className="relative w-full max-w-116 mx-4 bg-white rounded-3xl px-8 pt-6 pb-8 flex flex-col gap-8"

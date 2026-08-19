@@ -336,7 +336,15 @@ function InsightsReadyState({ eligibility, recordCount, generating }: { eligibil
         ) : (
           <div className="translate-y-20">
             <h2 className="text-sub1-sb text-grey-950">AI 인사이트를 시작하기 위한 준비</h2>
-            <div className="mx-auto mt-4 w-fit rounded-xl bg-grey-50 px-5 py-4 text-body-reading2-md text-grey-800"><p>⚙️ 직무 설정하기 {jobConfigured ? '✓' : '(마이페이지에서 설정해주세요)'}</p><p>📋 기록 {requiredCount}개 쌓기 (현재 {recordCount}개 / {requiredCount}개)</p></div>
+            <div className="mx-auto mt-4 w-fit rounded-xl bg-grey-50 px-5 py-4 text-body-reading2-md text-grey-800">
+              <p className="flex items-center justify-center gap-1.5">
+                ⚙️ 직무 설정하기
+                {jobConfigured
+                  ? <CheckIcon aria-hidden className="h-auto w-3 shrink-0 text-primary-500" />
+                  : '(마이페이지 > 희망 직무 설정)'}
+              </p>
+              <p>📋 기록 {requiredCount}개 쌓기 (현재 {recordCount}개 / {requiredCount}개)</p>
+            </div>
             <p className="mt-4 text-body2-md text-grey-700">희망 직무를 설정하고 기록을 채우시면,<br />맞춤형 강점과 역량을 분석해드려요.</p>
           </div>
         )}

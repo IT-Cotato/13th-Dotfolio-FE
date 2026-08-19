@@ -55,7 +55,7 @@ export function MyStoryTimeline({
                       <h2 className="text-sub1-sb">{activity.title}</h2>
                       <ArrowIcon
                         className={`size-4 shrink-0 text-grey-400 transition-transform ${
-                          open ? 'rotate-90' : '-rotate-90'
+                          open ? '-rotate-90' : 'rotate-90'
                         }`}
                       />
                     </div>

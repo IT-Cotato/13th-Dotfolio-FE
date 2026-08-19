@@ -115,8 +115,8 @@ export const MemoDetailModal = ({ memo, onClose, onUpdate, onDelete, onToggleImp
     const textarea = contentRef.current;
     if (!textarea) return;
     textarea.style.height = '0px';
-    textarea.style.height = `${Math.max(208, textarea.scrollHeight)}px`;
-  }, [content]);
+    textarea.style.height = `${Math.max(memo.images.length ? 0 : 208, textarea.scrollHeight)}px`;
+  }, [content, memo.images.length]);
 
   return (
     <div className="fixed inset-0 z-40 flex items-center justify-center bg-grey-950/55 px-5" onMouseDown={() => void closeAndSave()}>
@@ -174,6 +174,7 @@ export const MemoDetailModal = ({ memo, onClose, onUpdate, onDelete, onToggleImp
 
             <textarea
               ref={contentRef}
+              rows={1}
               aria-label="메모 내용"
               aria-invalid={contentError}
               aria-describedby={contentError ? 'memo-content-error' : undefined}
@@ -184,7 +185,7 @@ export const MemoDetailModal = ({ memo, onClose, onUpdate, onDelete, onToggleImp
                 if (event.target.value.trim()) setContentError(false);
               }}
               onBlur={() => void saveChanges()}
-              className={`min-h-[208px] w-full resize-none overflow-hidden rounded-lg bg-transparent text-body-reading2-md text-grey-900 outline-none ${
+              className={`${memo.images.length ? 'min-h-0' : 'min-h-[208px]'} w-full resize-none overflow-hidden rounded-lg bg-transparent text-body-reading2-md text-grey-900 outline-none ${
                 contentError ? 'ring-1 ring-error-text' : ''
               }`}
             />
@@ -195,7 +196,7 @@ export const MemoDetailModal = ({ memo, onClose, onUpdate, onDelete, onToggleImp
             )}
 
             {memo.images.map((image, index) => (
-              <div key={image.id} className="relative overflow-hidden rounded-sm">
+              <div key={image.id} className={`relative overflow-hidden rounded-sm ${index === 0 ? '-mt-3' : ''}`}>
                 <img
                   src={image.imageUrl}
                   alt={`메모 활동 첨부 이미지 ${index + 1}`}

@@ -20,6 +20,15 @@ export interface LoginResponse {
   accessToken: string;
 }
 
+export function hasAccessToken(data: unknown): data is LoginResponse {
+  return (
+    typeof data === "object"
+    && data !== null
+    && "accessToken" in data
+    && typeof data.accessToken === "string"
+  );
+}
+
 export interface PasswordResetRequest {
   email: string;
 }
@@ -64,7 +73,7 @@ export function login(request: LoginRequest) {
 export function refreshAccessToken() {
   const xsrfToken = getXsrfToken();
 
-  return requestApi<LoginResponse>("/api/auth/refresh", {
+  return requestApi<unknown>("/api/auth/refresh", {
     method: "POST",
     credentials: "include",
     headers: xsrfToken ? { "X-XSRF-TOKEN": xsrfToken } : undefined,

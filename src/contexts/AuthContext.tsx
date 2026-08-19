@@ -5,7 +5,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { refreshAccessToken } from "@/api/auth";
+import { hasAccessToken, refreshAccessToken } from "@/api/auth";
 import {
   AuthContext,
   type AccessTokenResponse,
@@ -24,7 +24,11 @@ async function restoreAuthentication() {
 
   try {
     const { data } = await refreshAccessToken();
-    saveAuthTokens(data);
+
+    if (hasAccessToken(data)) {
+      saveAuthTokens(data);
+    }
+
     return true;
   } catch {
     clearAuthTokens();

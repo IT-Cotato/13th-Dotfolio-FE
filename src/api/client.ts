@@ -1,4 +1,4 @@
-import { refreshAccessToken } from "@/api/auth";
+import { hasAccessToken, refreshAccessToken } from "@/api/auth";
 import {
   clearAuthTokens,
   getAuthorizationHeader,
@@ -48,7 +48,9 @@ function refreshToken() {
   if (!refreshTokenPromise) {
     refreshTokenPromise = refreshAccessToken()
       .then(({ data }) => {
-        saveAuthTokens(data);
+        if (hasAccessToken(data)) {
+          saveAuthTokens(data);
+        }
       })
       .finally(() => {
         refreshTokenPromise = null;

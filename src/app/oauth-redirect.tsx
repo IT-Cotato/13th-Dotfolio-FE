@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import { refreshAccessToken } from "@/api/auth";
 import { useAuth } from "@/hooks/useAuth";
 
 export default function OAuthRedirect() {
@@ -13,8 +14,18 @@ export default function OAuthRedirect() {
     }
 
     hasHandledRedirectRef.current = true;
-    signInWithCookie();
-    navigate("/home", { replace: true });
+
+    const validateSession = async () => {
+      try {
+        await refreshAccessToken();
+        signInWithCookie();
+        navigate("/home", { replace: true });
+      } catch {
+        navigate("/login?error=google", { replace: true });
+      }
+    };
+
+    void validateSession();
   }, [navigate, signInWithCookie]);
 
   return null;

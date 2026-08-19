@@ -47,12 +47,22 @@ export function InsightJobCompetencySection({ insight, selectedCompetencyId, gen
 function RecommendationCard({ recommendation, onOpen }: { recommendation: InsightJobRecommendationResponse; onOpen: () => void }) {
   return (
     <div className="mt-6 rounded-2xl bg-grey-50 p-6">
-      <h3 className="text-sub1-sb text-grey-900">{recommendation.recordTitle}</h3>
+      <div className="flex items-center justify-between gap-4">
+        <h3 className="min-w-0 text-sub1-sb text-grey-900">{recommendation.recordTitle}</h3>
+        <button
+          type="button"
+          disabled={!recommendation.navigationAvailable}
+          onClick={onOpen}
+          className="flex shrink-0 cursor-pointer items-center gap-1.5 text-body2-md text-primary-500 disabled:cursor-default disabled:text-grey-300"
+        >
+          기록보기
+          <AiRecordIcon aria-hidden className="size-5" />
+        </button>
+      </div>
       <p className="mt-2 text-body3-md text-grey-500">{recommendation.templateName}</p>
       <div className="mt-6 flex items-center gap-5 border-t border-grey-100 pt-6">
         <span className="flex shrink-0 items-center gap-2 text-body3-md text-grey-500"><AiStarBadge /> AI 추천 이유</span>
         <p className="text-body2-md text-grey-700">{recommendation.reason}</p>
-        <button type="button" disabled={!recommendation.navigationAvailable} onClick={onOpen} aria-label="추천 기록 보기" className="ml-auto shrink-0 cursor-pointer text-primary-500 disabled:cursor-default disabled:text-grey-300"><AiRecordIcon className="size-5" /></button>
       </div>
     </div>
   );

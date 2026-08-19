@@ -20,12 +20,16 @@ interface InsightsReadyStateProps {
   eligibility: InsightEligibilityResponse | null;
   recordCount: number;
   generating: boolean;
+  retryingAnalysis: boolean;
+  onRetryAnalysis: () => void;
 }
 
 export function InsightsReadyState({
   eligibility,
   recordCount,
   generating,
+  retryingAnalysis,
+  onRetryAnalysis,
 }: InsightsReadyStateProps) {
   const requiredCount = eligibility?.requiredRecordCount ?? 10;
   const jobConfigured = eligibility?.reason !== 'JOB_NOT_CONFIGURED';
@@ -70,7 +74,19 @@ export function InsightsReadyState({
                 </p>
                 <div className="flex items-center justify-between gap-4">
                   <span className="text-error-text">⚠️ 분석 실패한 기록</span>
-                  <strong className="text-label2-sb text-error-text">{failedRecordCount}개</strong>
+                  <div className="flex items-center gap-2">
+                    <strong className="text-label2-sb text-error-text">{failedRecordCount}개</strong>
+                    {failedRecordCount > 0 && (
+                      <button
+                        type="button"
+                        onClick={onRetryAnalysis}
+                        disabled={retryingAnalysis}
+                        className="cursor-pointer rounded-lg border border-error-border bg-white px-3 py-1 text-label3-sb text-error-text transition-colors hover:bg-error-bg disabled:cursor-default disabled:opacity-50"
+                      >
+                        {retryingAnalysis ? '재시도 중...' : '재시도'}
+                      </button>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>

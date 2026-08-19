@@ -1,5 +1,7 @@
+import { useEffect, useState } from 'react';
 import LottieLib from 'lottie-react';
 import type { InsightJobRecommendationResponse, LatestInsightResponse } from '@/api/insight';
+import { getRecordDetail } from '@/api/records';
 import AiRecordIcon from '@/assets/ai_record.svg';
 import CheckIcon from '@/assets/check.svg';
 import loadingBlueAnimation from '@/assets/Loading_blue.json';
@@ -18,6 +20,32 @@ interface InsightJobCompetencySectionProps {
 
 export function InsightJobCompetencySection({ insight, selectedCompetencyId, generating, onSelectCompetency, onOpenRecord }: InsightJobCompetencySectionProps) {
   const selectedRecommendation = insight.recommendations.find((item) => item.jobCompetencyId === selectedCompetencyId);
+  const [loadedRecord, setLoadedRecord] = useState<{ recordId: string; content: string } | null>(null);
+  const selectedRecordId = selectedRecommendation?.recordId;
+  const recordContent = loadedRecord && loadedRecord.recordId === selectedRecordId ? loadedRecord.content : '';
+  const isContentLoading = Boolean(selectedRecordId) && loadedRecord?.recordId !== selectedRecordId;
+
+  useEffect(() => {
+    if (!selectedRecordId) return;
+
+    let active = true;
+
+    getRecordDetail(selectedRecordId)
+      .then((response) => {
+        if (!active) return;
+        const firstAnswer = [...response.data.answers]
+          .sort((a, b) => a.sortOrder - b.sortOrder)
+          .find((answer) => answer.answerText.trim());
+        setLoadedRecord({ recordId: selectedRecordId, content: firstAnswer?.answerText ?? '' });
+      })
+      .catch(() => {
+        if (active) setLoadedRecord({ recordId: selectedRecordId, content: '' });
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [selectedRecordId]);
 
   return (
     <section className="rounded-2xl border border-grey-100 p-6">
@@ -34,7 +62,12 @@ export function InsightJobCompetencySection({ insight, selectedCompetencyId, gen
       {generating ? (
         <JobCompetencyLoading />
       ) : selectedRecommendation?.navigationAvailable ? (
-        <RecommendationCard recommendation={selectedRecommendation} onOpen={() => void onOpenRecord(selectedRecommendation.recordId)} />
+        <RecommendationCard
+          recommendation={selectedRecommendation}
+          recordContent={recordContent}
+          isContentLoading={isContentLoading}
+          onOpen={() => void onOpenRecord(selectedRecommendation.recordId)}
+        />
       ) : selectedCompetencyId || insight.recommendations.length === 0 ? (
         <JobCompetencyEmpty />
       ) : (
@@ -44,7 +77,14 @@ export function InsightJobCompetencySection({ insight, selectedCompetencyId, gen
   );
 }
 
-function RecommendationCard({ recommendation, onOpen }: { recommendation: InsightJobRecommendationResponse; onOpen: () => void }) {
+interface RecommendationCardProps {
+  recommendation: InsightJobRecommendationResponse;
+  recordContent: string;
+  isContentLoading: boolean;
+  onOpen: () => void;
+}
+
+function RecommendationCard({ recommendation, recordContent, isContentLoading, onOpen }: RecommendationCardProps) {
   return (
     <div className="mt-6 rounded-2xl bg-grey-50 p-6">
       <div className="flex items-center justify-between gap-4">
@@ -59,7 +99,9 @@ function RecommendationCard({ recommendation, onOpen }: { recommendation: Insigh
           <AiRecordIcon aria-hidden className="size-5" />
         </button>
       </div>
-      <p className="mt-2 text-body3-md text-grey-500">{recommendation.templateName}</p>
+      <p className="mt-2 text-body3-md text-grey-500">
+        {isContentLoading ? '기록 내용을 불러오는 중...' : recordContent}
+      </p>
       <div className="mt-6 flex items-center gap-5 border-t border-grey-100 pt-6">
         <span className="flex shrink-0 items-center gap-2 text-body3-md text-grey-500"><AiStarBadge /> AI 추천 이유</span>
         <p className="text-body2-md text-grey-700">{recommendation.reason}</p>

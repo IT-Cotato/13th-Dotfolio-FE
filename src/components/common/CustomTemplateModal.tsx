@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Button } from '@/components/common/button';
 import CloseIcon from '@/assets/close.svg';
 import AddIcon from '@/assets/add.svg';
@@ -36,6 +36,9 @@ export const CustomTemplateModal = ({ isOpen, onClose, onSubmit }: CustomTemplat
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
+  // 텍스트 드래그 중 마우스가 배경으로 나가서 click이 배경 자체에서 발생하는 경우와
+  // 실제로 배경을 클릭한 경우를 구분하기 위해, mousedown이 배경 자체에서 시작됐는지 추적.
+  const backdropMouseDownRef = useRef(false);
 
   if (!isOpen) return null;
 
@@ -83,7 +86,11 @@ export const CustomTemplateModal = ({ isOpen, onClose, onSubmit }: CustomTemplat
     <div
       className="fixed inset-0 z-50 flex items-center justify-center"
       style={{ background: '#1C1C1A9E' }}
-      onClick={handleClose}
+      onMouseDown={e => { backdropMouseDownRef.current = e.target === e.currentTarget; }}
+      onClick={e => {
+        if (!backdropMouseDownRef.current || e.target !== e.currentTarget) return;
+        handleClose();
+      }}
     >
       <div
         className="relative w-165 h-206 max-w-[calc(100vw-2rem)] max-h-[calc(100vh-2rem)] bg-white rounded-3xl p-8 overflow-y-auto scrollbar-hide"

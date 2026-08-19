@@ -43,16 +43,28 @@ const getErrorMessage = (error: unknown, fallback: string) => (
 
 const formatPercent = (ratio: number) => Math.round(Math.max(0, Math.min(1, ratio)) * 100);
 
-const formatNextAvailable = (value: string | null) => {
-  if (!value) return '';
+const formatRecordMonth = (value: string) => {
+  const yearMonth = /^(\d{4})-(\d{2})/.exec(value);
+  if (yearMonth) return `${yearMonth[1]}.${yearMonth[2]}`;
+
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return value;
-  return date.toLocaleString('ko-KR', {
-    month: 'long',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  });
+  return `${date.getFullYear()}.${String(date.getMonth() + 1).padStart(2, '0')}`;
+};
+
+const formatRemainingTime = (value: string | null, currentTime: number) => {
+  if (!value) return '00:00:00';
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return '00:00:00';
+
+  const totalSeconds = Math.max(0, Math.ceil((date.getTime() - currentTime) / 1000));
+  const hours = Math.floor(totalSeconds / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
+
+  return [hours, minutes, seconds]
+    .map((unit) => String(unit).padStart(2, '0'))
+    .join(':');
 };
 
 export default function MyStoryInsights() {
@@ -233,7 +245,10 @@ export default function MyStoryInsights() {
   return (
     <Card className="relative items-stretch gap-0 rounded-t-[36px] p-6">
       {toast && <div className="fixed left-1/2 top-5 z-[100] -translate-x-1/2"><Toast message={toast.message} variant={toast.variant} /></div>}
-      <h1 className="mb-6 text-title1 text-grey-900">인사이트</h1>
+      <header className="mb-0">
+        <h1 className="text-title1 text-grey-900">인사이트</h1>
+        <p className="mt-1 text-body2-md text-grey-500">총 {insight.analyzedRecordCount}개의 기록을 분석했어요.</p>
+      </header>
 
       <div className="grid gap-4 lg:grid-cols-[minmax(0,464px)_1fr]">
         <InsightUpdateCard
@@ -244,14 +259,14 @@ export default function MyStoryInsights() {
         />
         <section className="rounded-2xl border border-grey-100 p-6">
           <h2 className="text-title2 text-grey-900">기록 템플릿 분포</h2>
-          <p className="mt-1 text-body3-md text-grey-500">어떤 유형의 기록을 주로 남기는지 볼 수 있어요.</p>
+          <p className="mt-1 text-body2-md text-grey-500">어떤 유형의 기록을 주로 남기는지 볼 수 있어요.</p>
           <div className="mt-6 grid gap-4">
             {insight.templates.map((template, index) => {
               const percent = formatPercent(template.ratio);
               const color = COLORS[index % COLORS.length];
               return (
                 <div key={template.templateId}>
-                  <div className="mb-2 flex justify-between text-body3-md text-grey-800"><span>{template.templateName}</span><strong style={{ color }}>{percent}%</strong></div>
+                  <div className="mb-2 flex justify-between text-body3-md text-grey-900"><span>{template.templateName}</span><strong style={{ color }}>{percent}%</strong></div>
                   <div className="h-2 overflow-hidden rounded-full bg-grey-100"><span className="block h-full rounded-full" style={{ width: `${percent}%`, backgroundColor: color }} /></div>
                 </div>
               );
@@ -261,10 +276,10 @@ export default function MyStoryInsights() {
         </section>
       </div>
 
-      <section className="mt-4 rounded-2xl border border-grey-100 p-6">
+      <section className="rounded-2xl border border-grey-100 p-6">
         <div className="flex items-start justify-between">
           <div><h2 className="text-title2 text-grey-900">Top 5 강점</h2><p className="mt-1 text-body3-md text-grey-500">AI가 {insight.analyzedRecordCount}개의 기록을 분석하여 도출한 핵심 강점이에요.</p></div>
-          {selectedStrength && <button type="button" onClick={() => setSelectedStrengthId(null)} className="cursor-pointer text-body3-md text-grey-500">전체 강점보기</button>}
+          {selectedStrength && <button type="button" onClick={() => setSelectedStrengthId(null)} className="cursor-pointer text-body2-md text-grey-500">전체 강점보기</button>}
         </div>
         {selectedStrength ? (
           <StrengthDetail strength={selectedStrength} />
@@ -273,10 +288,10 @@ export default function MyStoryInsights() {
             {insight.strengths.map((strength, index) => <StrengthBubble key={strength.strengthTagId} strength={strength} index={index} onClick={() => setSelectedStrengthId(strength.strengthTagId)} />)}
           </div>
         ) : <p className="py-20 text-center text-body2-md text-grey-500">분석된 강점이 없습니다.</p>}
-        <p className="mt-3 flex items-center gap-2 text-body3-md text-grey-400"><AiStarBadge />강점을 클릭하면 연결된 경험을 탐색할 수 있습니다</p>
+        <p className="mt-3 flex items-center gap-2 text-body3-md text-grey-500"><AiStarBadge />강점을 클릭하면 연결된 경험을 탐색할 수 있습니다</p>
       </section>
 
-      <section className="mt-4 rounded-2xl border border-grey-100 p-6">
+      <section className="rounded-2xl border border-grey-100 p-6">
         <h2 className="text-title2 text-grey-900">직무역량 <span className="text-primary-500">[희망 직무: {insight.job.jobName}]</span></h2>
         <p className="mt-1 text-body3-md text-grey-500">사용자의 경험 중 희망 직무 역량을 가장 잘 보여주는 경험을 추천해요.</p>
         <div className="mt-6 flex flex-wrap gap-2">
@@ -331,17 +346,39 @@ function InsightsReadyState({ eligibility, recordCount, generating }: { eligibil
 }
 
 function InsightUpdateCard({ insight, eligibility, generating, onCreate }: { insight: LatestInsightResponse; eligibility: InsightEligibilityResponse | null; generating: boolean; onCreate: () => void }) {
+  const isCooldown = eligibility?.reason === 'COOLDOWN';
+  const [currentTime, setCurrentTime] = useState(() => Date.now());
+
+  useEffect(() => {
+    if (!isCooldown) return;
+
+    const intervalId = window.setInterval(() => setCurrentTime(Date.now()), 1000);
+    return () => window.clearInterval(intervalId);
+  }, [isCooldown, eligibility?.nextAvailableAt]);
+
   const disabled = generating || !eligibility?.eligible;
-  const buttonLabel = generating ? '인사이트 생성 중...' : eligibility?.reason === 'COOLDOWN' ? formatNextAvailable(eligibility.nextAvailableAt) : '새로운 인사이트 생성';
+  const buttonLabel = generating
+    ? '인사이트 생성 중...'
+    : isCooldown
+      ? formatRemainingTime(eligibility.nextAvailableAt, currentTime)
+      : '새로운 인사이트 생성';
+  const helperMessage = isCooldown
+    ? '인사이트는 1일 1회 생성가능해요.'
+    : eligibility?.reason === 'NO_CHANGES'
+      ? '새로운 변경사항이 없습니다.'
+      : '';
+
   return (
     <section className="flex min-h-[352px] flex-col rounded-2xl border border-grey-100 p-6">
-      <h2 className="text-title2 text-grey-900">새로운 인사이트</h2><p className="mt-1 text-body3-md text-grey-500">마지막 업데이트 이후 변경사항이 있어요.</p>
+      <h2 className="text-title2 text-grey-900">새로운 인사이트</h2><p className="mt-1 text-body2-md text-grey-500">마지막 업데이트 이후 변경사항이 있어요.</p>
       <div className="mt-6 grid gap-2">
-        <div className="flex items-center gap-3 rounded-xl border border-primary-100 bg-primary-50 px-4 py-3"><span className="grid size-9 shrink-0 place-items-center rounded-full bg-white"><img src={DOCUMENT_ICON_URL} alt="" className="size-5" /></span><div><span className="text-label3-md text-grey-500">새 기록</span><strong className="block text-label2-sb text-grey-900">{insight.changes.newCompletedRecordCount}개 추가됨</strong></div></div>
-        <div className="flex items-center gap-3 rounded-xl border border-category-pink bg-category-pink-bg px-4 py-3"><span className="grid size-9 shrink-0 place-items-center rounded-full bg-white"><img src={BRIEFCASE_ICON_URL} alt="" className="size-5" /></span><div><span className="text-label3-md text-grey-500">희망 직무</span><strong className="block text-label2-sb text-grey-900">{insight.changes.desiredJobChanged ? '변경됨' : insight.job.jobName}</strong></div></div>
+        <div className="flex items-center gap-3 rounded-xl border border-primary-100 bg-primary-50 px-4 py-3"><span className="grid size-9 shrink-0 place-items-center rounded-full bg-white"><img src={DOCUMENT_ICON_URL} alt="" className="size-5" /></span><div><span className="text-label2-md text-grey-600">새 기록</span><strong className="block text-label2-sb text-grey-900">{insight.changes.newCompletedRecordCount}개 추가됨</strong></div></div>
+        <div className="flex items-center gap-3 rounded-xl border border-category-pink bg-category-pink-bg px-4 py-3"><span className="grid size-9 shrink-0 place-items-center rounded-full bg-white"><img src={BRIEFCASE_ICON_URL} alt="" className="size-5" /></span><div><span className="text-label2-md text-grey-600">희망 직무</span><strong className="block text-label2-sb text-grey-900">{insight.changes.desiredJobChanged ? '변경됨' : insight.job.jobName}</strong></div></div>
       </div>
-      <div className="mt-auto pt-6"><Button disabled={disabled} onClick={onCreate} label={buttonLabel || '새로운 인사이트 생성'} /></div>
-      {!eligibility?.eligible && eligibility?.reason === 'NO_CHANGES' && <p className="mt-2 text-center text-label3-md text-grey-500">새로운 변경사항이 없습니다.</p>}
+      <div className="mt-auto pt-6">
+        <Button disabled={disabled} onClick={onCreate} label={buttonLabel} />
+        {helperMessage && <p className="mt-2 text-center text-body3-md text-grey-500">{helperMessage}</p>}
+      </div>
     </section>
   );
 }
@@ -356,7 +393,42 @@ function StrengthBubble({ strength, index, onClick }: { strength: InsightStrengt
 function StrengthDetail({ strength }: { strength: InsightStrengthResponse }) {
   const navigate = useNavigate();
   const color = COLORS[(strength.rank - 1) % COLORS.length];
-  return <div className="mt-6 grid min-h-[330px] gap-6 md:grid-cols-2"><div className="grid place-items-center rounded-2xl bg-grey-50"><div className="text-center"><span className="mx-auto grid size-32 place-items-center rounded-full text-white" style={{ background: `radial-gradient(circle, ${color}, ${color}33 68%, transparent 72%)` }}>{strength.rank}</span><strong className="mt-2 block text-title2" style={{ color }}>{strength.strengthName}</strong><span className="text-body3-md text-grey-500">{strength.recordCount}개 · 평균 {formatPercent(strength.averageScore)}점</span></div></div><div className="rounded-2xl bg-grey-50 p-6"><div className="rounded-xl bg-primary-50 p-4 text-label1-md text-grey-900"><span className="mb-2 flex items-center gap-2 text-label2-md text-primary-500"><AiStarBadge /> AI 분석</span><strong>전체 분석 기록의 {formatPercent(strength.ratio)}%에서 나타난 강점입니다.</strong></div><h3 className="mt-5 text-body2-md text-grey-600">연결된 기록 ({strength.records.length})</h3>{strength.records.map((record) => <button type="button" disabled={!record.navigationAvailable} key={record.recordId} onClick={() => navigate(`/record?recordId=${record.recordId}`)} className="flex w-full cursor-pointer items-center justify-between border-b border-grey-100 py-4 text-left text-body2-md text-grey-900 disabled:cursor-default disabled:text-grey-400"><span>{record.recordTitle}</span><AiRecordIcon className="size-4 shrink-0" /></button>)}</div></div>;
+  return (
+    <div className="mt-6 grid min-h-[330px] gap-6 md:grid-cols-2">
+      <div className="grid place-items-center rounded-2xl">
+        <div className="text-center">
+          <span className="mx-auto grid size-32 place-items-center rounded-full text-white" style={{ background: `radial-gradient(circle, ${color}, ${color}33 68%, transparent 72%)` }}>{strength.rank}</span>
+          <strong className="mt-2 block text-title2" style={{ color }}>{strength.strengthName}</strong>
+          <span className="text-body2-md text-grey-600">{strength.recordCount}개</span>
+        </div>
+      </div>
+      <div className="rounded-2xl p-6">
+        <div className="rounded-xl border border-primary-100 bg-primary-50 p-4">
+          <span className="mb-2 flex items-center gap-2 text-body2-md text-primary-500">
+            <AiStarIcon className="size-4 shrink-0 [&_path]:fill-current" />
+            AI 요약
+          </span>
+          <p className="text-label1-sb text-grey-900">전체 분석 기록의 {formatPercent(strength.ratio)}%에서 나타난 강점입니다.</p>
+        </div>
+        <h3 className="mt-5 text-body2-md text-grey-600">연결된 기록 ({strength.records.length})</h3>
+        {strength.records.map((record) => (
+          <button
+            type="button"
+            disabled={!record.navigationAvailable}
+            key={record.recordId}
+            onClick={() => navigate(`/record?recordId=${record.recordId}`)}
+            className="group/record flex w-full cursor-pointer items-start justify-between border-b border-grey-100 py-4 text-left disabled:cursor-default"
+          >
+            <span className="min-w-0 pr-4">
+              <span className="block truncate text-sub1-sb text-grey-900 group-disabled/record:text-grey-400">{record.recordTitle}</span>
+              <time dateTime={record.completedAt} className="mt-1 block text-body2-md text-grey-500 group-disabled/record:text-grey-400">{formatRecordMonth(record.completedAt)}</time>
+            </span>
+            <AiRecordIcon className="mt-1 size-4 shrink-0 text-primary-500 group-disabled/record:text-grey-300" />
+          </button>
+        ))}
+      </div>
+    </div>
+  );
 }
 
 function RecommendationCard({ recommendation, onOpen }: { recommendation: InsightJobRecommendationResponse; onOpen: () => void }) {
@@ -376,8 +448,8 @@ function JobCompetencyLoading() {
         loop
         className="size-20 shrink-0"
       />
-      <p className="mt-2 text-body2-md text-grey-700">직무 역량과 딱 맞는 나의 경험을 연결하는 중이에요.</p>
-      <p className="mt-1 text-body3-md text-grey-500">쌓인 기록이 많다면 잠시만 기다려 주세요!</p>
+      <p className="mt-2 text-sub2-sb text-grey-700">직무 역량과 딱 맞는 나의 경험을 연결하는 중이에요.</p>
+      <p className="mt-1 text-body3-r text-grey-700">쌓인 기록이 많다면 잠시만 기다려 주세요!</p>
     </div>
   );
 }
@@ -385,12 +457,12 @@ function JobCompetencyLoading() {
 function JobCompetencyEmpty() {
   return (
     <div className="mt-6 flex min-h-[220px] flex-col items-center justify-center rounded-2xl bg-grey-50 px-6 text-center">
-      <p className="text-body2-md text-grey-700">아직 이 역량을 보여줄 기록이 없어요.</p>
-      <p className="mt-2 text-body3-md text-grey-500">새로운 경험을 쌓고 기록으로 남겨보세요!</p>
+      <p className="text-sub2-sb text-grey-700">아직 이 역량을 보여줄 기록이 없어요.</p>
+      <p className="mt-2 text-body3-r text-grey-700">새로운 경험을 쌓고 기록으로 남겨보세요!</p>
     </div>
   );
 }
 
 function AiStarBadge() {
-  return <span className="grid size-6 shrink-0 place-items-center rounded-lg bg-primary-50"><AiStarIcon className="size-4 text-primary-500" /></span>;
+  return <span className="grid size-6 shrink-0 place-items-center rounded-lg border border-primary-100 bg-primary-50"><AiStarIcon className="size-4 text-primary-500 [&_path]:fill-current" /></span>;
 }

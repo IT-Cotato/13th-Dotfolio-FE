@@ -29,7 +29,7 @@ export const RecordList = ({ records, onDeleteClick, onRecordClick }: RecordList
             className={`flex flex-col gap-2 py-4 ${onRecordClick ? 'cursor-pointer' : ''}`}
             onClick={() => onRecordClick?.(record)}
           >
-            <p className="text-grey-900 text-sub2-sb">제목 : {record.title}</p>
+            <p className="text-grey-900 text-sub2-sb">{record.title}</p>
             <p className="text-grey-700 text-body3-r">{record.date}</p>
           </div>
           <div className="justify-self-center">

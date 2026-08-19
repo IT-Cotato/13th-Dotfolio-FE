@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { refreshAccessToken } from "@/api/auth";
+import { hasAccessToken, refreshAccessToken } from "@/api/auth";
 import { useAuth } from "@/hooks/useAuth";
 
 export default function OAuthRedirect() {
@@ -17,7 +17,13 @@ export default function OAuthRedirect() {
 
     const validateSession = async () => {
       try {
-        await refreshAccessToken();
+        const { data } = await refreshAccessToken();
+
+        if (!hasAccessToken(data)) {
+          navigate("/login?error=google", { replace: true });
+          return;
+        }
+
         signInWithCookie();
         navigate("/home", { replace: true });
       } catch {

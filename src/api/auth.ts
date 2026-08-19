@@ -1,6 +1,6 @@
 import { requestApi } from "@/api/client";
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL?.replace(/\/$/, "");
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL?.replace(/\/$/, "") ?? "";
 
 export interface SignupRequest {
   email: string;
@@ -48,10 +48,6 @@ function getXsrfToken() {
 }
 
 export function getGoogleAuthorizationUrl() {
-  if (!API_BASE_URL) {
-    throw new Error("[auth] VITE_API_BASE_URL이 설정되지 않았습니다.");
-  }
-
   return `${API_BASE_URL}/oauth2/authorization/google`;
 }
 

@@ -14,6 +14,15 @@ const POSITIONS = [
 
 const formatPercent = (ratio: number) => Math.round(Math.max(0, Math.min(1, ratio)) * 100);
 
+const getBubbleCoreSize = (recordCount: number, minRecordCount: number, maxRecordCount: number) => {
+  const minSize = 52;
+  const maxSize = 100;
+  if (minRecordCount === maxRecordCount) return Math.round((minSize + maxSize) / 2);
+
+  const normalizedCount = (recordCount - minRecordCount) / (maxRecordCount - minRecordCount);
+  return Math.round(minSize + normalizedCount * (maxSize - minSize));
+};
+
 const formatRecordMonth = (value: string) => {
   const yearMonth = /^(\d{4})-(\d{2})/.exec(value);
   if (yearMonth) return `${yearMonth[1]}.${yearMonth[2]}`;
@@ -31,6 +40,9 @@ interface InsightStrengthSectionProps {
 
 export function InsightStrengthSection({ insight, selectedStrengthId, onSelectStrength, onOpenRecord }: InsightStrengthSectionProps) {
   const selectedStrength = insight.strengths.find((item) => item.strengthTagId === selectedStrengthId);
+  const recordCounts = insight.strengths.map((strength) => strength.recordCount);
+  const minRecordCount = recordCounts.length ? Math.min(...recordCounts) : 0;
+  const maxRecordCount = recordCounts.length ? Math.max(...recordCounts) : 0;
 
   return (
     <section className="overflow-hidden rounded-2xl border border-grey-100">
@@ -50,7 +62,14 @@ export function InsightStrengthSection({ insight, selectedStrengthId, onSelectSt
           ) : insight.strengths.length ? (
             <div className="relative mx-auto mt-6 h-[380px] w-full max-w-[900px]">
               {insight.strengths.map((strength, index) => (
-                <StrengthBubble key={strength.strengthTagId} strength={strength} index={index} onClick={() => onSelectStrength(strength.strengthTagId)} />
+                <StrengthBubble
+                  key={strength.strengthTagId}
+                  strength={strength}
+                  index={index}
+                  minRecordCount={minRecordCount}
+                  maxRecordCount={maxRecordCount}
+                  onClick={() => onSelectStrength(strength.strengthTagId)}
+                />
               ))}
             </div>
           ) : <p className="py-20 text-center text-body2-md text-grey-500">분석된 강점이 없습니다.</p>}
@@ -62,10 +81,22 @@ export function InsightStrengthSection({ insight, selectedStrengthId, onSelectSt
   );
 }
 
-function StrengthBubble({ strength, index, onClick }: { strength: InsightStrengthResponse; index: number; onClick: () => void }) {
+function StrengthBubble({
+  strength,
+  index,
+  minRecordCount,
+  maxRecordCount,
+  onClick,
+}: {
+  strength: InsightStrengthResponse;
+  index: number;
+  minRecordCount: number;
+  maxRecordCount: number;
+  onClick: () => void;
+}) {
   const color = COLORS[index % COLORS.length];
   const position = POSITIONS[index % POSITIONS.length];
-  const core = Math.round(52 + Math.max(0, Math.min(1, strength.ratio)) * 48);
+  const core = getBubbleCoreSize(strength.recordCount, minRecordCount, maxRecordCount);
   return (
     <button type="button" onClick={onClick} className="absolute -translate-x-1/2 cursor-pointer text-center" style={{ left: position.left, top: position.top }}>
       <span className="relative mx-auto grid place-items-center rounded-full" style={{ width: core + 38, height: core + 38, backgroundColor: `${color}19` }}>

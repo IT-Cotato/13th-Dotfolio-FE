@@ -127,7 +127,7 @@ export default function Home() {
             <span className="text-title1 text-grey-900">{activities.length}</span>
           </div>
           {activities.length > 0 && (
-            <PrimaryButton label="활동 추가" onClick={() => setIsModalOpen(true)} />
+            <PrimaryButton label="활동 추가" onClick={() => setIsModalOpen(true)} size="sm" />
           )}
         </section>
         {isLoading ? (

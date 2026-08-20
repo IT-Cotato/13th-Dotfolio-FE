@@ -33,10 +33,10 @@ export const CategoryDropdown = ({ options, value, onChange }: CategoryDropdownP
       <button
         type="button"
         onClick={() => setIsOpen(prev => !prev)}
-        className="flex items-center gap-4 px-4 py-2.5 rounded-xl border border-grey-100 bg-grey-0 text-grey-900 text-body2-md cursor-pointer"
+        className="flex items-center gap-2 px-3 py-1.5 rounded-xl border border-grey-100 bg-grey-0 text-grey-900 text-body3-md cursor-pointer"
       >
         {selected?.label}
-        <span className={`px-1 py-2 transition-transform ${isOpen ? '-rotate-90' : 'rotate-90'}`}>
+        <span className={`px-1 py-1 transition-transform ${isOpen ? '-rotate-90' : 'rotate-90'}`}>
           <ArrowIcon className="w-4 h-4 text-grey-400" />
         </span>
       </button>
@@ -47,7 +47,7 @@ export const CategoryDropdown = ({ options, value, onChange }: CategoryDropdownP
               key={option.id}
               type="button"
               onClick={() => { onChange(option.id); setIsOpen(false); }}
-              className="text-left px-4 py-2 text-body2-md text-grey-900 hover:bg-grey-50 transition-colors cursor-pointer whitespace-nowrap"
+              className="text-left px-3 py-1.5 text-body3-md text-grey-900 hover:bg-grey-50 transition-colors cursor-pointer whitespace-nowrap"
             >
               {option.label}
             </button>

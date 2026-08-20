@@ -96,7 +96,7 @@ export default function Record() {
               주제와 질문을 직접 설정해 나만의 템플릿을 만들어보세요.
             </p>
           </div>
-          <PrimaryButton label="템플릿 만들기" onClick={() => setIsCustomModalOpen(true)} />
+          <PrimaryButton label="템플릿 만들기" onClick={() => setIsCustomModalOpen(true)} size="sm" />
         </div>
       ) : (
         <div className="w-full flex flex-col gap-6">

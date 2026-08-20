@@ -37,7 +37,7 @@ export const ActivityTagDropdown = ({ tags, selectedTag, onChange }: ActivityTag
         <span className="min-w-0 flex-1 truncate text-left" title={selectedTag || '활동 태그별'}>
           {selectedTag || '활동 태그별'}
         </span>
-        <span className="shrink-0">{isOpen ? <VectorDownIcon /> : <VectorUpIcon />}</span>
+        <span className="shrink-0">{isOpen ? <VectorUpIcon /> : <VectorDownIcon />}</span>
       </button>
 
       {isOpen && (

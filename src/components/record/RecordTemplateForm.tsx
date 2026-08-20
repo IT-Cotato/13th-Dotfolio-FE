@@ -1,7 +1,6 @@
 import { useLayoutEffect, useRef, useState } from 'react';
 import VectorDownIcon from '@/assets/vector_down.svg';
 import VectorUpIcon from '@/assets/vector_up.svg';
-import { Button } from '@/components/common/button';
 import type { TemplateQuestion } from '@/constants/templates';
 
 interface RecordTemplateFormProps {
@@ -82,24 +81,19 @@ export function RecordTemplateForm({
                       )}
                     </div>
 
-                    <div className="flex items-center gap-3">
-                      {isExpanded && (
-                        <Button label="기록 TIP 💡" size="tip" />
+                    <button
+                      type="button"
+                      aria-expanded={isExpanded}
+                      aria-label={`${question.label} ${isExpanded ? '접기' : '펼치기'}`}
+                      onClick={() => toggleQuestion(question.id)}
+                      className="flex h-6 w-7 cursor-pointer items-center justify-center"
+                    >
+                      {isExpanded ? (
+                        <VectorUpIcon className="h-[7px] w-3.5 shrink-0 text-grey-400" />
+                      ) : (
+                        <VectorDownIcon className="h-[7px] w-3.5 shrink-0 text-grey-400" />
                       )}
-                      <button
-                        type="button"
-                        aria-expanded={isExpanded}
-                        aria-label={`${question.label} ${isExpanded ? '접기' : '펼치기'}`}
-                        onClick={() => toggleQuestion(question.id)}
-                        className="flex h-6 w-7 cursor-pointer items-center justify-center"
-                      >
-                        {isExpanded ? (
-                          <VectorUpIcon className="h-[7px] w-3.5 shrink-0 text-grey-400" />
-                        ) : (
-                          <VectorDownIcon className="h-[7px] w-3.5 shrink-0 text-grey-400" />
-                        )}
-                      </button>
-                    </div>
+                    </button>
                   </div>
 
                   {isExpanded && (

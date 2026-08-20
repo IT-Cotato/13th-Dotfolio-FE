@@ -106,11 +106,11 @@ export const ProfileImageCropModal = ({ file, onCancel, onSave }: ProfileImageCr
       className="fixed inset-0 z-70 flex flex-col bg-[rgba(28,28,26,0.9)] text-white"
     >
       <header className="relative flex h-16 shrink-0 items-center justify-center px-6">
-        <button type="button" aria-label="이전" onClick={onCancel} className="absolute left-6">
+        <button type="button" aria-label="이전" onClick={onCancel} className="absolute left-6 cursor-pointer">
           <BackIcon className="size-4 brightness-0 invert" />
         </button>
         <h2 id="profile-crop-title" className="text-sub1-sb">자르기</h2>
-        <button type="button" aria-label="닫기" onClick={onCancel} className="absolute right-6 text-white">
+        <button type="button" aria-label="닫기" onClick={onCancel} className="absolute right-6 cursor-pointer text-white">
           <CloseIcon className="size-4" />
         </button>
       </header>
@@ -133,7 +133,7 @@ export const ProfileImageCropModal = ({ file, onCancel, onSave }: ProfileImageCr
           type="button"
           disabled={!sourceUrl || isSaving}
           onClick={() => void saveCroppedImage()}
-          className="min-w-20 rounded-full bg-white px-6 py-2 text-label2-sb text-grey-900 disabled:cursor-not-allowed disabled:bg-grey-300"
+          className="min-w-20 cursor-pointer rounded-full bg-white px-6 py-2 text-label2-sb text-grey-900 disabled:cursor-not-allowed disabled:bg-grey-300"
         >
           저장
         </button>

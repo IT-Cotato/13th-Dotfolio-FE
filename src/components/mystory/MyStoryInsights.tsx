@@ -9,7 +9,7 @@ import {
   type LatestInsightResponse,
 } from '@/api/insight';
 import { ApiError } from '@/api/client';
-import { getRecordDetail, getRecords } from '@/api/records';
+import { getRecordDetail, getRecords, updateRecord } from '@/api/records';
 import { Card } from '@/components/common/card';
 import { Toast } from '@/components/common/Toast';
 import { InsightJobCompetencySection } from '@/components/mystory/insights/InsightJobCompetencySection';
@@ -31,6 +31,7 @@ export default function MyStoryInsights() {
   const [pollingAttempt, setPollingAttempt] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [isCreating, setIsCreating] = useState(false);
+  const [isRetryingAnalysis, setIsRetryingAnalysis] = useState(false);
   const [loadError, setLoadError] = useState('');
   const [selectedStrengthId, setSelectedStrengthId] = useState<string | null>(null);
   const [selectedCompetencyId, setSelectedCompetencyId] = useState<string | null>(null);
@@ -164,6 +165,50 @@ export default function MyStoryInsights() {
     }
   }, [fireToast, navigate]);
 
+  const retryFailedAnalysis = useCallback(async () => {
+    if (isRetryingAnalysis || !eligibility?.analysisFailedCount) return;
+
+    setIsRetryingAnalysis(true);
+    try {
+      const pageSize = 50;
+      const firstPage = await getRecords({ status: 'COMPLETED', page: 0, size: pageSize });
+      const recordItems = [...firstPage.data.content];
+
+      for (let page = 1; page < firstPage.data.totalPages; page += 1) {
+        const response = await getRecords({ status: 'COMPLETED', page, size: pageSize });
+        recordItems.push(...response.data.content);
+      }
+
+      let retriedCount = 0;
+      for (const item of recordItems) {
+        try {
+          const { data: record } = await getRecordDetail(item.id);
+          await updateRecord(record.id, {
+            title: record.title,
+            answers: record.answers.map(({ templateQuestionId, answerText }) => ({
+              templateQuestionId,
+              answerText,
+            })),
+            memos: record.memos.map(({ memoId, collapsed }) => ({ memoId, collapsed })),
+            status: 'COMPLETED',
+          });
+          retriedCount += 1;
+        } catch {
+          // 개별 기록 실패와 관계없이 나머지 기록의 분석 재요청을 이어갑니다.
+        }
+      }
+
+      if (retriedCount === 0) throw new Error('다시 분석할 기록을 찾지 못했습니다.');
+
+      await loadInsights();
+      fireToast(`기록 ${retriedCount}개의 분석을 다시 요청했습니다.`);
+    } catch (error) {
+      fireToast(getErrorMessage(error, '기록 분석을 다시 요청하지 못했습니다.'), undefined, 'error');
+    } finally {
+      setIsRetryingAnalysis(false);
+    }
+  }, [eligibility?.analysisFailedCount, fireToast, isRetryingAnalysis, loadInsights]);
+
   useEffect(() => {
     if (insight || !eligibility?.eligible || isCreating || generationId || hasRequestedInitialInsight.current) {
       return;
@@ -201,6 +246,8 @@ export default function MyStoryInsights() {
           eligibility={eligibility}
           recordCount={completedRecordCount}
           generating={generating}
+          retryingAnalysis={isRetryingAnalysis}
+          onRetryAnalysis={() => void retryFailedAnalysis()}
         />
       </div>
     );

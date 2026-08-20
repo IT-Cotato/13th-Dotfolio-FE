@@ -92,7 +92,7 @@ export const JobSelectModal = ({
                 <button
                   type="button"
                   onClick={onRetry}
-                  className="rounded-xl border border-primary-500 px-4 py-2 text-body3-md text-primary-500"
+                  className="cursor-pointer rounded-xl border border-primary-500 px-4 py-2 text-body3-md text-primary-500"
                 >
                   다시 시도
                 </button>
@@ -111,7 +111,7 @@ export const JobSelectModal = ({
                     type="button"
                     aria-pressed={activeCategoryCode === category.code}
                     onClick={() => setSelectedCategoryCode(category.code)}
-                    className={`rounded-xl border px-3 py-2 text-body3-md transition-colors ${
+                    className={`cursor-pointer rounded-xl border px-3 py-2 text-body3-md transition-colors ${
                       activeCategoryCode === category.code
                         ? 'border-primary-500 bg-primary-500 text-white'
                         : 'border-grey-100 bg-white text-grey-700 hover:border-primary-200'
@@ -129,7 +129,7 @@ export const JobSelectModal = ({
                     type="button"
                     aria-pressed={draftJobId === job.id}
                     onClick={() => setDraftJobId(job.id)}
-                    className={`flex items-center gap-2 rounded-xl border px-3 py-2 text-body3-md transition-colors ${
+                    className={`flex cursor-pointer items-center gap-2 rounded-xl border px-3 py-2 text-body3-md transition-colors ${
                       draftJobId === job.id
                         ? 'border-primary-500 bg-primary-500 text-white'
                         : 'border-primary-500 bg-white text-primary-500 hover:bg-primary-50'

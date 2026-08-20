@@ -344,7 +344,7 @@ export default function Memo() {
           <button
             type="button"
             onClick={() => void loadMemos()}
-            className="rounded-xl border border-primary-500 px-4 py-2 text-body2-md text-primary-500"
+            className="cursor-pointer rounded-xl border border-primary-500 px-4 py-2 text-body2-md text-primary-500"
           >
             다시 시도
           </button>

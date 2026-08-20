@@ -60,7 +60,7 @@ export const CreateMemoModal = ({ onClose, onCreate, activities }: CreateMemoMod
       >
         <div className="mb-[46px] flex h-[34px] items-center justify-between">
           <h2 id="create-memo-title" className="text-title2 text-grey-950">메모 생성</h2>
-          <button type="button" aria-label="닫기" onClick={onClose} className="text-title2 text-grey-400 hover:text-grey-700">×</button>
+          <button type="button" aria-label="닫기" onClick={onClose} className="cursor-pointer text-title2 text-grey-400 hover:text-grey-700">×</button>
         </div>
 
         <div className="flex flex-col gap-8">
@@ -99,7 +99,7 @@ export const CreateMemoModal = ({ onClose, onCreate, activities }: CreateMemoMod
                 event.preventDefault();
                 selectFile(event.dataTransfer.files);
               }}
-              className="flex h-20 flex-col items-center justify-center rounded-2xl border border-dashed border-grey-200 text-grey-400 hover:border-primary-300 hover:text-primary-400"
+              className="flex h-20 cursor-pointer flex-col items-center justify-center rounded-2xl border border-dashed border-grey-200 text-grey-400 hover:border-primary-300 hover:text-primary-400"
             >
               <CloudUploadIcon aria-hidden="true" className="h-6 w-[23px]" />
               <span className="mt-1 text-caption1">이미지를 드래그하거나 클릭해서 업로드하세요. (허용 확장자 : JPG, PNG)</span>
@@ -110,7 +110,7 @@ export const CreateMemoModal = ({ onClose, onCreate, activities }: CreateMemoMod
               <div className="mt-1">
                 <div className="flex items-center justify-between text-caption1 text-grey-600">
                   <span>{file.name} <span className="ml-1 text-grey-400">{(file.size / 1024 / 1024).toFixed(1)}MB</span></span>
-                  <button type="button" onClick={() => setFile(null)} className="text-grey-500">삭제 ×</button>
+                  <button type="button" onClick={() => setFile(null)} className="cursor-pointer text-grey-500">삭제 ×</button>
                 </div>
                 <div className="mt-2 h-1 overflow-hidden rounded-full bg-grey-100"><div className="h-full w-full bg-primary-500" /></div>
                 <p className="mt-2 text-caption1 text-primary-500">업로드 준비 완료</p>
@@ -127,7 +127,7 @@ export const CreateMemoModal = ({ onClose, onCreate, activities }: CreateMemoMod
                   type="button"
                   aria-pressed={selectedActivityId === activity.id}
                   onClick={() => setSelectedActivityId((current) => current === activity.id ? undefined : activity.id)}
-                  className={`rounded-xl border px-3 py-2 text-label2-md ${
+                  className={`cursor-pointer rounded-xl border px-3 py-2 text-label2-md ${
                     selectedActivityId === activity.id
                       ? 'border-primary-400 bg-primary-50 text-primary-500'
                       : 'border-grey-100 text-grey-700'
@@ -146,7 +146,7 @@ export const CreateMemoModal = ({ onClose, onCreate, activities }: CreateMemoMod
           type="button"
           disabled={!memo.trim() || isSubmitting}
           onClick={() => void handleCreate()}
-          className="bg-primary-gradient mt-8 h-[52px] w-full rounded-[14px] text-sub2-sb text-white disabled:cursor-not-allowed disabled:bg-none disabled:bg-grey-300"
+          className="bg-primary-gradient mt-8 h-[52px] w-full cursor-pointer rounded-[14px] text-sub2-sb text-white disabled:cursor-not-allowed disabled:bg-none disabled:bg-grey-300"
         >
           {isSubmitting ? '생성 중...' : '메모 생성'}
         </button>

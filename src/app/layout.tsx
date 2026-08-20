@@ -148,12 +148,14 @@ function HomeLayout() {
             </header>
             <div className="flex h-[calc(100vh-80px)]">
               {isSidebarOpen && (
-                <nav className="w-60 shrink-0 flex flex-col items-start py-6 px-6 gap-6">
+                <nav className="h-full min-h-0 w-60 shrink-0 flex flex-col items-start py-6 px-6 gap-6">
                   <ImmersionToggle
                     isOn={isStartingImmersion}
                     onToggle={handleImmersionToggle}
                   />
-                  <Sidebar />
+                  <div className="min-h-0 w-full flex-1 overflow-y-auto scrollbar-hide">
+                    <Sidebar />
+                  </div>
                 </nav>
               )}
               <main className={`flex-1 pb-8 pr-6 h-full overflow-y-auto scrollbar-hide ${isSidebarOpen ? '' : 'pl-8'}`}>

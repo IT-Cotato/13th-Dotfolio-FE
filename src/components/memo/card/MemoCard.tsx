@@ -24,7 +24,7 @@ export const MemoCard = ({ memo, onDelete, onToggleImportant, onMove, selected, 
       type="button"
       aria-label={`${memo.title || '제목 없는 메모'} 상세보기`}
       onClick={onOpen}
-      className="absolute inset-0 z-0 rounded-[20px] outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2"
+      className="absolute inset-0 z-0 cursor-pointer rounded-[20px] outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2"
     />
     <div className={`pointer-events-none relative z-10 flex min-h-0 flex-1 flex-col overflow-visible ${selected ? 'rounded-[18px]' : 'rounded-[19px]'} ${memo.isImportant ? 'bg-primary-50' : 'bg-white'}`}>
     <label className="peer group/check pointer-events-auto absolute left-0 top-0 z-20 h-[54px] w-11 cursor-pointer">

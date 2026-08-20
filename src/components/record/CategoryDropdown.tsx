@@ -47,7 +47,7 @@ export const CategoryDropdown = ({ options, value, onChange }: CategoryDropdownP
               key={option.id}
               type="button"
               onClick={() => { onChange(option.id); setIsOpen(false); }}
-              className="text-left px-3.5 py-1.5 text-body3-md text-grey-900 hover:bg-grey-50 transition-colors cursor-pointer whitespace-nowrap"
+              className="text-left px-3 py-1.5 text-body3-md text-grey-900 hover:bg-grey-50 transition-colors cursor-pointer whitespace-nowrap"
             >
               {option.label}
             </button>

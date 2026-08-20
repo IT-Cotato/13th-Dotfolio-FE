@@ -53,7 +53,7 @@ export const DeleteMemoModal = ({ onClose, onConfirm }: DeleteMemoModalProps) =>
             type="button"
             disabled={isDeleting}
             onClick={() => void handleConfirm()}
-            className="rounded-[14px] border border-primary-500 bg-white px-5 py-3.5 text-sub2-sb text-primary-500"
+            className="cursor-pointer rounded-[14px] border border-primary-500 bg-white px-5 py-3.5 text-sub2-sb text-primary-500 disabled:cursor-not-allowed"
           >
             {isDeleting ? '삭제 중...' : '메모 삭제'}
           </button>
@@ -61,7 +61,7 @@ export const DeleteMemoModal = ({ onClose, onConfirm }: DeleteMemoModalProps) =>
             ref={cancelButtonRef}
             type="button"
             onClick={onClose}
-            className="bg-primary-gradient rounded-[14px] px-5 py-3.5 text-sub2-sb text-white outline-none focus-visible:ring-2 focus-visible:ring-primary-200"
+            className="bg-primary-gradient cursor-pointer rounded-[14px] px-5 py-3.5 text-sub2-sb text-white outline-none focus-visible:ring-2 focus-visible:ring-primary-200"
           >
             취소
           </button>

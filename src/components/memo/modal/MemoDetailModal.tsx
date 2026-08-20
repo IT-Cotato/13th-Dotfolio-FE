@@ -207,7 +207,7 @@ export const MemoDetailModal = ({ memo, onClose, onUpdate, onDelete, onToggleImp
                   aria-label={`첨부 이미지 ${index + 1} 삭제`}
                   disabled={deletingImageId === image.id}
                   onClick={() => void removeImage(image.id)}
-                  className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center text-grey-700 disabled:cursor-wait disabled:opacity-60"
+                  className="absolute right-3 top-3 flex h-8 w-8 cursor-pointer items-center justify-center text-grey-700 disabled:cursor-wait disabled:opacity-60"
                 >
                   <CloseIcon aria-hidden="true" className="h-3.5 w-3.5" />
                 </button>

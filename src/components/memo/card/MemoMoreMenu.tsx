@@ -67,7 +67,7 @@ export const MemoMoreMenu = ({ isImportant, onToggleImportant, onDelete, onMove,
         aria-label="메모 더보기"
         aria-expanded={isOpen}
         onClick={toggleMenu}
-        className={`flex h-8 w-8 items-center justify-center rounded-xl text-grey-400 ${isOpen ? 'bg-primary-100' : ''}`}
+        className={`flex h-8 w-8 cursor-pointer items-center justify-center rounded-xl text-grey-400 ${isOpen ? 'bg-primary-100' : ''}`}
       >
         <MoreIcon />
       </button>

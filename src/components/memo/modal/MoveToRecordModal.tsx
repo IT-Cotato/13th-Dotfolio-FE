@@ -70,11 +70,11 @@ export const MoveToRecordModal = ({
         onMouseDown={(event) => event.stopPropagation()}
       >
         <header className="flex items-center">
-          <button type="button" aria-label="뒤로 가기" onClick={onClose} className="flex h-8 w-8 items-center justify-center text-grey-400 hover:text-grey-700">
+          <button type="button" aria-label="뒤로 가기" onClick={onClose} className="flex h-8 w-8 cursor-pointer items-center justify-center text-grey-400 hover:text-grey-700">
             <ArrowLeftIcon />
           </button>
           <h2 id="move-to-record-title" className="flex-1 text-center text-title1 text-grey-900">기록하기로 이동</h2>
-          <button type="button" aria-label="닫기" onClick={onClose} className="flex h-8 w-8 items-center justify-center text-grey-400 hover:text-grey-700">
+          <button type="button" aria-label="닫기" onClick={onClose} className="flex h-8 w-8 cursor-pointer items-center justify-center text-grey-400 hover:text-grey-700">
             <CloseIcon />
           </button>
         </header>
@@ -90,7 +90,7 @@ export const MoveToRecordModal = ({
                   type="button"
                   aria-pressed={selectedActivityId === activity.id}
                   onClick={() => selectActivity(activity.id)}
-                  className={`min-h-[84px] rounded-2xl border-[1.5px] px-6 py-4 text-body1-md transition-colors ${
+                  className={`min-h-[84px] cursor-pointer rounded-2xl border-[1.5px] px-6 py-4 text-body1-md transition-colors ${
                     selectedActivityId === activity.id
                       ? 'border-primary-500 bg-primary-50 text-primary-500'
                       : 'border-grey-100 bg-white text-grey-900 hover:border-primary-200'
@@ -115,7 +115,7 @@ export const MoveToRecordModal = ({
                   type="button"
                   aria-pressed={selectedTemplateId === template.id}
                   onClick={() => setSelectedTemplateId(template.id)}
-                  className={`rounded-2xl border-[1.5px] px-6 py-4 text-body1-md transition-colors ${
+                  className={`cursor-pointer rounded-2xl border-[1.5px] px-6 py-4 text-body1-md transition-colors ${
                     selectedTemplateId === template.id
                       ? 'border-primary-500 bg-primary-50 text-primary-500'
                       : 'border-grey-100 bg-white text-grey-900 hover:border-primary-200'
@@ -135,7 +135,7 @@ export const MoveToRecordModal = ({
           type="button"
           disabled={!canMove}
           onClick={handleMove}
-          className="bg-primary-gradient mt-8 w-full rounded-[14px] px-5 py-3.5 text-sub2-sb text-white disabled:cursor-not-allowed disabled:bg-none disabled:bg-grey-300"
+          className="bg-primary-gradient mt-8 w-full cursor-pointer rounded-[14px] px-5 py-3.5 text-sub2-sb text-white disabled:cursor-not-allowed disabled:bg-none disabled:bg-grey-300"
         >
           이동
         </button>

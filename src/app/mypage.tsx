@@ -179,7 +179,7 @@ export default function MyPage() {
           <button
             type="button"
             onClick={() => void loadProfile()}
-            className="rounded-xl border border-primary-500 px-4 py-2 text-body2-md text-primary-500"
+            className="cursor-pointer rounded-xl border border-primary-500 px-4 py-2 text-body2-md text-primary-500"
           >
             다시 시도
           </button>
@@ -203,7 +203,7 @@ export default function MyPage() {
             aria-label="프로필 이미지 수정"
             disabled={isSavingProfileImage}
             onClick={() => profileFileInputRef.current?.click()}
-            className="relative size-[70px] shrink-0 rounded-full"
+            className="relative size-[70px] shrink-0 cursor-pointer rounded-full disabled:cursor-wait"
           >
             <div className="grid size-full place-items-center overflow-hidden rounded-full bg-primary-gradient text-[20px] leading-[28px] font-bold tracking-[-0.2px] text-white">
               {profile.profileImageUrl ? (
@@ -233,7 +233,7 @@ export default function MyPage() {
         <button
           type="button"
           onClick={() => setIsProfileModalOpen(true)}
-          className="shrink-0 rounded-xl border-[1.5px] border-primary-500 px-3 py-2 text-sub2-sb text-primary-500 transition-colors hover:bg-primary-50"
+          className="shrink-0 cursor-pointer rounded-xl border-[1.5px] border-primary-500 px-3 py-2 text-sub2-sb text-primary-500 transition-colors hover:bg-primary-50"
         >
           회원정보 수정
         </button>
@@ -252,7 +252,7 @@ export default function MyPage() {
             <button
               type="button"
               onClick={() => setIsJobModalOpen(true)}
-              className="flex items-center gap-1.5 text-body2-md text-primary-500"
+              className="flex cursor-pointer items-center gap-1.5 text-body2-md text-primary-500"
             >
               변경
               <MyPageVectorIcon aria-hidden className="h-3 w-1.5 shrink-0 text-primary-500 [&_path]:fill-current" />
@@ -264,7 +264,7 @@ export default function MyPage() {
       <button
         type="button"
         onClick={() => navigate('/template-all', { state: { from: '/mypage' } })}
-        className="flex w-full items-center justify-between rounded-2xl border border-grey-100 p-6 text-left transition-colors hover:border-primary-200 hover:bg-primary-50/40"
+        className="flex w-full cursor-pointer items-center justify-between rounded-2xl border border-grey-100 p-6 text-left transition-colors hover:border-primary-200 hover:bg-primary-50/40"
       >
         <span>
           <strong className="block text-title2 text-grey-900">템플릿 관리</strong>

@@ -114,7 +114,7 @@ export const ProfileEditModal = ({
               type="button"
               aria-label="프로필 이미지 변경"
               onClick={() => fileInputRef.current?.click()}
-              className="grid size-full place-items-center overflow-hidden rounded-full bg-primary-gradient text-[20px] leading-[28px] font-bold tracking-[-0.2px] text-white"
+              className="grid size-full cursor-pointer place-items-center overflow-hidden rounded-full bg-primary-gradient text-[20px] leading-[28px] font-bold tracking-[-0.2px] text-white"
             >
               {profilePreviewUrl || profileImageUrl ? (
                 <img src={profilePreviewUrl ?? profileImageUrl ?? ''} alt="프로필 미리보기" className="size-full object-cover" />
@@ -161,8 +161,8 @@ export const ProfileEditModal = ({
 
         <div className="flex flex-1 flex-col">
           <div className="flex flex-1 items-center justify-center gap-5 text-label2-md text-grey-500 underline underline-offset-2">
-            <button type="button" onClick={onLogout}>로그아웃</button>
-            <button type="button" onClick={onWithdraw}>회원탈퇴</button>
+            <button type="button" onClick={onLogout} className="cursor-pointer">로그아웃</button>
+            <button type="button" onClick={onWithdraw} className="cursor-pointer">회원탈퇴</button>
           </div>
 
           <Button

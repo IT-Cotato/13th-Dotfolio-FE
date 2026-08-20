@@ -37,7 +37,7 @@ export default function TemplateAll() {
         <CategoryHeader
           title="템플릿 선택"
           onBack={() => navigate(backPath)}
-          extra={<PrimaryButton label="커스텀 템플릿 만들기" onClick={() => setIsCustomModalOpen(true)} />}
+          extra={<PrimaryButton label="커스텀 템플릿 만들기" onClick={() => setIsCustomModalOpen(true)} size="sm" />}
         />
         <div className="w-full grid grid-cols-[repeat(auto-fill,266px)] gap-6">
           {templates.map(template => (

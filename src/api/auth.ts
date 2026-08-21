@@ -39,12 +39,18 @@ export interface PasswordResetConfirmRequest {
   newPassword: string;
 }
 
-function getXsrfToken() {
-  const cookie = document.cookie
-    .split("; ")
-    .find((value) => value.startsWith("XSRF-TOKEN="));
+interface CsrfTokenResponse {
+  csrfToken: string;
+}
 
-  return cookie ? decodeURIComponent(cookie.slice("XSRF-TOKEN=".length)) : null;
+async function requestCsrfToken() {
+  const { data } = await requestApi<CsrfTokenResponse>("/api/auth/csrf", {
+    method: "GET",
+    credentials: "include",
+    skipAuthorization: true,
+  });
+
+  return data.csrfToken;
 }
 
 export function getGoogleAuthorizationUrl() {
@@ -66,13 +72,13 @@ export function login(request: LoginRequest) {
   });
 }
 
-export function refreshAccessToken() {
-  const xsrfToken = getXsrfToken();
+export async function refreshAccessToken() {
+  const csrfToken = await requestCsrfToken();
 
   return requestApi<unknown>("/api/auth/refresh", {
     method: "POST",
     credentials: "include",
-    headers: xsrfToken ? { "X-XSRF-TOKEN": xsrfToken } : undefined,
+    headers: { "X-XSRF-TOKEN": csrfToken },
     skipAuthorization: true,
   });
 }

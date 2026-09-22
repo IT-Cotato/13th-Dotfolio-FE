@@ -9,7 +9,7 @@ import {
   type LatestInsightResponse,
 } from '@/api/insight';
 import { ApiError } from '@/api/client';
-import { getRecordDetail, getRecords, updateRecord } from '@/api/records';
+import { getRecordDetail, getRecords, retryFailedRecordAnalyses } from '@/api/records';
 import { Card } from '@/components/common/card';
 import { Toast } from '@/components/common/Toast';
 import { InsightJobCompetencySection } from '@/components/mystory/insights/InsightJobCompetencySection';
@@ -170,38 +170,12 @@ export default function MyStoryInsights() {
 
     setIsRetryingAnalysis(true);
     try {
-      const pageSize = 50;
-      const firstPage = await getRecords({ status: 'COMPLETED', page: 0, size: pageSize });
-      const recordItems = [...firstPage.data.content];
+      const { data: { requestedCount } } = await retryFailedRecordAnalyses();
 
-      for (let page = 1; page < firstPage.data.totalPages; page += 1) {
-        const response = await getRecords({ status: 'COMPLETED', page, size: pageSize });
-        recordItems.push(...response.data.content);
-      }
-
-      let retriedCount = 0;
-      for (const item of recordItems) {
-        try {
-          const { data: record } = await getRecordDetail(item.id);
-          await updateRecord(record.id, {
-            title: record.title,
-            answers: record.answers.map(({ templateQuestionId, answerText }) => ({
-              templateQuestionId,
-              answerText,
-            })),
-            memos: record.memos.map(({ memoId, collapsed }) => ({ memoId, collapsed })),
-            status: 'COMPLETED',
-          });
-          retriedCount += 1;
-        } catch {
-          // 개별 기록 실패와 관계없이 나머지 기록의 분석 재요청을 이어갑니다.
-        }
-      }
-
-      if (retriedCount === 0) throw new Error('다시 분석할 기록을 찾지 못했습니다.');
+      if (requestedCount === 0) throw new Error('다시 분석할 기록을 찾지 못했습니다.');
 
       await loadInsights();
-      fireToast(`기록 ${retriedCount}개의 분석을 다시 요청했습니다.`);
+      fireToast(`기록 ${requestedCount}개의 분석을 다시 요청했습니다.`);
     } catch (error) {
       fireToast(getErrorMessage(error, '기록 분석을 다시 요청하지 못했습니다.'), undefined, 'error');
     } finally {

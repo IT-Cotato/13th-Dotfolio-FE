@@ -116,6 +116,10 @@ export interface UpdateRecordPayload {
   status: string;
 }
 
+export interface RecordAnalysisRetryResponse {
+  requestedCount: number;
+}
+
 export function updateRecord(recordId: string, payload: UpdateRecordPayload) {
   return requestApi<RecordDetail>(`/api/records/${recordId}`, {
     method: "PATCH",
@@ -133,6 +137,12 @@ export function deleteRecord(recordId: string) {
 
 export function restoreRecord(recordId: string) {
   return requestApi<string>(`/api/records/${recordId}/restore`, { method: "PATCH" });
+}
+
+export function retryFailedRecordAnalyses() {
+  return requestApi<RecordAnalysisRetryResponse>("/api/records/analysis/retry-failed", {
+    method: "POST",
+  });
 }
 
 export function getRecentRecords() {

@@ -2,6 +2,7 @@ import LottieLib from 'lottie-react';
 import type { InsightEligibilityResponse } from '@/api/insight';
 import CheckIcon from '@/assets/check.svg';
 import loadingBlueAnimation from '@/assets/Loading_blue.json';
+import { Button } from '@/components/common/button';
 import { Card } from '@/components/common/card';
 
 const Lottie =
@@ -22,6 +23,7 @@ interface InsightsReadyStateProps {
   generating: boolean;
   retryingAnalysis: boolean;
   onRetryAnalysis: () => void;
+  onCreate: () => void;
 }
 
 export function InsightsReadyState({
@@ -30,6 +32,7 @@ export function InsightsReadyState({
   generating,
   retryingAnalysis,
   onRetryAnalysis,
+  onCreate,
 }: InsightsReadyStateProps) {
   const requiredCount = eligibility?.requiredRecordCount ?? 10;
   const jobConfigured = eligibility?.reason !== 'JOB_NOT_CONFIGURED';
@@ -91,6 +94,11 @@ export function InsightsReadyState({
               </div>
             </div>
             <p className="mt-4 text-body2-md text-grey-700">희망 직무를 설정하고 기록을 채우시면,<br />맞춤형 강점과 역량을 분석해드려요.</p>
+            {eligibility?.eligible && (
+              <div className="mx-auto mt-6 w-56">
+                <Button label="인사이트 생성하기" onClick={onCreate} />
+              </div>
+            )}
           </div>
         )}
       </div>

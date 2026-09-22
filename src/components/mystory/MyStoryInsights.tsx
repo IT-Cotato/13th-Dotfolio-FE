@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   createInsight,
@@ -35,7 +35,6 @@ export default function MyStoryInsights() {
   const [loadError, setLoadError] = useState('');
   const [selectedStrengthId, setSelectedStrengthId] = useState<string | null>(null);
   const [selectedCompetencyId, setSelectedCompetencyId] = useState<string | null>(null);
-  const hasRequestedInitialInsight = useRef(false);
   const { toast, fireToast } = useToast();
 
   const loadInsights = useCallback(async (signal?: AbortSignal) => {
@@ -183,15 +182,6 @@ export default function MyStoryInsights() {
     }
   }, [eligibility?.analysisFailedCount, fireToast, isRetryingAnalysis, loadInsights]);
 
-  useEffect(() => {
-    if (insight || !eligibility?.eligible || isCreating || generationId || hasRequestedInitialInsight.current) {
-      return;
-    }
-
-    hasRequestedInitialInsight.current = true;
-    void handleCreate();
-  }, [eligibility?.eligible, generationId, handleCreate, insight, isCreating]);
-
   const generating = Boolean(generationId) || isCreating || eligibility?.reason === 'GENERATION_IN_PROGRESS';
 
   if (isLoading) {
@@ -222,6 +212,7 @@ export default function MyStoryInsights() {
           generating={generating}
           retryingAnalysis={isRetryingAnalysis}
           onRetryAnalysis={() => void retryFailedAnalysis()}
+          onCreate={() => void handleCreate()}
         />
       </div>
     );

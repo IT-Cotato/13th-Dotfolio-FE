@@ -74,7 +74,7 @@ export default function Record() {
             moreLabel="더 많은 템플릿 보기"
             onMoreClick={() => navigate('/template-all')}
             />
-        <div className="w-full grid grid-cols-[repeat(auto-fill,266px)] gap-6">
+        <div className="grid w-full grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-[repeat(auto-fill,minmax(220px,266px))]">
           {templates.filter(template => !template.isCustom).map(template => (
             <Template
               key={template.id}

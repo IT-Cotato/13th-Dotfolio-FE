@@ -11,10 +11,10 @@ interface MemoCardProps {
 
 export const MemoCard = ({ memo, selected, onToggle, variant = 'default' }: MemoCardProps) => (
   <label
-    className={`flex w-[266px] shrink-0 cursor-pointer flex-col overflow-hidden rounded-[20px] text-left ${
+    className={`flex w-full shrink-0 cursor-pointer flex-col overflow-hidden rounded-[20px] text-left ${
       variant === 'immersion'
-        ? 'min-h-[266px] max-h-[454px] bg-[#414F6F]'
-        : 'h-[266px] border border-grey-100'
+        ? 'min-h-[16.625rem] max-h-[28.375rem] bg-[#414F6F]'
+        : 'h-[16.625rem] border border-grey-100'
     }`}
   >
     <div className={`flex h-[54px] w-full shrink-0 items-center gap-2 p-4 ${

@@ -238,7 +238,7 @@ export default function RecordWrite() {
           />
         </div>
 
-        <div className="w-full grid grid-cols-[280px_1fr] gap-6 items-start">
+        <div className="grid w-full grid-cols-1 items-start gap-6 lg:grid-cols-[280px_1fr]">
           <div className="flex flex-col gap-4">
             <div className="w-full flex items-center justify-between">
               <p className="text-sub1-sb text-grey-900 pl-1">메모 {selectedMemos.length}</p>

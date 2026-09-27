@@ -88,8 +88,8 @@ export default function RecordAll() {
     <Card>
       <div className="w-full flex flex-col gap-8">
         <CategoryHeader title="최근 작성한 기록" onBack={() => navigate('/record')} />
-        <div className="w-full flex items-center justify-between">
-          <div className="flex items-center gap-2">
+        <div className="flex w-full flex-wrap items-center justify-between gap-3">
+          <div className="flex flex-wrap items-center gap-2">
             {STATUS_FILTERS.map(status => (
               <StatusTag
                 key={status}

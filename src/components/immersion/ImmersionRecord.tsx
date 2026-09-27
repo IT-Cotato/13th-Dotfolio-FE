@@ -240,7 +240,7 @@ export function ImmersionRecord({
   }, [recordIds]);
 
   return (
-    <ImmersionPageLayout className="px-6 py-6">
+    <ImmersionPageLayout className="px-4 py-4 sm:px-6 sm:py-6">
       <header className="relative flex w-full items-center justify-between">
         <ImmersionToggle
           isOn
@@ -251,29 +251,29 @@ export function ImmersionRecord({
         <ImmersionTimer initialMinutes={focusMinutes} />
       </header>
 
-      <div className="relative mx-auto mt-20 flex w-full max-w-[1340px] flex-col items-center gap-8">
-        <div className="flex w-full flex-col items-start gap-8">
-          <div className="flex w-full flex-col items-start gap-6">
+      <div className="relative mx-auto mt-10 flex w-full max-w-[1340px] flex-col items-center gap-6 sm:mt-14 sm:gap-8 lg:mt-20">
+        <div className="flex w-full flex-col items-start gap-6 sm:gap-8">
+          <div className="flex w-full flex-col items-start gap-4 sm:gap-6">
             <nav
               aria-label="현재 기록 경로"
-              className="flex w-full items-center gap-0.5 px-1"
+              className="flex w-full min-w-0 items-center gap-0.5 overflow-hidden px-1"
             >
-              <span className="text-body2-md text-grey-100">
+              <span className="max-w-[45%] truncate text-body2-md text-grey-100">
                 {currentRecord?.activityTitle ?? "활동"}
               </span>
               <span className="flex size-6 items-center justify-center px-1 py-2">
                 <PolygonIcon className="h-2.5 w-3 text-grey-100" />
               </span>
-              <span className="text-body2-md text-grey-100">
+              <span className="min-w-0 flex-1 truncate text-body2-md text-grey-100">
                 {currentRecord?.templateTitle ?? "템플릿"}
               </span>
             </nav>
 
-            <div className="flex w-full items-center justify-between px-1">
-              <h1 className="w-full max-w-[452px] text-title1 text-grey-0">
+            <div className="flex w-full flex-col items-stretch gap-4 px-1 sm:flex-row sm:items-center sm:justify-between">
+              <h1 className="min-w-0 break-words text-title1 text-grey-0 sm:w-full sm:max-w-[452px]">
                 {currentRecord?.title ?? "기록을 불러오는 중이에요."}
               </h1>
-              <div className="flex flex-col items-end gap-2">
+              <div className="flex shrink-0 flex-col items-end gap-2 self-end">
                 <Button
                   label={
                     isSaving
@@ -293,7 +293,7 @@ export function ImmersionRecord({
                   onClick={handleSave}
                 />
                 {saveError && (
-                  <p role="alert" className="text-body3-r text-error-text">
+                  <p role="alert" className="max-w-full text-right text-body3-r text-error-text">
                     {saveError}
                   </p>
                 )}
@@ -301,7 +301,7 @@ export function ImmersionRecord({
             </div>
           </div>
 
-          <div className="flex min-h-[678px] w-full items-start gap-6">
+          <div className="flex w-full flex-col items-stretch gap-4 sm:gap-6 lg:min-h-[678px] lg:flex-row lg:items-start">
             <ImmersionMemoPanel
               memos={memos}
               onRemove={(memoId) => {
@@ -313,7 +313,7 @@ export function ImmersionRecord({
             />
             <section
               aria-label="기록 입력"
-              className="flex min-h-[678px] min-w-0 flex-1 flex-col items-start gap-10 rounded-[32px] bg-[rgba(0,17,78,0.35)] p-6"
+              className="flex min-h-[480px] w-full min-w-0 flex-1 flex-col items-start gap-6 rounded-[24px] bg-[rgba(0,17,78,0.35)] p-4 sm:rounded-[32px] sm:p-6 lg:min-h-[678px] lg:gap-10"
             >
               {isLoading ? (
                 <p className="text-body2-md text-grey-200">

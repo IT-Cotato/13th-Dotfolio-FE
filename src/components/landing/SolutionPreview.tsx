@@ -33,12 +33,12 @@ export function SolutionPreview({ selectedStep }: SolutionPreviewProps) {
         <img
           src={QuickMemoPreview1}
           alt="빠르게 남긴 메모 화면"
-          className="absolute top-[143px] left-[54px] size-[268px]"
+          className="absolute top-[28%] left-[5%] w-[44%] object-contain lg:top-[143px] lg:left-[54px] lg:size-[268px]"
         />
         <img
           src={QuickMemoPreview2}
           alt="중요한 메모를 정리한 화면"
-          className="absolute top-[54px] right-[54px] h-[412px] w-[268px]"
+          className="absolute top-[10%] right-[5%] h-[80%] w-[44%] object-contain lg:top-[54px] lg:right-[54px] lg:h-[412px] lg:w-[268px]"
         />
       </div>
     );
@@ -50,7 +50,7 @@ export function SolutionPreview({ selectedStep }: SolutionPreviewProps) {
     <img
       src={preview.src}
       alt={preview.alt}
-      className="max-h-[439px] w-[601px] object-contain"
+      className="max-h-[calc(100%-2rem)] w-[calc(100%-2rem)] object-contain sm:max-h-[439px] sm:w-[601px]"
     />
   );
 }

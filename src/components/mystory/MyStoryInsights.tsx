@@ -190,7 +190,7 @@ export default function MyStoryInsights() {
 
   if (loadError) {
     return (
-      <Card className="relative items-stretch gap-0 rounded-t-[36px] p-6">
+      <Card className="relative items-stretch gap-0 rounded-t-[24px] p-4 md:rounded-t-[36px] md:p-6">
         <h1 className="text-title1 text-grey-900">인사이트</h1>
         <div className="grid min-h-[55vh] place-items-center text-center">
           <div>
@@ -219,7 +219,7 @@ export default function MyStoryInsights() {
   }
 
   return (
-    <Card className="relative items-stretch gap-0 rounded-t-[36px] p-6">
+    <Card className="relative items-stretch gap-0 rounded-t-[24px] p-4 md:rounded-t-[36px] md:p-6">
       {toast && <div className="fixed left-1/2 top-5 z-[100] -translate-x-1/2"><Toast message={toast.message} variant={toast.variant} /></div>}
       <header className="mb-0">
         <h1 className="text-title1 text-grey-900">인사이트</h1>

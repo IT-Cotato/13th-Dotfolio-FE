@@ -55,12 +55,12 @@ export const CreateMemoModal = ({ onClose, onCreate, activities }: CreateMemoMod
         role="dialog"
         aria-modal="true"
         aria-labelledby="create-memo-title"
-        className="h-[min(746px,calc(100vh-48px))] w-full max-w-[660px] overflow-y-auto rounded-[40px] bg-white p-8 shadow-[0_0_20px_rgba(0,0,0,0.18)]"
+        className="h-[clamp(360px,72.852dvh,895px)] max-h-[calc(100dvh-32px)] w-[clamp(320px,45.833vw,792px)] max-w-[calc(100vw-32px)] overflow-y-auto rounded-[24px] bg-white p-5 shadow-[0_0_20px_rgba(0,0,0,0.18)] sm:max-h-[calc(100dvh-48px)] sm:max-w-[calc(100vw-40px)] sm:rounded-[40px] sm:p-8"
         onMouseDown={(event) => event.stopPropagation()}
       >
-        <div className="mb-[46px] flex h-[34px] items-center justify-between">
+        <div className="mb-8 flex h-[34px] items-center justify-between sm:mb-[46px]">
           <h2 id="create-memo-title" className="text-title2 text-grey-950">메모 생성</h2>
-          <button type="button" aria-label="닫기" onClick={onClose} className="cursor-pointer text-title2 text-grey-400 hover:text-grey-700">×</button>
+          <button type="button" aria-label="닫기" onClick={onClose} className="flex size-11 cursor-pointer items-center justify-center text-title2 text-grey-400 hover:text-grey-700">×</button>
         </div>
 
         <div className="flex flex-col gap-8">
@@ -70,7 +70,7 @@ export const CreateMemoModal = ({ onClose, onCreate, activities }: CreateMemoMod
               maxLength={255}
               value={title}
               onChange={(event) => setTitle(event.target.value)}
-              placeholder="메모를 한눈에 알아볼 수 있는 제목을 작성해보세요."
+              placeholder="메모 제목을 입력해주세요."
               className="h-12 rounded-2xl border border-grey-100 px-4 text-body2-r text-grey-900 outline-none placeholder:text-grey-400 focus:border-primary-300"
             />
           </label>
@@ -146,7 +146,7 @@ export const CreateMemoModal = ({ onClose, onCreate, activities }: CreateMemoMod
           type="button"
           disabled={!memo.trim() || isSubmitting}
           onClick={() => void handleCreate()}
-          className="bg-primary-gradient mt-8 h-[52px] w-full cursor-pointer rounded-[14px] text-sub2-sb text-white disabled:cursor-not-allowed disabled:bg-none disabled:bg-grey-300"
+          className="bg-primary-gradient mt-8 h-13 w-full cursor-pointer rounded-[14px] text-sub2-sb text-white disabled:cursor-not-allowed disabled:bg-none disabled:bg-grey-300"
         >
           {isSubmitting ? '생성 중...' : '메모 생성'}
         </button>

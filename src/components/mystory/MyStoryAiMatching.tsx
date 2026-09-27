@@ -75,7 +75,7 @@ export default function MyStoryAiMatching() {
   };
 
   return (
-    <Card className="items-stretch gap-0 rounded-t-[36px] p-6">
+    <Card className="items-stretch gap-0 rounded-t-[24px] p-5 sm:rounded-t-[36px] sm:p-6">
       <header>
         <div className="flex items-center gap-3">
           <span className="grid size-7 shrink-0 place-items-center rounded-lg bg-primary-500">
@@ -83,10 +83,10 @@ export default function MyStoryAiMatching() {
           </span>
           <h1 className="text-title1 text-grey-900">AI 기록 매칭</h1>
         </div>
-        <p className="ml-10 mt-1 text-body2-md text-grey-500">이력서·자소서 문항을 입력하면 AI가 관련 기록을 찾아드립니다.</p>
+        <p className="mt-2 text-body2-md text-grey-500 sm:ml-10 sm:mt-1">이력서·자소서 문항을 입력하면 AI가 관련 기록을 찾아드립니다.</p>
       </header>
 
-      <div className="relative flex h-[98px] items-end rounded-[14px] border border-grey-100 bg-white p-4">
+      <div className="relative flex flex-col gap-3 rounded-[14px] border border-grey-100 bg-white p-3.5 sm:h-[98px] sm:flex-row sm:items-end sm:gap-0 sm:p-4">
         <textarea
           value={prompt}
           onChange={(event) => {
@@ -100,13 +100,13 @@ export default function MyStoryAiMatching() {
           }}
           placeholder="예) 해당 직무에서 열심히 공부했던 경험에 대해 서술하시오."
           aria-label="자소서 문항"
-          className="h-full min-w-0 flex-1 resize-none bg-transparent pr-5 text-body2-md text-grey-900 outline-none placeholder:text-grey-400"
+          className="h-[112px] w-full min-w-0 resize-none bg-transparent text-body2-md leading-relaxed text-grey-900 outline-none placeholder:text-grey-400 sm:h-full sm:flex-1 sm:pr-5"
         />
         <button
           type="button"
           onClick={() => void startMatching()}
           disabled={!prompt.trim() || status === 'analyzing'}
-          className={`flex shrink-0 items-center justify-center gap-2 rounded-[14px] px-5 py-2.5 text-label2-sb text-white transition-colors ${
+          className={`flex min-h-11 w-full shrink-0 items-center justify-center gap-2 rounded-[14px] px-5 py-2.5 text-label2-sb text-white transition-colors sm:min-h-0 sm:w-auto ${
             prompt.trim() && status !== 'analyzing' ? 'cursor-pointer bg-primary-500' : 'cursor-default bg-grey-300'
           }`}
         >
@@ -120,13 +120,13 @@ export default function MyStoryAiMatching() {
       {!hasMatchedRecords && (
         <section className="mt-2">
           <h2 className="text-body2-md text-grey-700">예시 문항</h2>
-          <div className="mt-5 flex flex-wrap gap-2">
+          <div className="mt-4 flex flex-col items-stretch gap-2 sm:mt-5 sm:flex-row sm:flex-wrap">
             {examples.map((example) => (
               <button
                 type="button"
                 key={example.id}
                 onClick={() => chooseExample(example.content)}
-                className="cursor-pointer rounded-xl border border-primary-100 bg-primary-50 px-4 py-2 text-label2-sb text-primary-500 transition-colors hover:bg-primary-100"
+                className="min-h-11 w-full cursor-pointer whitespace-normal break-words rounded-xl border border-primary-100 bg-primary-50 px-3 py-2.5 text-left text-label2-sb leading-relaxed text-primary-500 transition-colors hover:bg-primary-100 sm:min-h-0 sm:w-auto sm:px-4 sm:py-2 sm:text-center"
               >
                 {example.content}
               </button>
@@ -182,16 +182,16 @@ function MatchedRecord({
   const score = Math.max(0, Math.min(100, Math.round(record.matchRate <= 1 ? record.matchRate * 100 : record.matchRate)));
 
   return (
-    <article className="rounded-2xl border border-grey-100 bg-white p-5">
+    <article className="rounded-2xl border border-grey-100 bg-white p-4 sm:p-5">
       <button type="button" onClick={onToggle} className="w-full cursor-pointer text-left">
         <div className="flex items-start justify-between gap-5">
           <div className="min-w-0">
-            <span className="inline-flex rounded-full bg-grey-600 px-3 py-1 text-label3-md text-white"># {record.activityTitle}</span>
-            <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1">
-              <h3 className="text-body2-md text-grey-900">{record.recordTitle}</h3>
+            <span className="inline-flex max-w-full whitespace-normal break-words rounded-2xl bg-grey-600 px-3 py-1 text-label3-md text-white"># {record.activityTitle}</span>
+            <div className="mt-3 flex flex-col items-start gap-1 sm:flex-row sm:flex-wrap sm:items-center sm:gap-x-3">
+              <h3 className="break-words text-body2-md text-grey-900">{record.recordTitle}</h3>
               <time className="text-body3-md text-grey-500">{formatDate(record.recordDate)}</time>
             </div>
-            <span className="mt-3 inline-flex rounded-lg bg-category-purple-bg px-3 py-1 text-label3-md text-category-purple-text">{record.templateTitle || record.activityType}</span>
+            <span className="mt-3 inline-flex max-w-full whitespace-normal break-words rounded-lg bg-category-purple-bg px-3 py-1 text-label3-md text-category-purple-text">{record.templateTitle || record.activityType}</span>
           </div>
           {expanded ? (
             <VectorUpIcon className="mt-2 h-[7px] w-[14px] shrink-0" />

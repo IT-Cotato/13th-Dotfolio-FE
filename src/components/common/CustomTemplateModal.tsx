@@ -93,12 +93,12 @@ export const CustomTemplateModal = ({ isOpen, onClose, onSubmit }: CustomTemplat
       }}
     >
       <div
-        className="relative w-165 h-206 max-w-[calc(100vw-2rem)] max-h-[calc(100vh-2rem)] bg-white rounded-3xl p-8 overflow-y-auto scrollbar-hide"
+        className="relative h-[clamp(360px,80.469dvh,989px)] w-[clamp(320px,45.833vw,792px)] max-w-[calc(100vw-2rem)] max-h-[calc(100dvh-2rem)] overflow-y-auto rounded-2xl bg-white p-5 scrollbar-hide sm:rounded-3xl sm:p-8"
         onClick={e => e.stopPropagation()}
       >
         <div className="flex items-center justify-between">
           <p className="text-title1 text-grey-900">커스텀 템플릿 만들기</p>
-          <button type="button" onClick={handleClose} className="cursor-pointer">
+          <button type="button" onClick={handleClose} className="flex size-11 shrink-0 cursor-pointer items-center justify-center sm:size-auto">
             <CloseIcon className="w-4 h-4 text-grey-400" />
           </button>
         </div>
@@ -179,7 +179,7 @@ export const CustomTemplateModal = ({ isOpen, onClose, onSubmit }: CustomTemplat
                   type="text"
                   value={question.label}
                   onChange={e => updateQuestion(question.id, { label: e.target.value })}
-                  placeholder="항목 제목을 입력해주세요. (예: 어려웠던 점)"
+                  placeholder="항목 제목을 입력해주세요."
                   className="w-full px-4 py-4 rounded-[14px] border border-grey-100 text-body-reading2-md text-grey-900 placeholder:text-grey-400 outline-none"
                 />
 
@@ -189,7 +189,7 @@ export const CustomTemplateModal = ({ isOpen, onClose, onSubmit }: CustomTemplat
                     type="text"
                     value={question.description}
                     onChange={e => updateQuestion(question.id, { description: e.target.value })}
-                    placeholder="항목 설명을 입력해주세요. (예: 업무 중 가장 어려웠던 점은 무엇이었나요?)"
+                    placeholder="항목 설명을 입력해주세요."
                     className="w-full px-4 py-4 rounded-[14px] border border-grey-100 text-body-reading2-md text-grey-900 placeholder:text-grey-400 outline-none"
                   />
                 </div>

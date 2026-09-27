@@ -1,4 +1,3 @@
-import { Fragment } from 'react';
 import { Tag } from '@/components/record/tag';
 import { useTemplates } from '@/contexts/TemplatesContext';
 import type { RecordEntry } from '@/types/record';
@@ -18,21 +17,35 @@ interface RecordListProps {
 export const RecordList = ({ records, onDeleteClick, onRecordClick }: RecordListProps) => {
   const { templates } = useTemplates();
   return (
-  <div className="w-full grid grid-cols-[1fr_auto_auto_auto] items-center gap-x-6">
-    {records.map((record, i) => {
+  <div className="flex w-full flex-col divide-y divide-grey-100">
+    {records.map(record => {
       const template = templates.find(t => t.id === record.templateId);
       const statusStyle = STATUS_STYLES[record.status] ?? STATUS_STYLES['기록 중'];
       return (
-        <Fragment key={record.id}>
-          {i > 0 && <div className="col-span-4 border-t border-grey-100" />}
+        <div
+          key={record.id}
+          className={`grid grid-cols-[1fr_auto] items-center gap-x-3 gap-y-3 py-4 sm:grid-cols-[1fr_auto_auto_auto] sm:gap-x-6 ${onRecordClick ? 'cursor-pointer' : ''}`}
+          onClick={() => onRecordClick?.(record)}
+        >
           <div
-            className={`flex flex-col gap-2 py-4 ${onRecordClick ? 'cursor-pointer' : ''}`}
-            onClick={() => onRecordClick?.(record)}
+            className="flex min-w-0 flex-col gap-2"
           >
-            <p className="text-grey-900 text-sub2-sb">{record.title}</p>
+            <p className="break-words text-grey-900 text-sub2-sb">{record.title}</p>
             <p className="text-grey-700 text-body3-r">{record.date}</p>
           </div>
-          <div className="justify-self-center">
+          <button
+            type="button"
+            aria-label={`${record.title} 삭제`}
+            onClick={event => {
+              event.stopPropagation();
+              onDeleteClick?.(record);
+            }}
+            className="flex size-11 cursor-pointer items-center justify-center justify-self-end sm:order-last sm:size-auto"
+          >
+            <TrashIcon className="w-5 h-5 text-grey-700" />
+          </button>
+          <div className="col-span-2 flex flex-wrap items-center gap-2 sm:col-span-1 sm:contents">
+          <div className="sm:justify-self-center">
             <Tag
               label={record.status}
               bgClassName={statusStyle.bgClassName}
@@ -41,7 +54,7 @@ export const RecordList = ({ records, onDeleteClick, onRecordClick }: RecordList
             />
           </div>
           {template ? (
-            <div className="justify-self-center">
+            <div className="sm:justify-self-center">
               <Tag
                 label={template.title}
                 bgClassName={template.bgClassName}
@@ -50,14 +63,8 @@ export const RecordList = ({ records, onDeleteClick, onRecordClick }: RecordList
               />
             </div>
           ) : <div />}
-          <button
-            type="button"
-            onClick={() => onDeleteClick?.(record)}
-            className="cursor-pointer justify-self-end"
-          >
-            <TrashIcon className="w-5 h-5 text-grey-700" />
-          </button>
-        </Fragment>
+          </div>
+        </div>
       );
     })}
   </div>

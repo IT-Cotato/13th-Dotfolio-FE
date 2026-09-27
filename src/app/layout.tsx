@@ -62,11 +62,22 @@ export default function Layout() {
 function HomeLayout() {
   const navigate = useNavigate();
   const { toast, fireToast } = useToast();
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isMobile, setIsMobile] = useState(() => window.matchMedia('(max-width: 767px)').matches);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(() => !window.matchMedia('(max-width: 767px)').matches);
   const [isStartingImmersion, setIsStartingImmersion] = useState(false);
   const isCheckingDraftsRef = useRef(false);
   const hasAddedLoadingGuardRef = useRef(false);
   const loadingTimeoutRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(max-width: 767px)');
+    const syncLayout = (event: MediaQueryListEvent | MediaQueryList) => {
+      setIsMobile(event.matches);
+      setIsSidebarOpen(!event.matches);
+    };
+    mediaQuery.addEventListener('change', syncLayout);
+    return () => mediaQuery.removeEventListener('change', syncLayout);
+  }, []);
 
   useEffect(() => {
     if (!isStartingImmersion) return;
@@ -126,13 +137,18 @@ function HomeLayout() {
     <ActivitiesProvider>
       <TemplatesProvider>
         <RecordsProvider>
-          <div className="w-full h-screen bg-home">
-            <header className="w-full h-20 relative flex items-center justify-between pl-8 pr-6">
+          <div className="h-dvh w-full overflow-hidden bg-home">
+            <header className="relative z-30 flex h-16 w-full items-center justify-between px-2 md:h-20 md:pl-8 md:pr-6">
               <div className="flex items-center gap-4">
-                <MenuIcon
-                  className="w-6 h-6 text-grey-700 cursor-pointer"
+                <button
+                  type="button"
+                  aria-label={isSidebarOpen ? '메뉴 닫기' : '메뉴 열기'}
+                  aria-expanded={isSidebarOpen}
                   onClick={() => setIsSidebarOpen(prev => !prev)}
-                />
+                  className="flex size-11 cursor-pointer items-center justify-center md:size-6"
+                >
+                  <MenuIcon className="h-6 w-6 text-grey-700" />
+                </button>
                 <span
                   className="font-nexon text-logo text-grey-600 cursor-pointer"
                   onClick={() => navigate("/home")}
@@ -141,14 +157,29 @@ function HomeLayout() {
                 </span>
               </div>
               <div className="flex items-center gap-5">
-                <button type="button" aria-label="마이페이지" onClick={() => navigate('/mypage')}>
+                <button type="button" aria-label="마이페이지" onClick={() => navigate('/mypage')} className="flex size-11 items-center justify-center md:size-6">
                   <ProfileIcon className="w-6 h-6 text-grey-700 cursor-pointer" />
                 </button>
               </div>
             </header>
-            <div className="flex h-[calc(100vh-80px)]">
+            <div className="flex h-[calc(100dvh-4rem)] md:h-[calc(100dvh-5rem)]">
+              {isMobile && isSidebarOpen && (
+                <button
+                  type="button"
+                  aria-label="메뉴 닫기"
+                  onClick={() => setIsSidebarOpen(false)}
+                  className="fixed inset-x-0 bottom-0 top-16 z-40 bg-grey-950/35"
+                />
+              )}
               {isSidebarOpen && (
-                <nav className="h-full min-h-0 w-60 shrink-0 flex flex-col items-start py-6 px-6 gap-6">
+                <nav
+                  className="fixed bottom-0 left-0 top-16 z-50 flex w-[min(20rem,85vw)] flex-col items-start gap-6 bg-home px-6 py-6 shadow-[8px_0_30px_rgba(22,53,164,0.12)] md:static md:h-full md:min-h-0 md:w-60 md:shrink-0 md:bg-transparent md:shadow-none"
+                  onClick={(event) => {
+                    if (isMobile && (event.target as HTMLElement).closest("a")) {
+                      setIsSidebarOpen(false);
+                    }
+                  }}
+                >
                   <ImmersionToggle
                     isOn={isStartingImmersion}
                     onToggle={handleImmersionToggle}
@@ -158,7 +189,7 @@ function HomeLayout() {
                   </div>
                 </nav>
               )}
-              <main className={`flex-1 pb-8 pr-6 h-full overflow-y-auto scrollbar-hide ${isSidebarOpen ? '' : 'pl-8'}`}>
+              <main className={`h-full min-w-0 flex-1 overflow-y-auto px-4 pb-4 scrollbar-hide md:pb-8 md:pr-6 ${isSidebarOpen && !isMobile ? 'md:pl-0' : 'md:pl-8'}`}>
                 <Routes>
                   <Route path="/home" element={<Home />} />
                   <Route path="/memo" element={<Memo />} />

@@ -23,7 +23,7 @@ export const Button = ({
     type={type}
     onClick={onClick}
     disabled={disabled}
-    className={`flex items-center justify-center transition-all ${
+    className={`flex shrink-0 items-center justify-center whitespace-nowrap transition-all ${
       size === "tip"
         ? "text-label3-sb w-auto gap-1 rounded-xl py-1 pr-2 pl-3"
         : size === "compact"

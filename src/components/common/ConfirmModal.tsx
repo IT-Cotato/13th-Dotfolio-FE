@@ -36,7 +36,7 @@ export const ConfirmModal = ({
         aria-modal="true"
         aria-labelledby="confirm-modal-title"
         aria-describedby="confirm-modal-description"
-        className="flex w-full max-w-109.5 flex-col gap-6 rounded-3xl bg-white p-6"
+        className="flex max-h-[calc(100dvh-2rem)] w-[clamp(320px,30.417vw,526px)] max-w-[calc(100vw-2rem)] flex-col gap-6 overflow-y-auto rounded-2xl bg-white p-5 scrollbar-hide sm:rounded-3xl sm:p-6"
         onClick={e => e.stopPropagation()}
       >
         <div className="flex flex-col items-center gap-2 text-center">

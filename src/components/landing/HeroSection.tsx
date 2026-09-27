@@ -7,7 +7,7 @@ const DOTFOLIO_MOCK_URL = new URL(
 
 export function HeroSection() {
   return (
-    <section className="relative flex h-[1175px] w-full flex-col items-center overflow-hidden bg-[#F6F8FC]">
+    <section className="relative flex h-[760px] w-full flex-col items-center overflow-hidden bg-[#F6F8FC] sm:h-[1175px]">
       <div className="pointer-events-none absolute inset-0" aria-hidden="true">
         <div className="absolute inset-0 bg-[url('/images/background.jpg')] bg-cover bg-center bg-no-repeat" />
         <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(22,74,164,0.25)_11.52%,rgba(22,74,164,0)_100%)]" />
@@ -18,8 +18,8 @@ export function HeroSection() {
         <LandingHeader />
       </div>
 
-      <div className="relative z-10 mt-16 flex w-[592px] max-w-full flex-col items-center gap-6 px-5">
-        <h1 className="flex w-[404px] max-w-full flex-col items-center gap-0.5 text-center text-5xl leading-[140%] tracking-[-0.48px] [text-shadow:0_0_20px_rgba(0,0,0,0.10)]">
+      <div className="relative z-10 mt-10 flex w-[592px] max-w-full flex-col items-center gap-5 px-5 sm:mt-16 sm:gap-6">
+        <h1 className="flex w-[404px] max-w-full flex-col items-center gap-0.5 text-center text-3xl leading-[140%] tracking-[-0.48px] [text-shadow:0_0_20px_rgba(0,0,0,0.10)] sm:text-5xl">
           <span className="w-full bg-[linear-gradient(90deg,#FFF_23.15%,rgba(255,255,255,0.40)_84.52%)] bg-clip-text font-normal text-transparent">
             기억은 흐려져도
           </span>
@@ -28,14 +28,14 @@ export function HeroSection() {
           </span>
         </h1>
 
-        <p className="w-full text-center text-xl leading-8 font-normal tracking-[-0.2px] text-grey-0 [text-shadow:0_0_20px_rgba(0,0,0,0.10)]">
+        <p className="w-full text-center text-base leading-7 font-normal tracking-[-0.2px] text-grey-0 [text-shadow:0_0_20px_rgba(0,0,0,0.10)] sm:text-xl sm:leading-8">
           Dotfolio는 대학 생활의 모든 경험을 빠르게 기록하고,
           <br />
           자소서와 면접에 활용할 수 있도록 도와드려요.
         </p>
       </div>
 
-      <div className="relative z-10 mt-11.5 aspect-[887/665] w-[887px] max-w-full shrink-0 overflow-hidden">
+      <div className="relative z-10 mt-8 aspect-[887/665] w-[887px] max-w-[calc(100%-2rem)] shrink-0 overflow-hidden sm:mt-11.5 sm:max-w-full">
         <img
           src={DOTFOLIO_MOCK_URL}
           alt="Dotfolio 서비스 화면"

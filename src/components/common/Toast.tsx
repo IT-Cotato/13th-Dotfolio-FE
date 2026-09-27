@@ -8,20 +8,22 @@ interface ToastProps {
 }
 
 export const Toast = ({ message, onUndo, variant = 'success' }: ToastProps) => (
-  <div className="flex items-center gap-2.5 px-4 py-3 rounded-full bg-white border border-grey-0">
+  <div className="flex w-max max-w-[calc(100vw-2rem)] items-start gap-2.5 rounded-2xl border border-grey-0 bg-white px-4 py-3 shadow-[0_4px_20px_rgba(22,53,164,0.10)] sm:items-center sm:rounded-full">
     {variant === 'error' ? (
-      <ErrorIcon className="w-5.5 h-5.5 shrink-0" />
+      <ErrorIcon className="h-5.5 w-5.5 shrink-0" />
     ) : (
-      <div className="w-5.5 h-5.5 py-1.5 px-1 rounded-full bg-primary-gradient flex items-center justify-center shrink-0">
-        <CheckIcon className="w-3.5 h-2.5 text-grey-0" />
+      <div className="bg-primary-gradient flex h-5.5 w-5.5 shrink-0 items-center justify-center rounded-full px-1 py-1.5">
+        <CheckIcon className="h-2.5 w-3.5 text-grey-0" />
       </div>
     )}
-    <span className="text-body2-md text-grey-900 whitespace-nowrap">{message}</span>
+    <span className="min-w-0 flex-1 break-words text-[clamp(12px,3.5vw,14px)] leading-5 text-grey-900 sm:whitespace-nowrap sm:text-body2-md">
+      {message}
+    </span>
     {onUndo && (
       <button
         type="button"
         onClick={onUndo}
-        className="text-body3-md text-grey-500 underline whitespace-nowrap cursor-pointer"
+        className="shrink-0 cursor-pointer whitespace-nowrap text-[12px] leading-5 text-grey-500 underline sm:text-body3-md"
       >
         실행취소
       </button>

@@ -12,7 +12,7 @@ interface MemoListProps {
 }
 
 export const MemoList = ({ memos, onDelete, onToggleImportant, onMove, selectedIds, onSelect, onOpen }: MemoListProps) => (
-  <section data-memo-list className="mx-auto mt-6 w-full max-w-[1124px] columns-[266px] gap-5">
+  <section data-memo-list className="mx-auto mt-6 w-full max-w-[clamp(999px,78.056vw,1349px)] columns-1 gap-5 sm:columns-2 lg:columns-4">
     {memos.map((memo) => (
       <MemoCard
         key={memo.id}

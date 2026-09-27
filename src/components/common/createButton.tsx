@@ -15,7 +15,7 @@ export const PrimaryButton = ({ label, onClick, size = 'md' }: PrimaryButtonProp
   return (
     <button
       onClick={onClick}
-      className={`flex items-center gap-2 bg-primary-gradient text-white rounded-[12px] cursor-pointer ${SIZE_CLASSES[size]}`}
+      className={`flex shrink-0 items-center gap-2 whitespace-nowrap bg-primary-gradient text-white rounded-[12px] cursor-pointer ${SIZE_CLASSES[size]}`}
     >
       <span className="p-1.5"><AddIcon className="w-5 h-5" /></span>
       <span>{label}</span>

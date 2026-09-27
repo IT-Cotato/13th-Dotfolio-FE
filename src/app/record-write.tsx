@@ -233,12 +233,12 @@ export default function RecordWrite() {
             type="text"
             value={title}
             onChange={e => setTitle(e.target.value)}
-            placeholder="기록의 제목을 입력해주세요. (예: 데이터 시각화 대시보드 개선)"
+            placeholder="기록 제목을 입력해주세요."
             className={`px-4 py-4 rounded-[14px] border border-grey-100 text-body-reading2-md text-grey-900 placeholder:text-grey-400 outline-none transition-colors`}
           />
         </div>
 
-        <div className="w-full grid grid-cols-[280px_1fr] gap-6 items-start">
+        <div className="grid w-full grid-cols-1 items-start gap-6 lg:grid-cols-[280px_1fr]">
           <div className="flex flex-col gap-4">
             <div className="w-full flex items-center justify-between">
               <p className="text-sub1-sb text-grey-900 pl-1">메모 {selectedMemos.length}</p>

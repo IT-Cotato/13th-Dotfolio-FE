@@ -81,3 +81,16 @@
     background: rgba(0, 17, 78, 0.35);
   }
 }
+
+@media (max-width: 767px) {
+  input,
+  textarea,
+  select {
+    font-size: 16px !important;
+  }
+
+  input::placeholder,
+  textarea::placeholder {
+    font-size: clamp(12px, 3.5vw, 14px) !important;
+  }
+}

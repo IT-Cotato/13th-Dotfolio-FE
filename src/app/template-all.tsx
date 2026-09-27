@@ -39,7 +39,7 @@ export default function TemplateAll() {
           onBack={() => navigate(backPath)}
           extra={<PrimaryButton label="커스텀 템플릿 만들기" onClick={() => setIsCustomModalOpen(true)} size="sm" />}
         />
-        <div className="w-full grid grid-cols-[repeat(auto-fill,266px)] gap-6">
+        <div className="grid w-full grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-[repeat(auto-fill,minmax(220px,266px))]">
           {templates.map(template => (
             <Template
               key={template.id}

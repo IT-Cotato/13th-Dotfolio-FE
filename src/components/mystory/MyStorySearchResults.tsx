@@ -25,9 +25,9 @@ export function MyStorySearchResults({ query, results, onOpenDetail }: MyStorySe
             type="button"
             onClick={() => onOpenDetail(record)}
             key={record.id}
-            className="rounded-2xl border border-grey-100 px-6 py-4 text-left cursor-pointer hover:border-primary-200 hover:shadow-[0_8px_24px_rgba(47,82,235,.06)] transition-all"
+            className="cursor-pointer rounded-2xl border border-grey-100 px-4 py-4 text-left transition-all hover:border-primary-200 hover:shadow-[0_8px_24px_rgba(47,82,235,.06)] sm:px-6"
           >
-            <div className="flex items-start justify-between gap-6">
+            <div className="flex items-start justify-between gap-3 sm:gap-6">
               <div className="min-w-0">
                 <span className="inline-block rounded-full bg-grey-600 px-3 py-1 text-label3-md text-white"># {record.activityTitle}</span>
                 <p className="mt-3 text-body2-md text-grey-800">

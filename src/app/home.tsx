@@ -121,7 +121,7 @@ export default function Home() {
       )}
       <Card>
         <HomeHeader />
-        <section className="w-full flex items-center justify-between">
+        <section className="flex w-full flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-2">
             <span className="text-title1 text-grey-900">기록 중인 활동</span>
             <span className="text-title1 text-grey-900">{activities.length}</span>

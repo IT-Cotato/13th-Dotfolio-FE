@@ -17,10 +17,10 @@ export const MemoDetailModal = ({ memo, onClose }: MemoDetailModalProps) => {
       onClick={onClose}
     >
       <div
-        className="relative w-full max-w-155 max-h-[80vh] overflow-y-auto scrollbar-hide bg-white rounded-3xl p-4 flex flex-col"
+        className="relative flex max-h-[calc(100dvh-32px)] w-[clamp(320px,43.056vw,744px)] max-w-[calc(100vw-32px)] flex-col overflow-y-auto rounded-2xl bg-white p-4 scrollbar-hide sm:max-h-[80dvh] sm:max-w-[calc(100vw-40px)] sm:rounded-3xl"
         onClick={e => e.stopPropagation()}
       >
-        <button type="button" onClick={onClose} className="absolute top-4 right-4 cursor-pointer">
+        <button type="button" onClick={onClose} className="absolute right-1 top-1 flex size-11 cursor-pointer items-center justify-center sm:right-2 sm:top-2">
           <CloseIcon className="w-4 h-4 text-grey-400" />
         </button>
 

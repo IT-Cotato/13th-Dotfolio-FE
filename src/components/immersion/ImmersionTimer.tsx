@@ -35,7 +35,7 @@ export function ImmersionTimer({ initialMinutes }: ImmersionTimerProps) {
   }, [initialMinutes]);
 
   return (
-    <time className="text-title1 text-grey-0" dateTime={`PT${remainingSeconds}S`}>
+    <time className="shrink-0 text-title2 text-grey-0 sm:text-title1" dateTime={`PT${remainingSeconds}S`}>
       {formatRemainingTime(remainingSeconds)}
     </time>
   );

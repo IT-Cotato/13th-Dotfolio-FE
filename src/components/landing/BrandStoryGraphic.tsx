@@ -8,7 +8,7 @@ export function BrandStoryGraphic() {
     <img
       src={BRAND_STORY_GRAPHIC_URL}
       alt="흩어진 점들이 하나의 형태로 연결되는 그래픽"
-      className="h-auto w-[505px] shrink-0"
+      className="h-auto w-full max-w-[505px] shrink-0 self-center"
     />
   );
 }

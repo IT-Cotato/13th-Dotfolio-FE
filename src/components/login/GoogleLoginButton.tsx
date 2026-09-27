@@ -12,7 +12,7 @@ export function GoogleLoginButton({ label = "Google로 시작하기" }: GoogleLo
 
   return (
     <button
-      className="w-full h-[52px] px-5 py-2.5 rounded-xl border border-grey-100 bg-white flex justify-center items-center gap-2 text-body2-md text-grey-900"
+      className="h-13 w-full px-5 py-2.5 rounded-xl border border-grey-100 bg-white flex justify-center items-center gap-2 text-body2-md text-grey-900"
       onClick={handleClick}
       type="button"
     >

@@ -63,14 +63,14 @@ export const JobSelectModal = ({
         aria-modal="true"
         aria-labelledby="job-select-title"
         tabIndex={-1}
-        className="relative flex h-[min(611px,calc(100dvh-40px))] w-full max-w-[567px] flex-col rounded-[40px] bg-white p-8 outline-none"
+        className="relative flex h-[clamp(360px,59.668dvh,733px)] max-h-[calc(100dvh-32px)] w-[clamp(320px,39.375vw,680px)] max-w-[calc(100vw-32px)] flex-col rounded-[24px] bg-white p-5 outline-none sm:max-h-[calc(100dvh-40px)] sm:max-w-[calc(100vw-40px)] sm:rounded-[40px] sm:p-8"
         onMouseDown={event => event.stopPropagation()}
       >
         <button
           type="button"
           aria-label="닫기"
           onClick={onClose}
-          className="absolute top-6 right-6 cursor-pointer text-grey-400"
+          className="absolute right-2 top-2 flex size-11 cursor-pointer items-center justify-center text-grey-400 sm:right-4 sm:top-4"
         >
           <CloseIcon className="size-4" />
         </button>

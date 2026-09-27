@@ -16,7 +16,7 @@ export function MyStorySearchBar({ query, onQueryChange, onSubmit, disabled = fa
           value={query}
           onChange={event => onQueryChange(event.target.value)}
           onKeyDown={event => event.key === 'Enter' && !event.nativeEvent.isComposing && !disabled && onSubmit()}
-          placeholder="활동명, 태그, 기록 내용으로 검색해 보세요."
+          placeholder="기록을 검색해 보세요."
           className="min-w-0 flex-1 bg-transparent outline-none text-body3-md text-grey-900 placeholder:text-grey-400"
         />
       </div>

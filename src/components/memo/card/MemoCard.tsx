@@ -18,7 +18,7 @@ interface MemoCardProps {
 
 export const MemoCard = ({ memo, onDelete, onToggleImportant, onMove, selected, selectionMode, onSelect, onOpen }: MemoCardProps) => (
   <article
-    className={`group relative mb-5 flex min-h-[266px] w-[266px] max-h-[454px] break-inside-avoid cursor-pointer overflow-visible rounded-[20px] focus-within:z-40 ${selected ? 'bg-primary-gradient p-0.5 shadow-[0_0_30px_rgba(22,53,164,0.08)]' : `border ${memo.isImportant ? 'border-primary-100' : 'border-grey-100'}`}`}
+    className={`group relative mb-5 flex min-h-[16.625rem] w-full max-h-[28.375rem] break-inside-avoid cursor-pointer overflow-visible rounded-[20px] focus-within:z-40 ${selected ? 'bg-primary-gradient p-0.5 shadow-[0_0_30px_rgba(22,53,164,0.08)]' : `border ${memo.isImportant ? 'border-primary-100' : 'border-grey-100'}`}`}
   >
     <button
       type="button"
@@ -27,7 +27,7 @@ export const MemoCard = ({ memo, onDelete, onToggleImportant, onMove, selected, 
       className="absolute inset-0 z-0 cursor-pointer rounded-[20px] outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2"
     />
     <div className={`pointer-events-none relative z-10 flex min-h-0 flex-1 flex-col overflow-visible ${selected ? 'rounded-[18px]' : 'rounded-[19px]'} ${memo.isImportant ? 'bg-primary-50' : 'bg-white'}`}>
-    <label className="peer group/check pointer-events-auto absolute left-0 top-0 z-20 h-[54px] w-11 cursor-pointer">
+    <label className="peer group/check pointer-events-auto absolute left-0 top-0 z-20 h-[3.375rem] w-11 cursor-pointer">
       <span className="sr-only">메모 선택</span>
       <input
         type="checkbox"
@@ -39,12 +39,10 @@ export const MemoCard = ({ memo, onDelete, onToggleImportant, onMove, selected, 
         {selected && <CheckIcon />}
       </span>
     </label>
-    <header className={`flex h-[52px] shrink-0 items-center rounded-t-[18px] border-b px-4 text-body3-md transition-[padding] peer-hover:pl-11 ${selected || selectionMode ? 'pl-11' : ''} ${memo.isImportant ? 'border-primary-100 text-primary-500' : 'border-grey-100 text-grey-600'}`}>
+    <header className={`flex h-13 shrink-0 items-center rounded-t-[18px] border-b px-4 text-body3-md transition-[padding] peer-hover:pl-11 ${selected || selectionMode ? 'pl-11' : ''} ${memo.isImportant ? 'border-primary-100 text-primary-500' : 'border-grey-100 text-grey-600'}`}>
       <time>{memo.createdAt}</time>
-      <span className={`ml-2 flex h-[22px] w-[62px] shrink-0 items-center rounded-[100px] border border-grey-100 bg-white py-px pl-1 pr-2 text-label3-md ${memo.isImportant ? 'text-primary-500' : 'text-grey-600'}`}>
-        <span className="flex h-5 w-5 shrink-0 items-center justify-center">
-          <DdayIcon className="h-2.5 w-[7px]" />
-        </span>
+      <span className={`ml-2 flex h-[1.375rem] min-w-[3.875rem] shrink-0 items-center justify-center gap-1 rounded-full border border-grey-100 bg-white px-2 py-px text-label3-md ${memo.isImportant ? 'text-primary-500' : 'text-grey-600'}`}>
+        <DdayIcon className="h-2.5 w-[0.4375rem] shrink-0" />
         <span className="whitespace-nowrap">{memo.dDay}</span>
       </span>
       {!selected && (

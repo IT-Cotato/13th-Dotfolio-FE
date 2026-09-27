@@ -26,7 +26,7 @@ export const ActivityTagDropdown = ({ tags, selectedTag, onChange }: ActivityTag
   };
 
   return (
-    <div ref={containerRef} className="relative">
+    <div ref={containerRef} className="relative shrink-0">
       <button
         type="button"
         aria-haspopup="listbox"
@@ -51,7 +51,7 @@ export const ActivityTagDropdown = ({ tags, selectedTag, onChange }: ActivityTag
             role="option"
             aria-selected={!selectedTag}
             onClick={() => select('')}
-            className="min-h-[38px] cursor-pointer px-4 py-2 text-left text-body2-md text-grey-900 transition-colors hover:bg-grey-50"
+            className="min-h-[2.375rem] cursor-pointer px-4 py-2 text-left text-body2-md text-grey-900 transition-colors hover:bg-grey-50"
           >
             전체보기
           </button>
@@ -62,7 +62,7 @@ export const ActivityTagDropdown = ({ tags, selectedTag, onChange }: ActivityTag
               role="option"
               aria-selected={selectedTag === tag}
               onClick={() => select(tag)}
-              className="min-h-[38px] cursor-pointer truncate px-4 py-2 text-left text-body2-md text-grey-900 transition-colors hover:bg-grey-50"
+              className="min-h-[2.375rem] cursor-pointer truncate px-4 py-2 text-left text-body2-md text-grey-900 transition-colors hover:bg-grey-50"
             >
               {tag}
             </button>

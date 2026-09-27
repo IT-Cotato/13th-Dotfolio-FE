@@ -54,7 +54,7 @@ export const MemoLoadedCard = ({
           <span className={isImmersion ? 'text-body3-md text-grey-100' : 'text-body3-md text-grey-600'}>
             {memo.date}
           </span>
-          <div className={`flex items-center justify-end ${isImmersion ? 'w-[103px] gap-4' : 'gap-2'}`}>
+          <div className={`flex items-center justify-end ${isImmersion ? 'gap-2 lg:w-[103px] lg:gap-4' : 'gap-2'}`}>
             <div ref={menuRef} className="relative">
               <button
                 type="button"
@@ -65,7 +65,7 @@ export const MemoLoadedCard = ({
                 }}
                 className={`flex shrink-0 cursor-pointer items-center justify-center ${
                   isImmersion
-                    ? 'size-[22px] px-2.5 py-1 text-grey-100'
+                    ? 'size-11 text-grey-100 lg:size-[22px] lg:px-2.5 lg:py-1'
                     : 'size-6 rounded-[5px] text-grey-400 transition-colors hover:bg-[#EAEEF4]'
                 }`}
               >
@@ -99,7 +99,7 @@ export const MemoLoadedCard = ({
                 event.stopPropagation();
                 setIsOpen(previous => !previous);
               }}
-              className="flex size-[22px] shrink-0 cursor-pointer items-center justify-center py-2 pl-1"
+              className={`flex shrink-0 cursor-pointer items-center justify-center ${isImmersion ? 'size-11 lg:size-[22px] lg:py-2 lg:pl-1' : 'size-[22px] py-2 pl-1'}`}
             >
               {isOpen ? (
                 <VectorUpIcon className="h-[7px] w-3.5 text-grey-400" />

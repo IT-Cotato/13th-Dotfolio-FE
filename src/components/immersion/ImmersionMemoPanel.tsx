@@ -38,7 +38,7 @@ export function ImmersionMemoPanel({
   return (
     <aside
       aria-label="불러온 메모"
-      className="flex h-[678px] w-[389px] shrink-0 flex-col items-end gap-4 overflow-hidden rounded-[32px] bg-[rgba(0,17,78,0.35)] p-6"
+      className="flex h-[clamp(260px,45dvh,360px)] w-full shrink-0 flex-col items-end gap-4 overflow-hidden rounded-[24px] bg-[rgba(0,17,78,0.35)] p-4 sm:rounded-[32px] sm:p-6 lg:h-[678px] lg:w-[389px]"
     >
       <div className="flex w-full items-center justify-between px-1">
         <h2 className="text-sub1-sb text-grey-0">메모 {displayMemos.length}</h2>

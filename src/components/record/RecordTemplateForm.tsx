@@ -61,7 +61,7 @@ export function RecordTemplateForm({
 
   if (isImmersion) {
     return (
-      <div className="flex w-full flex-col items-start gap-10">
+      <div className="flex w-full flex-col items-start gap-6 sm:gap-10">
         {questions.map((question, index) => {
           const isExpanded = expandedQuestionIds.has(question.id);
 
@@ -73,9 +73,9 @@ export function RecordTemplateForm({
                 </span>
 
                 <div className="flex min-w-0 flex-1 flex-col gap-2">
-                  <div className="flex w-full items-center justify-between">
-                    <div className="flex min-w-0 items-center gap-0.5">
-                      <h2 className="text-sub1-sb text-grey-0">{question.label}</h2>
+                  <div className="flex w-full items-start justify-between gap-2">
+                    <div className="flex min-w-0 flex-1 items-start gap-0.5">
+                      <h2 className="min-w-0 break-words text-sub1-sb text-grey-0">{question.label}</h2>
                       {question.required && (
                         <span className="text-sub2-sb text-error-text">*</span>
                       )}
@@ -86,7 +86,7 @@ export function RecordTemplateForm({
                       aria-expanded={isExpanded}
                       aria-label={`${question.label} ${isExpanded ? '접기' : '펼치기'}`}
                       onClick={() => toggleQuestion(question.id)}
-                      className="flex h-6 w-7 cursor-pointer items-center justify-center"
+                      className="-mr-2 flex size-11 shrink-0 cursor-pointer items-center justify-center sm:mr-0 sm:h-6 sm:w-7"
                     >
                       {isExpanded ? (
                         <VectorUpIcon className="h-[7px] w-3.5 shrink-0 text-grey-400" />

@@ -179,7 +179,7 @@ export const CustomTemplateModal = ({ isOpen, onClose, onSubmit }: CustomTemplat
                   type="text"
                   value={question.label}
                   onChange={e => updateQuestion(question.id, { label: e.target.value })}
-                  placeholder="항목 제목을 입력해주세요. (예: 어려웠던 점)"
+                  placeholder="항목 제목을 입력해주세요."
                   className="w-full px-4 py-4 rounded-[14px] border border-grey-100 text-body-reading2-md text-grey-900 placeholder:text-grey-400 outline-none"
                 />
 
@@ -189,7 +189,7 @@ export const CustomTemplateModal = ({ isOpen, onClose, onSubmit }: CustomTemplat
                     type="text"
                     value={question.description}
                     onChange={e => updateQuestion(question.id, { description: e.target.value })}
-                    placeholder="항목 설명을 입력해주세요. (예: 업무 중 가장 어려웠던 점은 무엇이었나요?)"
+                    placeholder="항목 설명을 입력해주세요."
                     className="w-full px-4 py-4 rounded-[14px] border border-grey-100 text-body-reading2-md text-grey-900 placeholder:text-grey-400 outline-none"
                   />
                 </div>

@@ -70,7 +70,7 @@ export const CreateMemoModal = ({ onClose, onCreate, activities }: CreateMemoMod
               maxLength={255}
               value={title}
               onChange={(event) => setTitle(event.target.value)}
-              placeholder="메모를 한눈에 알아볼 수 있는 제목을 작성해보세요."
+              placeholder="메모 제목을 입력해주세요."
               className="h-12 rounded-2xl border border-grey-100 px-4 text-body2-r text-grey-900 outline-none placeholder:text-grey-400 focus:border-primary-300"
             />
           </label>

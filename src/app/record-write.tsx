@@ -233,7 +233,7 @@ export default function RecordWrite() {
             type="text"
             value={title}
             onChange={e => setTitle(e.target.value)}
-            placeholder="기록의 제목을 입력해주세요. (예: 데이터 시각화 대시보드 개선)"
+            placeholder="기록 제목을 입력해주세요."
             className={`px-4 py-4 rounded-[14px] border border-grey-100 text-body-reading2-md text-grey-900 placeholder:text-grey-400 outline-none transition-colors`}
           />
         </div>

@@ -173,7 +173,7 @@ function HomeLayout() {
               )}
               {isSidebarOpen && (
                 <nav
-                  className="fixed bottom-0 left-0 top-16 z-50 flex w-[min(20rem,85vw)] flex-col items-start gap-6 bg-home px-6 py-6 shadow-[8px_0_30px_rgba(22,53,164,0.12)] md:static md:h-full md:min-h-0 md:w-60 md:shrink-0 md:bg-transparent md:shadow-none"
+                  className="fixed bottom-0 left-0 top-16 z-50 flex w-[min(20rem,85vw)] flex-col items-start gap-6 bg-home px-6 py-6 shadow-[8px_0_30px_rgba(22,53,164,0.12)] md:static md:h-full md:min-h-0 md:w-60 md:shrink-0 md:bg-none md:bg-transparent md:shadow-none"
                   onClick={(event) => {
                     if (isMobile && (event.target as HTMLElement).closest("a")) {
                       setIsSidebarOpen(false);

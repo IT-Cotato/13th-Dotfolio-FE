@@ -196,7 +196,7 @@ export default function MyPage() {
         <h1 className="text-title1 text-grey-900">마이페이지</h1>
       </header>
 
-      <section className="flex w-full items-center justify-between rounded-2xl border border-grey-100 p-6">
+      <section className="flex w-full flex-col items-stretch gap-4 rounded-2xl border border-grey-100 p-4 sm:flex-row sm:items-center sm:justify-between sm:p-6">
         <div className="flex min-w-0 items-center gap-4">
           <button
             type="button"
@@ -233,13 +233,13 @@ export default function MyPage() {
         <button
           type="button"
           onClick={() => setIsProfileModalOpen(true)}
-          className="shrink-0 cursor-pointer rounded-xl border-[1.5px] border-primary-500 px-3 py-2 text-sub2-sb text-primary-500 transition-colors hover:bg-primary-50"
+          className="shrink-0 cursor-pointer whitespace-nowrap rounded-xl border-[1.5px] border-primary-500 px-3 py-2 text-sub2-sb text-primary-500 transition-colors hover:bg-primary-50 sm:w-auto"
         >
           회원정보 수정
         </button>
       </section>
 
-      <section className="w-full rounded-2xl border border-grey-100 p-6">
+      <section className="w-full rounded-2xl border border-grey-100 p-4 sm:p-6">
         <h2 className="text-title2 text-grey-900">희망 직무 설정</h2>
         <div className="mt-6 border-t border-grey-100 pt-6">
           <div className="flex items-end justify-between gap-4">
@@ -264,7 +264,7 @@ export default function MyPage() {
       <button
         type="button"
         onClick={() => navigate('/template-all', { state: { from: '/mypage' } })}
-        className="flex w-full cursor-pointer items-center justify-between rounded-2xl border border-grey-100 p-6 text-left transition-colors hover:border-primary-200 hover:bg-primary-50/40"
+        className="flex w-full cursor-pointer items-center justify-between gap-4 rounded-2xl border border-grey-100 p-4 text-left transition-colors hover:border-primary-200 hover:bg-primary-50/40 sm:p-6"
       >
         <span>
           <strong className="block text-title2 text-grey-900">템플릿 관리</strong>

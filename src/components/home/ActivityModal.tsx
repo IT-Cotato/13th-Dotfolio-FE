@@ -129,10 +129,10 @@ export const ActivityModal = ({ isOpen, onClose, onSubmit, activity }: ActivityM
       }}
     >
       <div
-        className="relative w-full max-w-116 mx-4 bg-white rounded-3xl px-8 pt-6 pb-8 flex flex-col gap-8"
+        className="relative mx-4 flex max-h-[calc(100dvh-2rem)] w-[clamp(320px,32.222vw,557px)] max-w-[calc(100vw-2rem)] flex-col gap-6 overflow-y-auto rounded-2xl bg-white px-5 pb-5 pt-6 scrollbar-hide sm:gap-8 sm:rounded-3xl sm:px-8 sm:pb-8"
         onClick={e => e.stopPropagation()}
       >
-        <button type="button" onClick={onClose} className="absolute top-5 right-6 cursor-pointer">
+        <button type="button" onClick={onClose} className="absolute right-2 top-2 flex size-11 cursor-pointer items-center justify-center sm:right-4 sm:top-3">
           <CloseIcon className="w-4 h-4 text-grey-400" />
         </button>
 
@@ -189,7 +189,7 @@ export const ActivityModal = ({ isOpen, onClose, onSubmit, activity }: ActivityM
 
         {/* 날짜 */}
         <div className="flex flex-col gap-4">
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-3">
             {/* 시작일 */}
             <div className="flex flex-col gap-2">
               <p className="text-sub2-sb text-grey-900">활동 시작일</p>

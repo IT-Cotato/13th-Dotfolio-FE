@@ -127,7 +127,7 @@ export function TermsAgreement({
           <section
             aria-labelledby="privacy-terms-title"
             aria-modal="true"
-            className="flex max-h-[calc(100svh-40px)] w-full max-w-[500px] flex-col rounded-2xl bg-grey-0 p-6"
+            className="flex max-h-[calc(100svh-32px)] w-[clamp(320px,34.722vw,600px)] max-w-[calc(100vw-32px)] flex-col rounded-2xl bg-grey-0 p-5 sm:max-h-[calc(100svh-40px)] sm:max-w-[calc(100vw-40px)] sm:p-6"
             onClick={(event) => event.stopPropagation()}
             role="dialog"
           >
@@ -140,7 +140,7 @@ export function TermsAgreement({
               </h2>
               <button
                 aria-label="약관 닫기"
-                className="text-grey-500"
+                className="flex size-11 shrink-0 items-center justify-center text-grey-500"
                 onClick={() => setIsTermsModalOpen(false)}
                 type="button"
               >

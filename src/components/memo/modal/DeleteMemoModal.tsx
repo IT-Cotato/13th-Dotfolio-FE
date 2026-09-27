@@ -40,7 +40,7 @@ export const DeleteMemoModal = ({ onClose, onConfirm }: DeleteMemoModalProps) =>
         aria-modal="true"
         aria-labelledby="delete-memo-title"
         aria-describedby="delete-memo-description"
-        className="w-full max-w-[438px] rounded-[24px] bg-white p-6 shadow-[0_0_20px_0_rgba(0,0,0,0.18),0_8px_36px_0_rgba(0,0,0,0.16)]"
+        className="max-h-[calc(100dvh-2rem)] w-[clamp(320px,30.417vw,526px)] max-w-[calc(100vw-32px)] overflow-y-auto rounded-[20px] bg-white p-5 shadow-[0_0_20px_0_rgba(0,0,0,0.18),0_8px_36px_0_rgba(0,0,0,0.16)] scrollbar-hide sm:max-w-[calc(100vw-40px)] sm:rounded-[24px] sm:p-6"
         onMouseDown={(event) => event.stopPropagation()}
       >
         <div className="flex flex-col gap-2 text-center">
@@ -53,7 +53,7 @@ export const DeleteMemoModal = ({ onClose, onConfirm }: DeleteMemoModalProps) =>
             type="button"
             disabled={isDeleting}
             onClick={() => void handleConfirm()}
-            className="cursor-pointer rounded-[14px] border border-primary-500 bg-white px-5 py-3.5 text-sub2-sb text-primary-500 disabled:cursor-not-allowed"
+            className="cursor-pointer whitespace-nowrap rounded-[14px] border border-primary-500 bg-white px-5 py-3.5 text-sub2-sb text-primary-500 disabled:cursor-not-allowed"
           >
             {isDeleting ? '삭제 중...' : '메모 삭제'}
           </button>
@@ -61,7 +61,7 @@ export const DeleteMemoModal = ({ onClose, onConfirm }: DeleteMemoModalProps) =>
             ref={cancelButtonRef}
             type="button"
             onClick={onClose}
-            className="bg-primary-gradient cursor-pointer rounded-[14px] px-5 py-3.5 text-sub2-sb text-white outline-none focus-visible:ring-2 focus-visible:ring-primary-200"
+            className="bg-primary-gradient cursor-pointer whitespace-nowrap rounded-[14px] px-5 py-3.5 text-sub2-sb text-white outline-none focus-visible:ring-2 focus-visible:ring-primary-200"
           >
             취소
           </button>

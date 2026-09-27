@@ -66,15 +66,15 @@ export const MoveToRecordModal = ({
         role="dialog"
         aria-modal="true"
         aria-labelledby="move-to-record-title"
-        className="max-h-[calc(100vh-48px)] w-full max-w-[660px] overflow-y-auto rounded-[40px] bg-white p-8 shadow-[0_0_20px_rgba(0,0,0,0.18)] scrollbar-hide"
+        className="max-h-[calc(100dvh-32px)] w-[clamp(320px,45.833vw,792px)] max-w-[calc(100vw-32px)] overflow-y-auto rounded-[24px] bg-white p-5 shadow-[0_0_20px_rgba(0,0,0,0.18)] scrollbar-hide sm:max-h-[calc(100dvh-48px)] sm:max-w-[calc(100vw-40px)] sm:rounded-[40px] sm:p-8"
         onMouseDown={(event) => event.stopPropagation()}
       >
         <header className="flex items-center">
-          <button type="button" aria-label="뒤로 가기" onClick={onClose} className="flex h-8 w-8 cursor-pointer items-center justify-center text-grey-400 hover:text-grey-700">
+          <button type="button" aria-label="뒤로 가기" onClick={onClose} className="flex size-11 cursor-pointer items-center justify-center text-grey-400 hover:text-grey-700 sm:size-8">
             <ArrowLeftIcon />
           </button>
           <h2 id="move-to-record-title" className="flex-1 text-center text-title1 text-grey-900">기록하기로 이동</h2>
-          <button type="button" aria-label="닫기" onClick={onClose} className="flex h-8 w-8 cursor-pointer items-center justify-center text-grey-400 hover:text-grey-700">
+          <button type="button" aria-label="닫기" onClick={onClose} className="flex size-11 cursor-pointer items-center justify-center text-grey-400 hover:text-grey-700 sm:size-8">
             <CloseIcon />
           </button>
         </header>
@@ -83,14 +83,14 @@ export const MoveToRecordModal = ({
           <fieldset>
             <legend className="text-title2 text-grey-900">활동 선택</legend>
             <p className="mt-2 text-body2-r text-grey-700">선택한 메모를 어떤 활동으로 기록할까요?</p>
-            <div className="mt-6 grid grid-cols-2 gap-2">
+            <div className="mt-6 grid grid-cols-1 gap-2 sm:grid-cols-2">
               {activities.map((activity) => (
                 <button
                   key={activity.id}
                   type="button"
                   aria-pressed={selectedActivityId === activity.id}
                   onClick={() => selectActivity(activity.id)}
-                  className={`min-h-[84px] cursor-pointer rounded-2xl border-[1.5px] px-6 py-4 text-body1-md transition-colors ${
+                  className={`min-h-[5.25rem] cursor-pointer rounded-2xl border-[1.5px] px-6 py-4 text-body1-md transition-colors ${
                     selectedActivityId === activity.id
                       ? 'border-primary-500 bg-primary-50 text-primary-500'
                       : 'border-grey-100 bg-white text-grey-900 hover:border-primary-200'
@@ -108,7 +108,7 @@ export const MoveToRecordModal = ({
           <fieldset>
             <legend className="text-title2 text-grey-900">템플릿 선택</legend>
             <p className="mt-2 text-body2-r text-grey-700">선택한 메모를 어떤 템플릿으로 기록할까요?</p>
-            <div className="mt-6 grid grid-cols-2 gap-2">
+            <div className="mt-6 grid grid-cols-1 gap-2 sm:grid-cols-2">
               {templates.map((template) => (
                 <button
                   key={template.id}

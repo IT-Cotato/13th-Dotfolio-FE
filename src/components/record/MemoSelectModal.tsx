@@ -100,10 +100,10 @@ export const MemoSelectModal = ({
         role="dialog"
         aria-modal="true"
         aria-label="메모 불러오기"
-        className={`relative flex w-full flex-col ${
+        className={`relative flex max-w-[calc(100vw-40px)] flex-col ${
           variant === 'immersion'
-            ? 'h-[692px] max-w-[620px] gap-8 rounded-[40px] bg-[rgba(0,17,78,0.35)] p-8 shadow-[0_0_20px_rgba(0,0,0,0.18)]'
-            : 'h-173 max-h-[80vh] max-w-155 gap-11.5 rounded-3xl bg-white px-8 pt-6 pb-8'
+            ? 'h-[clamp(360px,67.578dvh,830px)] max-h-[calc(100dvh-32px)] w-[clamp(320px,43.056vw,744px)] gap-5 rounded-[24px] bg-[rgba(0,17,78,0.35)] p-5 shadow-[0_0_20px_rgba(0,0,0,0.18)] sm:max-h-[calc(100dvh-40px)] sm:gap-8 sm:rounded-[40px] sm:p-8'
+            : 'h-[clamp(360px,67.578dvh,830px)] max-h-[calc(100dvh-32px)] w-[clamp(320px,43.056vw,744px)] gap-6 rounded-2xl bg-white p-5 sm:max-h-[80dvh] sm:gap-11.5 sm:rounded-3xl sm:px-8 sm:pb-8 sm:pt-6'
         }`}
         onClick={event => event.stopPropagation()}
       >
@@ -115,7 +115,7 @@ export const MemoSelectModal = ({
             type="button"
             aria-label="메모 불러오기 닫기"
             onClick={onClose}
-            className="flex size-6 cursor-pointer items-center justify-center p-2"
+            className="flex size-11 cursor-pointer items-center justify-center sm:size-6 sm:p-2"
           >
             <CloseIcon className="size-4 shrink-0 text-grey-400" />
           </button>
@@ -129,7 +129,7 @@ export const MemoSelectModal = ({
           ) : error ? (
             <p className="py-10 text-center text-body2-r text-error-text">{error}</p>
           ) : (
-            <div className="grid grid-cols-[266px_266px] gap-x-6 gap-y-4">
+            <div className="grid grid-cols-1 justify-center gap-4 sm:grid-cols-[repeat(2,minmax(0,16.625rem))] sm:gap-x-6 sm:gap-y-4">
               {memos.map(memo => (
                 <MemoCard
                   key={memo.id}

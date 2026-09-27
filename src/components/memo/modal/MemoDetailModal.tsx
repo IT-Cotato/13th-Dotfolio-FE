@@ -127,14 +127,12 @@ export const MemoDetailModal = ({ memo, onClose, onUpdate, onDelete, onToggleImp
         aria-modal="true"
         aria-label="메모 상세보기"
         onMouseDown={(event) => event.stopPropagation()}
-        className="flex h-[min(720px,calc(100vh-48px))] w-full max-w-[660px] flex-col overflow-visible rounded-[40px] bg-white px-4 pt-4"
+        className="flex h-[clamp(360px,70.313dvh,864px)] max-h-[calc(100dvh-32px)] w-[clamp(320px,45.833vw,792px)] max-w-[calc(100vw-32px)] flex-col overflow-visible rounded-[24px] bg-white px-3 pt-3 sm:max-h-[calc(100dvh-48px)] sm:max-w-[calc(100vw-40px)] sm:rounded-[40px] sm:px-4 sm:pt-4"
       >
         <header className="relative z-20 flex h-[54px] shrink-0 items-center border-b border-grey-100 pl-4 pr-2 text-body3-md text-grey-600">
           <time>{memo.createdAt}</time>
-          <span className="ml-2 flex h-[22px] w-[62px] shrink-0 items-center rounded-[100px] border border-grey-100 bg-white py-px pl-1 pr-2 text-label3-md text-grey-600">
-            <span className="flex h-5 w-5 shrink-0 items-center justify-center">
-              <DdayIcon className="h-2.5 w-[7px]" />
-            </span>
+          <span className="ml-2 flex h-[1.375rem] min-w-[3.875rem] shrink-0 items-center justify-center gap-1 rounded-full border border-grey-100 bg-white px-2 py-px text-label3-md text-grey-600">
+            <DdayIcon className="h-2.5 w-[0.4375rem] shrink-0" />
             <span className="whitespace-nowrap">{memo.dDay}</span>
           </span>
           <div className="ml-auto">

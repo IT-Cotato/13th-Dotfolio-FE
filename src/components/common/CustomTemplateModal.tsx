@@ -93,12 +93,12 @@ export const CustomTemplateModal = ({ isOpen, onClose, onSubmit }: CustomTemplat
       }}
     >
       <div
-        className="relative w-165 h-206 max-w-[calc(100vw-2rem)] max-h-[calc(100vh-2rem)] bg-white rounded-3xl p-8 overflow-y-auto scrollbar-hide"
+        className="relative h-[clamp(360px,80.469dvh,989px)] w-[clamp(320px,45.833vw,792px)] max-w-[calc(100vw-2rem)] max-h-[calc(100dvh-2rem)] overflow-y-auto rounded-2xl bg-white p-5 scrollbar-hide sm:rounded-3xl sm:p-8"
         onClick={e => e.stopPropagation()}
       >
         <div className="flex items-center justify-between">
           <p className="text-title1 text-grey-900">커스텀 템플릿 만들기</p>
-          <button type="button" onClick={handleClose} className="cursor-pointer">
+          <button type="button" onClick={handleClose} className="flex size-11 shrink-0 cursor-pointer items-center justify-center sm:size-auto">
             <CloseIcon className="w-4 h-4 text-grey-400" />
           </button>
         </div>

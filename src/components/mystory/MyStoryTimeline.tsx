@@ -39,7 +39,7 @@ export function MyStoryTimeline({
   return (
     <div>
       <h1 className="mb-8 text-title1 text-grey-900">타임라인</h1>
-      <div className="relative pl-[54px]">
+      <div className="relative pl-8 sm:pl-[54px]">
         <span className="absolute left-[4px] top-3 bottom-7 w-0.5 bg-[linear-gradient(180deg,#DEE6EF_0%,rgba(222,230,239,0.2)_100%)]" />
         {activities.map(activity => {
           const open = expandedIds.has(activity.id);
@@ -47,28 +47,28 @@ export function MyStoryTimeline({
           const period = `${activity.startDate.slice(0, 7)} ~ ${activity.endDateUnknown ? '현재' : activity.endDate.slice(0, 7)}`;
           return (
             <article key={activity.id} className="relative pb-4 last:pb-0">
-              <span className="absolute -left-[54px] top-2.5 w-2.5 h-2.5 rounded-full bg-primary-500" />
+              <span className="absolute -left-8 top-2.5 h-2.5 w-2.5 rounded-full bg-primary-500 sm:-left-[54px]" />
               <div className="w-full text-left">
-                <div className="flex items-start justify-between gap-5">
-                  <button type="button" onClick={() => onToggle(activity.id)} className="cursor-pointer text-left" aria-label={`${activity.title} ${period}`}>
-                    <div className="flex items-center gap-3 text-grey-900">
-                      <h2 className="text-sub1-sb">{activity.title}</h2>
+                <div className="flex flex-col items-stretch gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-5">
+                  <button type="button" onClick={() => onToggle(activity.id)} className="min-w-0 cursor-pointer text-left" aria-label={`${activity.title} ${period}`}>
+                    <div className="flex min-w-0 items-start gap-2 text-grey-900 sm:items-center sm:gap-3">
+                      <h2 className="min-w-0 flex-1 break-words text-sub1-sb">{activity.title}</h2>
                       <ArrowIcon
-                        className={`size-4 shrink-0 text-grey-400 transition-transform ${
+                        className={`mt-1 size-4 shrink-0 text-grey-400 transition-transform sm:mt-0 ${
                           open ? '-rotate-90' : 'rotate-90'
                         }`}
                       />
                     </div>
                     <p className="mt-1 text-body3-md text-grey-600">{period}</p>
                   </button>
-                  <div className="flex items-center gap-5">
-                    <span className="rounded-lg border border-grey-100 px-3 py-1 text-label3-sb text-grey-900">{activity.category}</span>
+                  <div className="flex max-w-full items-center justify-end gap-3 self-end sm:gap-5 sm:self-auto">
+                    <span className="max-w-[12rem] truncate rounded-lg border border-grey-100 px-3 py-1 text-label3-sb text-grey-900" title={activity.category}>{activity.category}</span>
                     <div className="relative">
                       <button
                         type="button"
                         aria-label={`${activity.title} 활동 관리`}
                         onClick={() => onToggleMenu(activity.id)}
-                        className={`flex size-6 items-center justify-center rounded-lg text-grey-400 cursor-pointer hover:bg-grey-50 ${openMenuId === activity.id ? 'bg-grey-50' : ''}`}
+                        className={`flex size-11 cursor-pointer items-center justify-center rounded-lg text-grey-400 hover:bg-grey-50 sm:size-6 ${openMenuId === activity.id ? 'bg-grey-50' : ''}`}
                       >
                         <MoreIcon aria-hidden="true" className="size-4" />
                       </button>
@@ -103,8 +103,8 @@ export function MyStoryTimeline({
                         onClick={() => onOpenDetail(record)}
                         className="flex items-center justify-between rounded-xl bg-grey-50 px-5 py-4 text-left cursor-pointer hover:bg-primary-50 transition-colors"
                       >
-                        <span>
-                          <strong className="block text-label1-md text-grey-900">{record.title}</strong>
+                        <span className="min-w-0 pr-3">
+                          <strong className="block break-words text-label1-md text-grey-900">{record.title}</strong>
                           <span className="mt-2 block text-body3-md text-grey-600">{record.date}</span>
                         </span>
                         <ArrowIcon className="size-4 shrink-0 text-grey-400" />

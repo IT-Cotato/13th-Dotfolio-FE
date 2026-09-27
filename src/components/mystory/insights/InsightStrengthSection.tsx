@@ -47,14 +47,17 @@ export function InsightStrengthSection({ insight, selectedStrengthId, onSelectSt
   return (
     <section className="overflow-hidden rounded-2xl border border-grey-100">
       <div className={`grid min-h-[520px] ${selectedStrength ? 'md:grid-cols-2' : ''}`}>
-        <div className="flex min-w-0 flex-col p-6">
-          <div className="flex items-start justify-between">
-            <div>
+        <div className="flex min-w-0 flex-col p-4 sm:p-6">
+          <div className="flex flex-col items-stretch gap-3 sm:flex-row sm:items-start sm:justify-between">
+            <div className="min-w-0">
               <h2 className="text-title2 text-grey-900">Top 5 강점</h2>
               <p className="mt-1 text-body3-md text-grey-500">AI가 {insight.analyzedRecordCount}개의 기록을 분석하여 도출한 핵심 강점이에요.</p>
             </div>
             {selectedStrength && (
-              <button type="button" onClick={() => onSelectStrength(null)} className="cursor-pointer text-body2-md text-grey-500">전체 강점보기</button>
+              <button type="button" onClick={() => onSelectStrength(null)} className="shrink-0 self-end whitespace-nowrap text-body2-md text-grey-500 cursor-pointer sm:self-auto">
+                <span className="sm:hidden">전체 보기</span>
+                <span className="hidden sm:inline">전체 강점보기</span>
+              </button>
             )}
           </div>
           {selectedStrength ? (

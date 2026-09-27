@@ -137,7 +137,7 @@ function HomeLayout() {
     <ActivitiesProvider>
       <TemplatesProvider>
         <RecordsProvider>
-          <div className="h-dvh w-full overflow-hidden bg-home">
+          <div className="h-dvh w-full overflow-hidden bg-home md:h-screen md:overflow-visible">
             <header className="relative z-30 flex h-16 w-full items-center justify-between px-2 md:h-20 md:pl-8 md:pr-6">
               <div className="flex items-center gap-4">
                 <button
@@ -162,7 +162,7 @@ function HomeLayout() {
                 </button>
               </div>
             </header>
-            <div className="flex h-[calc(100dvh-4rem)] md:h-[calc(100dvh-5rem)]">
+            <div className="flex h-[calc(100dvh-4rem)] md:h-[calc(100vh-80px)]">
               {isMobile && isSidebarOpen && (
                 <button
                   type="button"
@@ -173,7 +173,10 @@ function HomeLayout() {
               )}
               {isSidebarOpen && (
                 <nav
-                  className="fixed bottom-0 left-0 top-16 z-50 flex w-[min(20rem,85vw)] flex-col items-start gap-6 bg-home px-6 py-6 shadow-[8px_0_30px_rgba(22,53,164,0.12)] md:static md:h-full md:min-h-0 md:w-60 md:shrink-0 md:bg-none md:bg-transparent md:shadow-none"
+                  className={isMobile
+                    ? "bg-home-drawer fixed bottom-0 left-0 top-16 z-50 flex w-[min(20rem,85vw)] flex-col items-start gap-6 px-6 py-6 shadow-[8px_0_30px_rgba(22,53,164,0.12)]"
+                    : "h-full min-h-0 w-60 shrink-0 flex flex-col items-start py-6 px-6 gap-6"
+                  }
                   onClick={(event) => {
                     if (isMobile && (event.target as HTMLElement).closest("a")) {
                       setIsSidebarOpen(false);

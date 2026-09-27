@@ -4,6 +4,7 @@ import Home from "./home";
 import Landing from "./landing";
 import Memo from "./memo";
 import Login from "./login";
+import LoginGeneralAccount from "./login-general-account";
 import Signup from "./signup";
 import SignupGoogleAccount from "./signup-google-account";
 import PasswordReset from "./password-reset";
@@ -41,6 +42,7 @@ export default function Layout() {
     <Routes>
       <Route element={<GuestOnlyRoute />}>
         <Route path="/login" element={<Login />} />
+        <Route path="/login/general-account" element={<LoginGeneralAccount />} />
       </Route>
       <Route path="/signup" element={<Signup />} />
       <Route path="/signup/google-account" element={<SignupGoogleAccount />} />

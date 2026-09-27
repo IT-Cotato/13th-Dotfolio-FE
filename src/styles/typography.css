@@ -177,6 +177,10 @@
 }
 
 @layer base {
+  html {
+    font-size: clamp(14px, 1.111111vw, 19.2px);
+  }
+
   * {
     font-family: var(--font-pretendard);
   }

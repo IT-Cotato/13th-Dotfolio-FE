@@ -73,6 +73,20 @@
     background: url('/images/background.jpg') lightgray 0px -0.093px / 127.431% 100.018% no-repeat;
   }
 
+  .bg-home-drawer {
+    background-color: lightgray;
+    background-image:
+      linear-gradient(0deg, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0.6) 100%),
+      url('/images/background.jpg');
+    background-position:
+      0 0,
+      0 calc(-4rem - 0.093px);
+    background-repeat: no-repeat;
+    background-size:
+      100% 100%,
+      764.586% 100.018dvh;
+  }
+
   .bg-primary-gradient {
     background: linear-gradient(121deg, #4873ff 0%, #426eff 35.58%, #2d50e9 100%);
   }

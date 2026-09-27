@@ -12,7 +12,7 @@ export function PainPointCard({
   children,
 }: PainPointCardProps) {
   return (
-    <article className="flex w-96 flex-col items-start gap-2.5 rounded-[40px] border-2 border-white bg-[rgba(255,255,255,0.70)] p-7 shadow-[0_0_15px_0_rgba(22,53,164,0.05)]">
+    <article className="flex w-full flex-col items-start gap-2.5 rounded-[24px] border-2 border-white bg-[rgba(255,255,255,0.70)] p-5 shadow-[0_0_15px_0_rgba(22,53,164,0.05)] sm:rounded-[40px] sm:p-7 lg:w-96">
       <div className="flex w-full flex-col items-start gap-6">
         <span className="flex size-15 aspect-square items-center justify-center gap-2.5 rounded-[18px] bg-[#EDF3FF] p-0.75">
           <Icon aria-hidden="true" />

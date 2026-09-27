@@ -29,22 +29,22 @@ export function SolutionSection() {
   const [selectedStep, setSelectedStep] = useState(0);
 
   return (
-    <section className="flex w-full max-w-[1440px] flex-col items-start gap-2.5 p-30">
-      <div className="flex w-full flex-col items-start gap-20">
-        <div className="flex flex-col items-center gap-7.5">
-          <p className="w-full text-xl leading-7 font-semibold tracking-[-0.2px] text-primary-500">
+    <section className="flex w-full max-w-[1440px] flex-col items-start gap-2.5 px-4 py-20 sm:px-8 lg:p-30">
+      <div className="flex w-full flex-col items-start gap-10 lg:gap-20">
+        <div className="flex flex-col items-center gap-4 lg:gap-7.5">
+          <p className="w-full text-lg leading-7 font-semibold tracking-[-0.2px] text-primary-500 lg:text-xl">
             Solution
           </p>
-          <h2 className="text-5xl leading-18 font-bold tracking-[-0.48px] text-grey-900">
+          <h2 className="text-3xl leading-[1.35] font-bold tracking-[-0.48px] text-grey-900 lg:text-5xl lg:leading-18">
             메모 하나로 시작하는
             <br />
             경험 관리의 흐름
           </h2>
         </div>
 
-        <div className="flex w-full items-center gap-21.5">
+        <div className="flex w-full flex-col items-stretch gap-8 lg:flex-row lg:items-center lg:gap-21.5">
           <div
-            className="flex w-[441px] shrink-0 flex-col items-start gap-6"
+            className="flex w-full shrink-0 flex-col items-start gap-3 lg:w-[441px] lg:gap-6"
             role="tablist"
             aria-label="경험 관리 단계"
           >
@@ -64,7 +64,7 @@ export function SolutionSection() {
             id="solution-preview"
             role="tabpanel"
             aria-label={`${SOLUTION_STEPS[selectedStep].title} 미리보기`}
-            className="flex h-[519px] w-[673px] shrink-0 items-center justify-center overflow-hidden rounded-[60px] border-2 border-white bg-white shadow-[0_0_15px_0_rgba(22,53,164,0.05)]"
+            className="flex h-[min(78vw,360px)] w-full shrink-0 items-center justify-center overflow-hidden rounded-[32px] border-2 border-white bg-white shadow-[0_0_15px_0_rgba(22,53,164,0.05)] sm:h-[440px] lg:h-[519px] lg:w-[673px] lg:rounded-[60px]"
           >
             <SolutionPreview selectedStep={selectedStep} />
           </div>

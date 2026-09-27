@@ -6,7 +6,7 @@ export function LandingHeader() {
   const navigate = useNavigate();
 
   return (
-    <header className="mx-auto flex h-20 w-full max-w-[1440px] items-center justify-between px-8 py-7">
+    <header className="mx-auto flex h-16 w-full max-w-[1440px] items-center justify-between px-4 py-3 sm:h-20 sm:px-8 sm:py-7">
       <LandingLogo />
       <Button
         label="로그인"

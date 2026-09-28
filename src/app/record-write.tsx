@@ -174,8 +174,12 @@ export default function RecordWrite() {
   };
 
   const handleTempSave = async () => {
+    if (isValid) {
+      fireToast('모든 항목을 작성했다면 기록완료로 저장해주세요.', undefined, 'error');
+      return;
+    }
     if (!selectedActivity) {
-      console.error('[record-write] 선택된 활동이 없어 임시저장을 진행할 수 없습니다.');
+      fireToast('활동을 먼저 생성해주세요.', undefined, 'error');
       return;
     }
     try {
@@ -194,7 +198,7 @@ export default function RecordWrite() {
       return;
     }
     if (!selectedActivity) {
-      console.error('[record-write] 선택된 활동이 없어 기록완료를 진행할 수 없습니다.');
+      fireToast('활동을 먼저 생성해주세요.', undefined, 'error');
       return;
     }
     try {

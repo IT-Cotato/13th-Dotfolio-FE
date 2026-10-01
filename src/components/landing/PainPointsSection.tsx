@@ -26,20 +26,20 @@ const PAIN_POINTS = [
 
 export function PainPointsSection() {
   return (
-    <section className="flex w-full max-w-[1440px] flex-col items-start gap-2.5 px-4 py-20 sm:p-30">
-      <div className="flex w-full flex-col items-start gap-10 sm:gap-20">
+    <section className="flex w-full max-w-[1440px] flex-col items-start gap-2.5 px-4 py-20 sm:p-30 min-[1440px]:p-[120px]!">
+      <div className="flex w-full flex-col items-start gap-10 sm:gap-20 min-[1440px]:gap-[80px]!">
         <div className="flex flex-col items-center gap-7.5">
-          <p className="w-full text-xl leading-7 font-semibold tracking-[-0.2px] text-primary-500">
+          <p className="w-full text-xl leading-7 font-semibold tracking-[-0.2px] text-primary-500 min-[1440px]:text-[20px]! min-[1440px]:leading-[28px]!">
             PAIN POINTS
           </p>
-          <h2 className="text-3xl leading-[150%] font-bold tracking-[-0.48px] text-grey-900 sm:text-5xl sm:leading-18">
+          <h2 className="text-3xl leading-[150%] font-bold tracking-[-0.48px] text-grey-900 sm:text-5xl sm:leading-18 min-[1440px]:text-[48px]! min-[1440px]:leading-[72px]!">
             대학생이라면 한 번쯤 겪어봤을 고민
             <br />
             이제 그만
           </h2>
         </div>
 
-        <div className="flex w-full flex-col items-stretch gap-4 min-[1366px]:flex-row min-[1366px]:items-center min-[1366px]:gap-6">
+        <div className="flex w-full flex-col items-stretch gap-4 min-[1366px]:flex-row min-[1366px]:items-center min-[1366px]:gap-6 min-[1440px]:gap-[24px]!">
           {PAIN_POINTS.map(({ icon, title, description }) => (
             <PainPointCard key={title} icon={icon} title={title}>
               {description}

@@ -39,7 +39,7 @@ export function PainPointsSection() {
           </h2>
         </div>
 
-        <div className="flex w-full flex-col items-stretch gap-4 lg:flex-row lg:items-center lg:gap-6">
+        <div className="flex w-full flex-col items-stretch gap-4 min-[1366px]:flex-row min-[1366px]:items-center min-[1366px]:gap-6">
           {PAIN_POINTS.map(({ icon, title, description }) => (
             <PainPointCard key={title} icon={icon} title={title}>
               {description}

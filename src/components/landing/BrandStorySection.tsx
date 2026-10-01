@@ -6,7 +6,7 @@ export function BrandStorySection() {
   const navigate = useNavigate();
 
   return (
-    <section className="flex w-full max-w-[1440px] flex-col items-start justify-between gap-12 px-4 py-20 sm:px-8 lg:flex-row lg:items-center lg:gap-8 lg:px-30 lg:pt-30 lg:pb-40">
+    <section className="flex w-full max-w-[1440px] flex-col items-start justify-between gap-12 px-4 py-20 sm:px-8 lg:px-30 lg:pt-30 lg:pb-40 min-[1366px]:flex-row min-[1366px]:items-center min-[1366px]:gap-8">
       <div className="flex flex-col items-start gap-10 lg:gap-20">
         <div className="flex flex-col items-center gap-4 lg:gap-7.5">
           <p className="w-full text-lg leading-7 font-semibold tracking-[-0.2px] text-primary-500 lg:text-xl">

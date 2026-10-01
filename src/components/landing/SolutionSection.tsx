@@ -42,9 +42,9 @@ export function SolutionSection() {
           </h2>
         </div>
 
-        <div className="flex w-full flex-col items-stretch gap-8 lg:flex-row lg:items-center lg:gap-21.5">
+        <div className="flex w-full flex-col items-stretch gap-8 min-[1366px]:flex-row min-[1366px]:items-center min-[1366px]:gap-21.5">
           <div
-            className="flex w-full shrink-0 flex-col items-start gap-3 lg:w-[441px] lg:gap-6"
+            className="flex w-full shrink-0 flex-col items-start gap-3 lg:gap-6 min-[1366px]:w-[441px]"
             role="tablist"
             aria-label="경험 관리 단계"
           >

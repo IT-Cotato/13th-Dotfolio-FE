@@ -9,6 +9,11 @@ const SOLUTION_STEPS = [
       "활동 직후, 빠르게 메모해요.\n남겨둔 메모는 기록하기에서 참고할 수 있어요.",
   },
   {
+    title: "몰입모드",
+    description:
+      "작성 중인 기록은 언제든 이어 쓸 수 있어요.\n미뤄둔 기록은 몰입 모드에서 한꺼번에 완성해요.",
+  },
+  {
     title: "구조화된 기록",
     description:
       "적어둔 메모를 바탕으로 템플릿에 기록해요.\n활동을 질문에 맞게 정리해둘 수 있어요.",
@@ -44,7 +49,7 @@ export function SolutionSection() {
 
         <div className="flex w-full flex-col items-stretch gap-8 min-[1366px]:flex-row min-[1366px]:items-center min-[1366px]:gap-21.5 min-[1440px]:gap-[86px]!">
           <div
-            className="flex w-full shrink-0 flex-col items-start gap-3 lg:gap-6 min-[1366px]:w-[441px]"
+            className="flex w-full shrink-0 flex-col items-start gap-3 lg:gap-5 min-[1366px]:w-[441px]"
             role="tablist"
             aria-label="경험 관리 단계"
           >

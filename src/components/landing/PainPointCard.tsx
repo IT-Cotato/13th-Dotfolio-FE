@@ -12,7 +12,7 @@ export function PainPointCard({
   children,
 }: PainPointCardProps) {
   return (
-    <article className="flex w-full flex-col items-start gap-2.5 rounded-[24px] border-2 border-white bg-[rgba(255,255,255,0.70)] p-5 shadow-[0_0_15px_0_rgba(22,53,164,0.05)] sm:rounded-[40px] sm:p-7 min-[1366px]:w-96">
+    <article className="flex w-full flex-col items-start gap-2.5 rounded-[24px] border-2 border-white bg-[rgba(255,255,255,0.70)] p-5 shadow-[0_0_15px_0_rgba(22,53,164,0.05)] sm:rounded-[40px] sm:p-7 min-[1366px]:w-96 min-[1440px]:w-[384px]! min-[1440px]:p-[28px]!">
       <div className="flex w-full flex-col items-start gap-6">
         <span className="flex size-15 aspect-square items-center justify-center gap-2.5 rounded-[18px] bg-[#EDF3FF] p-0.75">
           <Icon aria-hidden="true" />
@@ -22,7 +22,7 @@ export function PainPointCard({
           <h3 className="w-full text-[22px] leading-[140%] font-semibold tracking-[-0.22px] text-grey-900">
             {title}
           </h3>
-          <p className="w-full whitespace-pre-line text-body-reading1-r text-grey-600">
+          <p className="w-full whitespace-pre-line text-body-reading1-r text-grey-600 min-[1440px]:whitespace-pre! min-[1440px]:text-[18px]! min-[1440px]:leading-[28.8px]!">
             {children}
           </p>
         </div>

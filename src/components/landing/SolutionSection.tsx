@@ -29,20 +29,20 @@ export function SolutionSection() {
   const [selectedStep, setSelectedStep] = useState(0);
 
   return (
-    <section className="flex w-full max-w-[1440px] flex-col items-start gap-2.5 px-4 py-20 sm:px-8 lg:p-30">
-      <div className="flex w-full flex-col items-start gap-10 lg:gap-20">
+    <section className="flex w-full max-w-[1440px] flex-col items-start gap-2.5 px-4 py-20 sm:px-8 lg:p-30 min-[1440px]:p-[120px]!">
+      <div className="flex w-full flex-col items-start gap-10 lg:gap-20 min-[1440px]:gap-[80px]!">
         <div className="flex flex-col items-center gap-4 lg:gap-7.5">
-          <p className="w-full text-lg leading-7 font-semibold tracking-[-0.2px] text-primary-500 lg:text-xl">
+          <p className="w-full text-lg leading-7 font-semibold tracking-[-0.2px] text-primary-500 lg:text-xl min-[1440px]:text-[20px]! min-[1440px]:leading-[28px]!">
             Solution
           </p>
-          <h2 className="text-3xl leading-[1.35] font-bold tracking-[-0.48px] text-grey-900 lg:text-5xl lg:leading-18">
+          <h2 className="text-3xl leading-[1.35] font-bold tracking-[-0.48px] text-grey-900 lg:text-5xl lg:leading-18 min-[1440px]:text-[48px]! min-[1440px]:leading-[72px]!">
             메모 하나로 시작하는
             <br />
             경험 관리의 흐름
           </h2>
         </div>
 
-        <div className="flex w-full flex-col items-stretch gap-8 min-[1366px]:flex-row min-[1366px]:items-center min-[1366px]:gap-21.5">
+        <div className="flex w-full flex-col items-stretch gap-8 min-[1366px]:flex-row min-[1366px]:items-center min-[1366px]:gap-21.5 min-[1440px]:gap-[86px]!">
           <div
             className="flex w-full shrink-0 flex-col items-start gap-3 lg:gap-6 min-[1366px]:w-[441px]"
             role="tablist"

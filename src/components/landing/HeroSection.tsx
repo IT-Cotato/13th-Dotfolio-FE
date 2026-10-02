@@ -19,7 +19,7 @@ export function HeroSection() {
       </div>
 
       <div className="relative z-10 mt-10 flex w-[592px] max-w-full flex-col items-center gap-5 px-5 sm:mt-16 sm:gap-6">
-        <h1 className="flex w-[404px] max-w-full flex-col items-center gap-0.5 text-center text-3xl leading-[140%] tracking-[-0.48px] [text-shadow:0_0_20px_rgba(0,0,0,0.10)] sm:text-5xl">
+        <h1 className="flex w-[404px] max-w-full flex-col items-center gap-0.5 text-center text-3xl leading-[140%] tracking-[-0.48px] [text-shadow:0_0_20px_rgba(0,0,0,0.10)] sm:text-5xl min-[1440px]:text-[48px]!">
           <span className="w-full bg-[linear-gradient(90deg,#FFF_23.15%,rgba(255,255,255,0.40)_84.52%)] bg-clip-text font-normal text-transparent">
             기억은 흐려져도
           </span>
@@ -28,7 +28,7 @@ export function HeroSection() {
           </span>
         </h1>
 
-        <p className="w-full text-center text-base leading-7 font-normal tracking-[-0.2px] text-grey-0 [text-shadow:0_0_20px_rgba(0,0,0,0.10)] sm:text-xl sm:leading-8">
+        <p className="w-full text-center text-base leading-7 font-normal tracking-[-0.2px] text-grey-0 [text-shadow:0_0_20px_rgba(0,0,0,0.10)] sm:text-xl sm:leading-8 min-[1440px]:text-[20px]! min-[1440px]:leading-[32px]!">
           Dotfolio는 대학 생활의 모든 경험을 빠르게 기록하고,
           <br />
           자소서와 면접에 활용할 수 있도록 도와드려요.

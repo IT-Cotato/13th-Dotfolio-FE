@@ -47,7 +47,7 @@ export function SolutionSection() {
           </h2>
         </div>
 
-        <div className="flex w-full flex-col items-stretch gap-8 min-[1366px]:flex-row min-[1366px]:items-center min-[1366px]:gap-21.5 min-[1440px]:gap-[86px]!">
+        <div className="flex w-full flex-col items-stretch gap-8 min-[1366px]:flex-row min-[1366px]:items-center min-[1366px]:justify-between min-[1366px]:gap-0">
           <div
             className="flex w-full shrink-0 flex-col items-start gap-3 lg:gap-5 min-[1366px]:w-[441px]"
             role="tablist"
@@ -69,7 +69,7 @@ export function SolutionSection() {
             id="solution-preview"
             role="tabpanel"
             aria-label={`${SOLUTION_STEPS[selectedStep].title} 미리보기`}
-            className="flex h-[min(78vw,360px)] w-full shrink-0 items-center justify-center overflow-hidden rounded-[32px] border-2 border-white bg-white shadow-[0_0_15px_0_rgba(22,53,164,0.05)] sm:h-[440px] lg:h-[519px] lg:w-[673px] lg:rounded-[60px]"
+            className="aspect-[651.43/463.239] w-full shrink-0 lg:w-[651.43px]"
           >
             <SolutionPreview selectedStep={selectedStep} />
           </div>

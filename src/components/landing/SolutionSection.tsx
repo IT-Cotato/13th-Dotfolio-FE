@@ -69,7 +69,7 @@ export function SolutionSection() {
             id="solution-preview"
             role="tabpanel"
             aria-label={`${SOLUTION_STEPS[selectedStep].title} 미리보기`}
-            className="aspect-[651.43/463.239] w-full shrink-0 lg:w-[651.43px]"
+            className="w-full shrink-0 lg:w-[651.43px]"
           >
             <SolutionPreview selectedStep={selectedStep} />
           </div>

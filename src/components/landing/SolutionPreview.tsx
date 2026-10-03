@@ -3,6 +3,7 @@ import ImmersionModePreview from "@/assets/landing_brandstory/solution-immersion
 import StructuredRecordPreview from "@/assets/landing_brandstory/solution-structured-record.png";
 import ActivityArchivePreview from "@/assets/landing_brandstory/solution-activity-archive.png";
 import AiApplicationPreview from "@/assets/landing_brandstory/solution-ai-application.png";
+import ImmersionModeToggle from "@/assets/landing_brandstory/immersion-mode-togle.png";
 
 const PREVIEWS = [
   {
@@ -33,12 +34,25 @@ interface SolutionPreviewProps {
 
 export function SolutionPreview({ selectedStep }: SolutionPreviewProps) {
   const preview = PREVIEWS[selectedStep];
+  const isImmersionMode = selectedStep === 1;
 
   return (
-    <img
-      src={preview.src}
-      alt={preview.alt}
-      className="size-full"
-    />
+    <div className="flex w-full flex-col gap-5">
+      {isImmersionMode && (
+        <div className="flex items-center gap-3">
+          <img
+            src={ImmersionModeToggle}
+            alt=""
+            aria-hidden="true"
+            className="h-[31px] w-[93px] shrink-0"
+          />
+          <p className="text-base leading-[160%] font-normal tracking-[-0.16px] text-grey-600">
+            토글버튼으로 간편하게 몰입모드 진입
+          </p>
+        </div>
+      )}
+
+      <img src={preview.src} alt={preview.alt} className="h-auto w-full" />
+    </div>
   );
 }

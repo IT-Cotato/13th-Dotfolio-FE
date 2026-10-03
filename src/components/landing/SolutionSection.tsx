@@ -47,7 +47,36 @@ export function SolutionSection() {
           </h2>
         </div>
 
-        <div className="flex w-full flex-col items-stretch gap-8 min-[1366px]:flex-row min-[1366px]:items-center min-[1366px]:justify-between min-[1366px]:gap-0">
+        <div
+          className="flex w-full flex-col gap-5 min-[1366px]:hidden"
+          role="tablist"
+          aria-label="경험 관리 단계"
+        >
+          {SOLUTION_STEPS.map((step, index) => (
+            <div key={step.title} className="flex w-full flex-col gap-5">
+              <SolutionStep
+                index={index + 1}
+                title={step.title}
+                description={step.description}
+                selected={selectedStep === index}
+                onSelect={() => setSelectedStep(index)}
+                controlsId={`solution-preview-${index}`}
+              />
+              {selectedStep === index && (
+                <div
+                  id={`solution-preview-${index}`}
+                  role="tabpanel"
+                  aria-label={`${step.title} 미리보기`}
+                  className="w-full self-center lg:w-[651.43px]"
+                >
+                  <SolutionPreview selectedStep={index} />
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+
+        <div className="hidden w-full items-center justify-between min-[1366px]:flex">
           <div
             className="flex w-full shrink-0 flex-col items-start gap-3 lg:gap-5 min-[1366px]:w-[441px]"
             role="tablist"

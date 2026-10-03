@@ -4,6 +4,7 @@ interface SolutionStepProps {
   description: string;
   selected: boolean;
   onSelect: () => void;
+  controlsId?: string;
 }
 
 export function SolutionStep({
@@ -12,20 +13,16 @@ export function SolutionStep({
   description,
   selected,
   onSelect,
+  controlsId = "solution-preview",
 }: SolutionStepProps) {
-  return (
-    <button
-      type="button"
-      role="tab"
-      aria-selected={selected}
-      aria-controls="solution-preview"
-      className={`flex w-full flex-col items-start gap-2.5 rounded-3xl text-left sm:rounded-4xl ${
-        selected
-          ? "border-2 border-white bg-[rgba(255,255,255,0.70)] p-4 shadow-[0_0_15px_0_rgba(22,53,164,0.05)] sm:p-7"
-          : "border-2 border-transparent px-4 py-4 sm:px-5.5 min-[1366px]:w-[440px]"
-      }`}
-      onClick={onSelect}
-    >
+  const className = `flex w-full flex-col items-start gap-2.5 rounded-3xl text-left sm:rounded-4xl ${
+    selected
+      ? "border-2 border-white bg-[rgba(255,255,255,0.70)] p-4 shadow-[0_0_15px_0_rgba(22,53,164,0.05)] sm:p-7"
+      : "border-2 border-transparent px-4 py-4 sm:px-5.5 min-[1366px]:w-[440px]"
+  }`;
+
+  const content = (
+    <>
       <span className="flex w-full items-start gap-4 sm:gap-6">
         <span
           className={`flex size-10 shrink-0 items-center justify-center rounded-full p-0.75 text-lg leading-7 font-semibold tracking-[-0.2px] sm:text-xl min-[1440px]:text-[20px]! min-[1440px]:leading-[28px]! ${
@@ -52,6 +49,19 @@ export function SolutionStep({
           )}
         </span>
       </span>
+    </>
+  );
+
+  return (
+    <button
+      type="button"
+      role="tab"
+      aria-selected={selected}
+      aria-controls={controlsId}
+      className={className}
+      onClick={onSelect}
+    >
+      {content}
     </button>
   );
 }

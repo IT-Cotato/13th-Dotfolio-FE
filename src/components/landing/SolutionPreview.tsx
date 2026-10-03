@@ -44,6 +44,7 @@ export function SolutionPreview({ selectedStep }: SolutionPreviewProps) {
             src={ImmersionModeToggle}
             alt=""
             aria-hidden="true"
+            loading="lazy"
             className="h-[31px] w-[93px] shrink-0"
           />
           <p className="text-base leading-[160%] font-normal tracking-[-0.16px] text-grey-600">
@@ -52,7 +53,12 @@ export function SolutionPreview({ selectedStep }: SolutionPreviewProps) {
         </div>
       )}
 
-      <img src={preview.src} alt={preview.alt} className="h-auto w-full" />
+      <img
+        src={preview.src}
+        alt={preview.alt}
+        loading="lazy"
+        className="h-auto w-full"
+      />
     </div>
   );
 }

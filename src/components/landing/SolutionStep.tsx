@@ -5,6 +5,7 @@ interface SolutionStepProps {
   selected: boolean;
   onSelect: () => void;
   controlsId?: string;
+  variant?: "tab" | "accordion";
 }
 
 export function SolutionStep({
@@ -14,6 +15,7 @@ export function SolutionStep({
   selected,
   onSelect,
   controlsId = "solution-preview",
+  variant = "tab",
 }: SolutionStepProps) {
   const className = `flex w-full flex-col items-start gap-2.5 rounded-3xl text-left sm:rounded-4xl ${
     selected
@@ -55,8 +57,9 @@ export function SolutionStep({
   return (
     <button
       type="button"
-      role="tab"
-      aria-selected={selected}
+      role={variant === "tab" ? "tab" : undefined}
+      aria-selected={variant === "tab" ? selected : undefined}
+      aria-expanded={variant === "accordion" ? selected : undefined}
       aria-controls={controlsId}
       className={className}
       onClick={onSelect}

@@ -47,11 +47,7 @@ export function SolutionSection() {
           </h2>
         </div>
 
-        <div
-          className="flex w-full flex-col gap-5 min-[1366px]:hidden"
-          role="tablist"
-          aria-label="경험 관리 단계"
-        >
+        <div className="flex w-full flex-col gap-5 min-[1366px]:hidden">
           {SOLUTION_STEPS.map((step, index) => (
             <div key={step.title} className="flex w-full flex-col gap-5">
               <SolutionStep
@@ -61,17 +57,17 @@ export function SolutionSection() {
                 selected={selectedStep === index}
                 onSelect={() => setSelectedStep(index)}
                 controlsId={`solution-preview-${index}`}
+                variant="accordion"
               />
-              {selectedStep === index && (
-                <div
-                  id={`solution-preview-${index}`}
-                  role="tabpanel"
-                  aria-label={`${step.title} 미리보기`}
-                  className="w-full self-center lg:w-[651.43px]"
-                >
-                  <SolutionPreview selectedStep={index} />
-                </div>
-              )}
+              <div
+                id={`solution-preview-${index}`}
+                role="region"
+                aria-label={`${step.title} 미리보기`}
+                hidden={selectedStep !== index}
+                className="w-full self-center lg:w-[651.43px]"
+              >
+                <SolutionPreview selectedStep={index} />
+              </div>
             </div>
           ))}
         </div>

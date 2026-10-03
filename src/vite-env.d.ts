@@ -6,6 +6,11 @@ declare module '*.svg' {
 
 declare module '*.css';
 
+declare module '*.png' {
+  const src: string;
+  export default src;
+}
+
 interface ImportMetaEnv {
   readonly DEV: boolean;
   readonly VITE_API_BASE_URL?: string;

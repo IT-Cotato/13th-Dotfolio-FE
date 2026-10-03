@@ -1,10 +1,7 @@
-import PhotosIcon from "@/assets/appicon/Frame 1707495235.svg";
-import InstagramIcon from "@/assets/appicon/Frame 1707495233.svg";
-import NotesIcon from "@/assets/appicon/notes.svg";
-import NotionIcon from "@/assets/appicon/Frame 1707495241.svg";
-import KakaoTalkIcon from "@/assets/appicon/Frame 1707495240.svg";
-import GoogleDriveIcon from "@/assets/appicon/Frame 1707495236.svg";
-import ExperienceCurve from "@/assets/appicon/experience_curve.svg";
+const EXPERIENCE_CURVE_URL = new URL(
+  "../../assets/ExperienceCurve.png",
+  import.meta.url,
+).href;
 
 export function ExperienceProblemSection() {
   return (
@@ -21,23 +18,12 @@ export function ExperienceProblemSection() {
         흩어진 경험을 찾고 연결하는 일이 어려울 뿐이에요.
       </p>
 
-      <div
-        className="relative h-[190px] w-full shrink-0 sm:h-[358px] sm:w-[1440px]"
-        aria-label="여러 앱에 흩어진 경험"
-      >
-        <ExperienceCurve
-          className="absolute left-1/2 top-8 h-auto w-[320px] -translate-x-1/2 sm:top-36.75 sm:h-[167px] sm:w-[878px]"
-          aria-hidden="true"
+      <div className="aspect-[957/358] w-[calc(100vw-32px)] max-w-[957px] overflow-hidden">
+        <img
+          src={EXPERIENCE_CURVE_URL}
+          alt="사진, 인스타그램, 메모, 노션, 카카오톡, 구글 드라이브에 흩어진 경험"
+          className="h-auto w-full -translate-y-[15.57%]"
         />
-
-        <PhotosIcon className="absolute top-69 left-60 hidden size-20.5 sm:block" />
-        <InstagramIcon className="absolute top-44 left-104 hidden size-20.5 sm:block" />
-        <span className="absolute top-28.25 left-148 hidden size-20.5 aspect-square items-center justify-end overflow-hidden rounded-3xl border-[1.351px] border-grey-100 bg-white sm:inline-flex">
-          <NotesIcon className="size-20.5 shrink-0" />
-        </span>
-        <NotionIcon className="absolute top-28.25 left-192 hidden size-20.5 sm:block" />
-        <KakaoTalkIcon className="absolute top-44 left-235.5 hidden size-20.5 sm:block" />
-        <GoogleDriveIcon className="absolute top-69 left-279.5 hidden size-20.5 sm:block" />
       </div>
     </section>
   );

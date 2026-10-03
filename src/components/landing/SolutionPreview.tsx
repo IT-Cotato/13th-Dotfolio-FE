@@ -1,13 +1,19 @@
-const imageUrl = (filename: string) =>
-  new URL(`../../assets/landing_brandstory/${filename}`, import.meta.url).href;
-
-const QuickMemoPreview1 = imageUrl("solution-quick-memo1.png");
-const QuickMemoPreview2 = imageUrl("solution-quick-memo2.png");
-const StructuredRecordPreview = imageUrl("solution-structured-record.png");
-const ActivityArchivePreview = imageUrl("solution-activity-archive.png");
-const AiApplicationPreview = imageUrl("solution-ai-application.png");
+import QuickMemoPreview from "@/assets/landing_brandstory/solution-quick-memo.png";
+import ImmersionModePreview from "@/assets/landing_brandstory/solution-immersion-mode.png";
+import StructuredRecordPreview from "@/assets/landing_brandstory/solution-structured-record.png";
+import ActivityArchivePreview from "@/assets/landing_brandstory/solution-activity-archive.png";
+import AiApplicationPreview from "@/assets/landing_brandstory/solution-ai-application.png";
+import ImmersionModeToggle from "@/assets/landing_brandstory/immersion-mode-togle.png";
 
 const PREVIEWS = [
+  {
+    src: QuickMemoPreview,
+    alt: "빠르게 남긴 메모와 중요 메모를 정리한 화면",
+  },
+  {
+    src: ImmersionModePreview,
+    alt: "몰입모드에서 기록을 이어서 작성하는 화면",
+  },
   {
     src: StructuredRecordPreview,
     alt: "메모를 템플릿에 맞춰 구조화하는 기록 화면",
@@ -27,30 +33,32 @@ interface SolutionPreviewProps {
 }
 
 export function SolutionPreview({ selectedStep }: SolutionPreviewProps) {
-  if (selectedStep === 0) {
-    return (
-      <div className="relative size-full">
-        <img
-          src={QuickMemoPreview1}
-          alt="빠르게 남긴 메모 화면"
-          className="absolute top-[28%] left-[5%] w-[44%] object-contain lg:top-[143px] lg:left-[54px] lg:size-[268px]"
-        />
-        <img
-          src={QuickMemoPreview2}
-          alt="중요한 메모를 정리한 화면"
-          className="absolute top-[10%] right-[5%] h-[80%] w-[44%] object-contain lg:top-[54px] lg:right-[54px] lg:h-[412px] lg:w-[268px]"
-        />
-      </div>
-    );
-  }
-
-  const preview = PREVIEWS[selectedStep - 1];
+  const preview = PREVIEWS[selectedStep];
+  const isImmersionMode = selectedStep === 1;
 
   return (
-    <img
-      src={preview.src}
-      alt={preview.alt}
-      className="max-h-[calc(100%-2rem)] w-[calc(100%-2rem)] object-contain sm:max-h-[439px] sm:w-[601px]"
-    />
+    <div className="flex w-full flex-col gap-5">
+      {isImmersionMode && (
+        <div className="flex items-center gap-3">
+          <img
+            src={ImmersionModeToggle}
+            alt=""
+            aria-hidden="true"
+            loading="lazy"
+            className="h-[31px] w-[93px] shrink-0"
+          />
+          <p className="text-base leading-[160%] font-normal tracking-[-0.16px] text-grey-600">
+            토글버튼으로 간편하게 몰입모드 진입
+          </p>
+        </div>
+      )}
+
+      <img
+        src={preview.src}
+        alt={preview.alt}
+        loading="lazy"
+        className="h-auto w-full"
+      />
+    </div>
   );
 }

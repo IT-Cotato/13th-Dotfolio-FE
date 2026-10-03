@@ -9,6 +9,11 @@ const SOLUTION_STEPS = [
       "활동 직후, 빠르게 메모해요.\n남겨둔 메모는 기록하기에서 참고할 수 있어요.",
   },
   {
+    title: "몰입모드",
+    description:
+      "작성 중인 기록은 언제든 이어 쓸 수 있어요.\n미뤄둔 기록은 몰입 모드에서 한꺼번에 완성해요.",
+  },
+  {
     title: "구조화된 기록",
     description:
       "적어둔 메모를 바탕으로 템플릿에 기록해요.\n활동을 질문에 맞게 정리해둘 수 있어요.",
@@ -42,9 +47,34 @@ export function SolutionSection() {
           </h2>
         </div>
 
-        <div className="flex w-full flex-col items-stretch gap-8 min-[1366px]:flex-row min-[1366px]:items-center min-[1366px]:gap-21.5 min-[1440px]:gap-[86px]!">
+        <div className="flex w-full flex-col gap-5 min-[1366px]:hidden">
+          {SOLUTION_STEPS.map((step, index) => (
+            <div key={step.title} className="flex w-full flex-col gap-5">
+              <SolutionStep
+                index={index + 1}
+                title={step.title}
+                description={step.description}
+                selected={selectedStep === index}
+                onSelect={() => setSelectedStep(index)}
+                controlsId={`solution-preview-${index}`}
+                variant="accordion"
+              />
+              <div
+                id={`solution-preview-${index}`}
+                role="region"
+                aria-label={`${step.title} 미리보기`}
+                hidden={selectedStep !== index}
+                className="w-full self-center lg:w-[651.43px]"
+              >
+                <SolutionPreview selectedStep={index} />
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="hidden w-full items-center justify-between min-[1366px]:flex">
           <div
-            className="flex w-full shrink-0 flex-col items-start gap-3 lg:gap-6 min-[1366px]:w-[441px]"
+            className="flex w-full shrink-0 flex-col items-start gap-3 lg:gap-5 min-[1366px]:w-[441px]"
             role="tablist"
             aria-label="경험 관리 단계"
           >
@@ -64,7 +94,7 @@ export function SolutionSection() {
             id="solution-preview"
             role="tabpanel"
             aria-label={`${SOLUTION_STEPS[selectedStep].title} 미리보기`}
-            className="flex h-[min(78vw,360px)] w-full shrink-0 items-center justify-center overflow-hidden rounded-[32px] border-2 border-white bg-white shadow-[0_0_15px_0_rgba(22,53,164,0.05)] sm:h-[440px] lg:h-[519px] lg:w-[673px] lg:rounded-[60px]"
+            className="w-full shrink-0 lg:w-[651.43px]"
           >
             <SolutionPreview selectedStep={selectedStep} />
           </div>

@@ -9,6 +9,7 @@ import { Card } from '@/components/common/card';
 import AiStarIcon from '@/assets/ai_star.svg';
 import VectorDownIcon from '@/assets/vector_down.svg';
 import VectorUpIcon from '@/assets/vector_up.svg';
+import { MyStoryComingSoon } from '@/components/mystory/MyStoryComingSoon';
 
 type MatchingStatus = 'idle' | 'analyzing' | 'complete';
 
@@ -26,6 +27,12 @@ const getErrorMessage = (error: unknown, fallback: string) => (
 );
 
 export default function MyStoryAiMatching() {
+  // 기존 AI 기록 매칭 화면을 다시 노출할 때 아래 렌더링으로 교체합니다.
+  // return <MyStoryAiMatchingContent />;
+  return <MyStoryComingSoon title="AI 기록 매칭" />;
+}
+
+export function MyStoryAiMatchingContent() {
   const [prompt, setPrompt] = useState('');
   const [status, setStatus] = useState<MatchingStatus>('idle');
   const [expandedId, setExpandedId] = useState<string | null>(null);

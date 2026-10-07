@@ -17,12 +17,19 @@ import { InsightOverviewSection } from '@/components/mystory/insights/InsightOve
 import { InsightsMessageCard, InsightsReadyState } from '@/components/mystory/insights/InsightsReadyState';
 import { InsightStrengthSection } from '@/components/mystory/insights/InsightStrengthSection';
 import { useToast } from '@/hooks/useToast';
+import { MyStoryComingSoon } from '@/components/mystory/MyStoryComingSoon';
 
 const getErrorMessage = (error: unknown, fallback: string) => (
   error instanceof Error ? error.message : fallback
 );
 
 export default function MyStoryInsights() {
+  // 기존 인사이트 화면을 다시 노출할 때 아래 렌더링으로 교체합니다.
+  // return <MyStoryInsightsContent />;
+  return <MyStoryComingSoon title="인사이트" />;
+}
+
+export function MyStoryInsightsContent() {
   const navigate = useNavigate();
   const [eligibility, setEligibility] = useState<InsightEligibilityResponse | null>(null);
   const [insight, setInsight] = useState<LatestInsightResponse | null>(null);

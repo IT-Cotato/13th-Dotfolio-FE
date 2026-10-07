@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AddIcon from '@/assets/add10.svg';
 import MyPageVectorIcon from '@/assets/mypage_vector.svg';
-import { logout, withdraw } from '@/api/auth';
+import { withdraw } from '@/api/auth';
 import { ApiError } from '@/api/client';
 import {
   getJobs,
@@ -44,7 +44,7 @@ export default function MyPage() {
   const [jobsError, setJobsError] = useState<string | null>(null);
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [isJobModalOpen, setIsJobModalOpen] = useState(false);
-  const [accountAction, setAccountAction] = useState<'logout' | 'withdraw' | null>(null);
+  const [isWithdrawModalOpen, setIsWithdrawModalOpen] = useState(false);
   const [isProcessingAccountAction, setIsProcessingAccountAction] = useState(false);
   const profileFileInputRef = useRef<HTMLInputElement>(null);
 
@@ -89,28 +89,18 @@ export default function MyPage() {
     }
   }, []);
 
-  const openAccountAction = (action: 'logout' | 'withdraw') => {
-    setIsProfileModalOpen(false);
-    setAccountAction(action);
-  };
-
-  const handleAccountAction = async () => {
-    if (!accountAction || isProcessingAccountAction) return;
+  const handleWithdraw = async () => {
+    if (isProcessingAccountAction) return;
 
     setIsProcessingAccountAction(true);
     try {
-      if (accountAction === 'logout') await logout();
-      else await withdraw();
+      await withdraw();
 
       clearAuthTokens();
       navigate('/login', { replace: true });
     } catch (error) {
       fireToast(
-        error instanceof ApiError
-          ? error.message
-          : accountAction === 'logout'
-            ? '로그아웃하지 못했습니다.'
-            : '회원탈퇴를 완료하지 못했습니다.',
+        error instanceof ApiError ? error.message : '회원탈퇴를 완료하지 못했습니다.',
         undefined,
         'error',
       );
@@ -281,8 +271,10 @@ export default function MyPage() {
           profileImageUrl={profile.profileImageUrl}
           isSaving={isSavingProfile}
           onClose={() => setIsProfileModalOpen(false)}
-          onLogout={() => openAccountAction('logout')}
-          onWithdraw={() => openAccountAction('withdraw')}
+          onWithdraw={() => {
+            setIsProfileModalOpen(false);
+            setIsWithdrawModalOpen(true);
+          }}
           onSubmit={async (nickname, email, profileImage) => {
             setIsSavingProfile(true);
             try {
@@ -350,23 +342,13 @@ export default function MyPage() {
       )}
 
       <ConfirmModal
-        isOpen={accountAction === 'logout'}
-        title="로그아웃 하시겠습니까?"
-        description="언제든지 다시 로그인할 수 있습니다."
-        confirmLabel="로그아웃"
-        isConfirming={isProcessingAccountAction}
-        onConfirm={() => void handleAccountAction()}
-        onCancel={() => setAccountAction(null)}
-      />
-
-      <ConfirmModal
-        isOpen={accountAction === 'withdraw'}
+        isOpen={isWithdrawModalOpen}
         title="회원탈퇴 하시겠습니까?"
         description={'회원을 탈퇴하면 모든 활동 기록과 데이터가\n영구적으로 삭제되며 복구할 수 없습니다.'}
         confirmLabel="회원탈퇴"
         isConfirming={isProcessingAccountAction}
-        onConfirm={() => void handleAccountAction()}
-        onCancel={() => setAccountAction(null)}
+        onConfirm={() => void handleWithdraw()}
+        onCancel={() => setIsWithdrawModalOpen(false)}
       />
 
       {toast && (

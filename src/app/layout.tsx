@@ -33,6 +33,10 @@ import { RecordsProvider } from "@/contexts/RecordsContext";
 import ProfileIcon from "@/assets/profile.svg";
 import MenuIcon from "@/assets/menu.svg";
 import { getRecords } from "@/api/records";
+import { logout } from "@/api/auth";
+import { ApiError } from "@/api/client";
+import { ConfirmModal } from "@/components/common/ConfirmModal";
+import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/useToast";
 
 const IMMERSION_LOADING_DELAY_MS = 2000;
@@ -63,10 +67,13 @@ export default function Layout() {
 
 function HomeLayout() {
   const navigate = useNavigate();
+  const { signOut } = useAuth();
   const { toast, fireToast } = useToast();
   const [isMobile, setIsMobile] = useState(() => window.matchMedia('(max-width: 767px)').matches);
   const [isSidebarOpen, setIsSidebarOpen] = useState(() => !window.matchMedia('(max-width: 767px)').matches);
   const [isStartingImmersion, setIsStartingImmersion] = useState(false);
+  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
   const isCheckingDraftsRef = useRef(false);
   const hasAddedLoadingGuardRef = useRef(false);
   const loadingTimeoutRef = useRef<number | null>(null);
@@ -135,6 +142,25 @@ function HomeLayout() {
     }
   };
 
+  const handleLogout = async () => {
+    if (isLoggingOut) return;
+
+    setIsLoggingOut(true);
+    try {
+      await logout();
+      signOut();
+      window.location.replace('/');
+    } catch (error) {
+      fireToast(
+        error instanceof ApiError ? error.message : '로그아웃하지 못했습니다.',
+        undefined,
+        'error',
+      );
+    } finally {
+      setIsLoggingOut(false);
+    }
+  };
+
   return (
     <ActivitiesProvider>
       <TemplatesProvider>
@@ -159,6 +185,13 @@ function HomeLayout() {
                 </span>
               </div>
               <div className="flex items-center gap-5">
+                <button
+                  type="button"
+                  onClick={() => setIsLogoutModalOpen(true)}
+                  className="cursor-pointer text-body3-md text-grey-900"
+                >
+                  로그아웃
+                </button>
                 <button type="button" aria-label="마이페이지" onClick={() => navigate('/mypage')} className="flex size-11 items-center justify-center md:size-6">
                   <ProfileIcon className="w-6 h-6 text-grey-700 cursor-pointer" />
                 </button>
@@ -219,6 +252,15 @@ function HomeLayout() {
               </main>
             </div>
             {isStartingImmersion && <ImmersionStartingOverlay />}
+            <ConfirmModal
+              isOpen={isLogoutModalOpen}
+              title="로그아웃 하시겠습니까?"
+              description="언제든지 다시 로그인할 수 있습니다."
+              confirmLabel="로그아웃"
+              isConfirming={isLoggingOut}
+              onConfirm={() => void handleLogout()}
+              onCancel={() => setIsLogoutModalOpen(false)}
+            />
             {toast && (
               <div
                 role="alert"

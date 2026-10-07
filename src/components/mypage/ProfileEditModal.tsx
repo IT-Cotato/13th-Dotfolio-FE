@@ -14,7 +14,6 @@ interface ProfileEditModalProps {
   isSaving?: boolean;
   onClose: () => void;
   onSubmit: (nickname: string, email: string, profileImage?: File) => void;
-  onLogout: () => void;
   onWithdraw: () => void;
 }
 
@@ -26,7 +25,6 @@ export const ProfileEditModal = ({
   isSaving = false,
   onClose,
   onSubmit,
-  onLogout,
   onWithdraw,
 }: ProfileEditModalProps) => {
   const [draftNickname, setDraftNickname] = useState(nickname);
@@ -88,7 +86,7 @@ export const ProfileEditModal = ({
         aria-modal="true"
         aria-labelledby="profile-edit-title"
         tabIndex={-1}
-        className="relative flex h-[clamp(360px,55.859dvh,686px)] max-h-[calc(100dvh-32px)] w-[clamp(320px,33.333vw,576px)] max-w-[calc(100vw-32px)] flex-col overflow-y-auto rounded-[24px] bg-white p-5 outline-none sm:max-h-[calc(100dvh-40px)] sm:max-w-[calc(100vw-40px)] sm:rounded-[40px] sm:p-8"
+        className="relative flex h-auto max-h-[calc(100dvh-32px)] w-full max-w-[480px] flex-col overflow-y-auto rounded-[24px] bg-white p-5 outline-none sm:h-[572px] sm:max-h-[calc(100dvh-40px)] sm:rounded-[40px] sm:p-8"
         onMouseDown={event => event.stopPropagation()}
         onSubmit={event => {
           event.preventDefault();
@@ -101,14 +99,14 @@ export const ProfileEditModal = ({
           type="button"
           aria-label="닫기"
           onClick={onClose}
-          className="absolute right-2 top-2 flex size-11 cursor-pointer items-center justify-center text-grey-400 sm:right-4 sm:top-4"
+          className="absolute right-2 top-2 flex size-11 cursor-pointer items-center justify-center text-grey-400 sm:right-6 sm:top-6 sm:size-auto"
         >
           <CloseIcon className="size-4" />
         </button>
 
         <h2 id="profile-edit-title" className="text-title1 text-grey-900">회원정보 수정</h2>
 
-        <div className="mt-8 flex flex-col items-center">
+        <div className="mt-6 flex flex-col items-center sm:mt-8">
           <div className="relative size-[70px]">
             <button
               type="button"
@@ -159,9 +157,8 @@ export const ProfileEditModal = ({
           </label>
         </div>
 
-        <div className="flex flex-1 flex-col">
-          <div className="flex flex-1 items-center justify-center gap-5 text-label2-md text-grey-500 underline underline-offset-2">
-            <button type="button" onClick={onLogout} className="cursor-pointer">로그아웃</button>
+        <div className="mt-5 flex flex-col gap-4 sm:mt-0 sm:flex-1 sm:gap-0">
+          <div className="flex items-center justify-center text-label2-md text-grey-500 underline underline-offset-2 sm:flex-1">
             <button type="button" onClick={onWithdraw} className="cursor-pointer">회원탈퇴</button>
           </div>
 

@@ -179,7 +179,7 @@ export default function RecordWrite() {
       return;
     }
     if (!selectedActivity) {
-      fireToast('활동을 먼저 생성해주세요.', undefined, 'error');
+      console.error('[record-write] 선택된 활동이 없어 임시저장을 진행할 수 없습니다.');
       return;
     }
     try {
@@ -198,7 +198,7 @@ export default function RecordWrite() {
       return;
     }
     if (!selectedActivity) {
-      fireToast('활동을 먼저 생성해주세요.', undefined, 'error');
+      console.error('[record-write] 선택된 활동이 없어 기록완료를 진행할 수 없습니다.');
       return;
     }
     try {

@@ -1,9 +1,10 @@
 import { useLocation, useNavigate } from 'react-router-dom';
+import LockIcon from '@/assets/lock.svg';
 
 const MY_STORY_ROUTES = [
   { path: '/mystory/archive', label: '활동 보관함' },
-  { path: '/mystory/insights', label: '인사이트' },
-  { path: '/mystory/ai-matching', label: 'AI 기록 매칭' },
+  { path: '/mystory/insights', label: '인사이트', locked: true },
+  { path: '/mystory/ai-matching', label: 'AI 기록 매칭', locked: true },
 ];
 
 export const MyStorySidebar = () => {
@@ -25,7 +26,10 @@ export const MyStorySidebar = () => {
             }`}
           >
             {selected && <span className="absolute left-0 top-2 bottom-2 w-0.5 bg-grey-700" />}
-            {item.label}
+            <span className="flex items-center gap-2">
+              {item.locked && <LockIcon aria-hidden className="size-[22px] shrink-0" />}
+              <span>{item.label}</span>
+            </span>
           </button>
         );
       })}
